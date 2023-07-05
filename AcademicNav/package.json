@@ -11,11 +11,13 @@
   "dependencies": {
     "@types/react-sidebar": "^3.0.2",
     "path": "^0.12.7",
+    "puppeteer": "^20.7.4",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-router-dom": "^6.14.1",
     "react-sidebar": "^3.0.2",
-    "react-tabs": "^6.0.1"
+    "react-tabs": "^6.0.1",
+    "reactflow": "^11.7.4"
   },
   "devDependencies": {
     "@types/react": "^18.0.37",
