@@ -11,7 +11,7 @@
 */
 import './new-view-input.scss'
 import {Routes, Route, useNavigate} from 'react-router-dom';
-import { ClassView } from '../../class-view/class-view';
+import ClassView from '../../class-view/class-view';
 
 function NewView() {
    const navigate = useNavigate();
@@ -25,7 +25,7 @@ function NewView() {
    <div>
      <div>
        <hr />
-       <button onClick={navigateToClassView}>Input Class Info</button>
+       <button onClick={navigateToClassView}>Finished inputting class info</button>
 
        <Routes>
          <Route path="/class-view" element={<ClassView />} />

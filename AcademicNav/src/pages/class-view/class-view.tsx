@@ -4,28 +4,29 @@ two main tabs for BlockView and GraphView
 */
 
 
-import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
+import {Routes, Route, useNavigate} from 'react-router-dom';
 import './class-view.scss'
-
+import MainView from './main-view/main-view';
 function ClassView() {
-    return (
+    const navigate = useNavigate();
+ 
+  const navigateToMainView = () => {
+    navigate('/main-view');
+  };
+ 
+  return (
+    <div>
       <div>
-        <h1>Welcome</h1>
-        <button>
-          <Link to="/new-view">Input some stuff</Link>
-        </button>
-      </div>
-    );
-  }
-  
-  function ClassViewRoutes() {
-    return (
-      <Router>
+        <hr />
+        <button onClick={navigateToMainView}>Finished inputting class info</button>
+ 
         <Routes>
           <Route path="/" element={<ClassView />} />
+          <Route path="/main-view" element={<MainView />} />
         </Routes>
-      </Router>
-    );
-  }
+      </div>
+    </div>
+  );
+ }
   
-  export { ClassView, ClassViewRoutes };
+  export default ClassView;
