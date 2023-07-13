@@ -1,4 +1,3 @@
-import React from "react";
 import SideBar from "../side-bar/side-bar";
 import { Tab, Tabs, TabList, TabPanel } from "react-tabs";
 import "react-tabs/style/react-tabs.css";

@@ -1,6 +1,3 @@
-/*
-    tab of both views
-*/
 import React from "react";
 import Sidebar from "react-sidebar";
 import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';

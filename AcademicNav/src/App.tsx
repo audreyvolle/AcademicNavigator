@@ -1,8 +1,8 @@
-import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import WelcomeRoutes  from './pages/welcome/welcome';
 import './App.css'
 
-function Home() {
+/*function Home() {
   return (
     <div>
       <h1>Home Page</h1>
@@ -11,13 +11,13 @@ function Home() {
       </button>
     </div>
   );
-}
+}*/
 
 function App() {
   return (
     <Router>
       <Routes>
-        <Route path="/" element={<Home />} />
+        <Route path="/" element={<WelcomeRoutes />} />
         <Route path="/welcome" element={<WelcomeRoutes />} />
       </Routes>
     </Router>
