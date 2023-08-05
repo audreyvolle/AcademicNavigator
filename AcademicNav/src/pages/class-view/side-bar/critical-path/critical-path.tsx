@@ -6,7 +6,7 @@ import './critical-path.scss'
 function CriticalPath() {
   return (
     <div>
-        
+        <p>critical path</p>
     </div>
   );
 }

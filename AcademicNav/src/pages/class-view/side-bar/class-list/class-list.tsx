@@ -7,7 +7,7 @@ import './class-list.scss'
 function ClassList() {
   return (
     <div>
-        
+        <p>classes left to place</p>
     </div>
   );
 }
