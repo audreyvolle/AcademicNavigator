@@ -1,16 +1,3 @@
-/*
-   WE SHOULD MAKE A PROTOTYPE FOR THIS
-   This should be able to be skipped if the user just wants the boilerplate class list
-    - Add warning once that is clicked and no information is inputted
-   Other inputs include:
-    - Selection of already completed classes
-    - The inputs that will be on the core path side bar inputs
-        - prefered credit hours
-        - graduation semester
-   Next will redirect to the main view page.
-*/
-//import './new-view-input.scss'
-
 import React, { useState } from 'react';
 import MainView from '../../class-view/main-view/main-view';
 import './new-view-input.scss';
@@ -82,5 +69,3 @@ function NewView() {
 }
 
 export default NewView;
-
-
