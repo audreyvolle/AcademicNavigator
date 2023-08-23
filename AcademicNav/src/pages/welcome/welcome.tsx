@@ -6,8 +6,14 @@ import majorFullKey from '../../assets/majorsFull';
 import Course from '../../assets/course';
 //import { printToJson } from '../../services/handleJSON';
 
-function Welcome() {
-  const [selectedValue, setSelectedValue] = useState('');
+interface WelcomeProps {
+  setSelectedValue:React.Dispatch<React.SetStateAction<string>>;
+  selectedValue: string;
+}
+
+
+
+const Welcome = ({setSelectedValue,selectedValue}:WelcomeProps) => {
   let courseList: Course[];
 
   const handleLoadWorkspace = () => {
@@ -56,23 +62,18 @@ function Welcome() {
   }
 
   return (
-    <div className="welcome-container">
-      <h1>Welcome to Academic Navigator</h1>
-      <button type="button" onClick={handleLoadWorkspace}>
-        Load Previous Work Space
-      </button>
-      <p>Select a Major to Get Started</p>
-      <select value={selectedValue} onChange={handleDropdownChange}>
-        <option value="">Select an option</option>
-        <option value="computer-science-ba">Computer Science BA</option>
-        <option value="computer-science-bs">Computer Science BS</option>
-        <option value="public-health">Public Health</option>
-      </select>
-      {selectedValue && (
-        <>
-          <NewView />
-        </>
-      )}
+  <div className="welcome-container">
+    <h1>Welcome to Academic Navigator</h1>
+    <button type="button" onClick={handleLoadWorkspace}>
+      Load Previous Work Space
+    </button>
+    <p>Select a Major to Get Started</p>
+    <select value={selectedValue} onChange={handleDropdownChange}>
+      <option value="">Select an option</option>
+      <option value="computer-science-ba">Computer Science BA</option>
+      <option value="computer-science-bs">Computer Science BS</option>
+      <option value="public-health">Public Health</option>
+    </select>
     </div>
   );
 }
