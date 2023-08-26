@@ -1,6 +1,6 @@
 [
     {
-      "id": "class1",
+      "id": "CS101",
       "title": "Introduction to Programming",
       "credits": 3,
       "prerequisites": ["none"],
@@ -9,7 +9,7 @@
       "taken": false
     },
     {
-      "id": "class2",
+      "id": "CS202",
       "title": "Data Structures and Algorithms",
       "credits": 4,
       "prerequisites": ["Introduction to Programming"],
@@ -18,7 +18,7 @@
       "taken": false
     },
     {
-      "id": "class3",
+      "id": "CS303",
       "title": "Database Systems",
       "credits": 3,
       "prerequisites": ["none"],
@@ -27,7 +27,7 @@
       "taken": false
     },
     {
-      "id": "class4",
+      "id": "CS404",
       "title": "Web Development",
       "credits": 3,
       "prerequisites": ["Introduction to Programming"],
@@ -36,7 +36,7 @@
       "taken": true
     },
     {
-      "id": "class5",
+      "id": "CS430",
       "title": "Software Engineering",
       "credits": 4,
       "prerequisites": ["Data Structures and Algorithms", "Database Systems"],

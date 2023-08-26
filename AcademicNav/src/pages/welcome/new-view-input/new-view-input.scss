@@ -2,55 +2,60 @@
 
 /* Style for the main container */
 .new-view-container {
-    padding: 20px;
-    border: 1px solid #ccc;
-    border-radius: 8px;
-    background-color:  #3083dcff;
-  }
-  
-  /* Style for the checkbox list */
-  .checkbox-list {
-    list-style: none;
-    padding-left: 0;
-  }
-  
-  /* Style for each checkbox item */
-  .checkbox-item {
-    margin-bottom: 10px;
-  }
-  
-  /* Style for the input elements */
-  .input-field {
-    margin: 10px 0;
-    padding: 8px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    width: 100%;
-    box-sizing: border-box;
-  }
-  
-  /* Style for the buttons */
-  .button-container {
-    margin-top: 20px;
-    display: flex;
-    justify-content: space-between;
-  }
-  
-  .button {
-    padding: 10px 20px;
-    background-color: #007bff;
-    color: #fff;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-  }
-  
-  .button-secondary {
-    background-color: #ccc;
-  }
-  
-  /* Style for hiding the MainView initially */
-  .main-view {
-    display: none;
-  }
-  
+  padding: 20px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  background-color:  #3083dcff;
+}
+
+.checkbox-list {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  grid-gap: 10px;
+}
+
+/* Style for each checkbox item */
+.checkbox-item {
+  margin-bottom: 10px;
+}
+
+ul {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+}
+
+/* Style for the input elements */
+.input-field {
+  margin: 10px 0;
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* Style for the buttons */
+.button-container {
+  margin-top: 20px;
+  display: flex;
+  justify-content: space-between;
+}
+
+.button {
+  padding: 10px 20px;
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.button-secondary {
+  background-color: #ccc;
+}
+
+/* Style for hiding the MainView initially */
+.main-view {
+  display: none;
+}
