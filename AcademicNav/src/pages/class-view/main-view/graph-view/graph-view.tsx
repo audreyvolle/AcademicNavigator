@@ -12,7 +12,7 @@ function GraphView() {
   return (
     <div>
         <p>graph view</p>
-        <div style={{ width: '100vw', height: '100vh' }}>
+        <div style={{ width: '66vw', height: '80vh' }}>
           <ReactFlow nodes={initialNodes} edges={initialEdges} />
         </div>
     </div>
