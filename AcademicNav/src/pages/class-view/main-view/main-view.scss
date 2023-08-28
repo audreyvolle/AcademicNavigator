@@ -1,0 +1,53 @@
+/* main-view.scss */
+/* Assuming this is the CSS file linked to your MainView component */
+
+/* Style for the container of the tab sections */
+.main-view {
+    margin: 20px;
+    display: flex; /* Use flexbox */
+  }
+  
+  /* Style for the left tab group (1/3 width) */
+  .left-tabs {
+    flex: 1; /* Take up 1/3 of available width */
+    padding-right: 10px; /* Add some spacing between tab groups */
+    padding-left: 10px;
+    box-sizing: border-box;
+  }
+  
+  /* Style for the right tab group (2/3 width) */
+  .right-tabs {
+    flex: 2; /* Take up 2/3 of available width */
+    padding-left: 10px; /* Add some spacing between tab groups */
+    box-sizing: border-box;
+  }
+  
+  /* Style for the tab headers */
+  .react-tabs__tab {
+    font-size: 16px;
+    padding: 10px 20px;
+    background-color: #f0f0f0;
+    border: 1px solid #ccc;
+    border-radius: 5px 5px 0 0;
+    cursor: pointer;
+    margin-right: 10px;
+  }
+  
+  .react-tabs__tab--selected {
+    background-color: #ffffff;
+    border-bottom-color: transparent;
+  }
+  
+  /* Style for the tab panels */
+  .react-tabs__tab-panel {
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-radius: 0 0 5px 5px;
+    background-color: #ffffff;
+  }
+  
+  /* Optional: Add some space between the different sets of tabs */
+  .react-tabs + .react-tabs {
+    margin-top: 20px;
+  }
+  
