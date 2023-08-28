@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
 import MainView from '../../class-view/main-view/main-view';
 import './new-view-input.scss';
+import { useUser } from '../../../Providers/UserProv';
 
 function NewView() {
-  const [selectedClasses, setSelectedClasses] = useState<string[]>([]);
-  const [isMainViewVisible, setIsMainViewVisible] = useState(false);
+  const {handleContinueClick,handleSkipClick,handleCheckboxChange,setIsMainViewVisible,selectedClasses,setSelectedClasses } = useUser();
 
   const dummyClasses = [
     'Class A',
@@ -12,23 +12,6 @@ function NewView() {
     'Class C',
     // Add more dummy classes
   ];
-
-  const handleCheckboxChange = (className: string) => {
-    if (selectedClasses.includes(className)) {
-      setSelectedClasses(selectedClasses.filter((c) => c !== className));
-    } else {
-      setSelectedClasses([...selectedClasses, className]);
-    }
-  };
-
-  const handleSkipClick = () => {
-    setSelectedClasses([]);
-    setIsMainViewVisible(true);
-  };
-
-  const handleContinueClick = () => {
-    setIsMainViewVisible(true);
-  };
 
   return (
     <div className="new-view-container">
@@ -59,10 +42,8 @@ function NewView() {
 
         <div className="button-container">
           <button onClick={handleSkipClick} className="button button-secondary">Skip</button>
-          <button onClick={handleContinueClick} className="button">Continue</button>
+          <button onClick={()=>{handleContinueClick()}} className="button">Continue</button>
         </div>
-
-        {isMainViewVisible && <MainView />}
       </div>
     </div>
   );

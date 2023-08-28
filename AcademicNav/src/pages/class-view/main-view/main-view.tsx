@@ -10,7 +10,6 @@ function MainView() {
     <div>
       <div>
         <hr />
-        <SideBar />
         <Tabs>
           <TabList>
             <Tab>Graph View</Tab>
@@ -24,6 +23,7 @@ function MainView() {
             <BlockView />
           </TabPanel>
         </Tabs>
+{    /*  BUGGY  <SideBar />   */}
       </div>
     </div>
   );
