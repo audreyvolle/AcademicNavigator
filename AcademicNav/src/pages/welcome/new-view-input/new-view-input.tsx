@@ -2,13 +2,12 @@ import { useState } from 'react';
 import MainView from '../../class-view/main-view/main-view';
 import './new-view-input.scss';
 import classData from '../../../data/scraped/test.json';
-import { printToJson } from '../../../services/handleJSON';
+import { useUser } from '../../../Providers/UserProv';
 
 function NewView() {
-  const [selectedClasses, setSelectedClasses] = useState<string[]>([]);
-  const [isMainViewVisible, setIsMainViewVisible] = useState(false);
+  const {handleContinueClick,handleSkipClick,handleCheckboxChange,setIsMainViewVisible,selectedClasses,setSelectedClasses } = useUser();
 
-  interface ClassList { //Used to store the data retrieved from the json file
+  interface ClassList {
     id: string,
     title: string,
     credits: number,
@@ -17,36 +16,7 @@ function NewView() {
     isReadyToTake: boolean,
     taken: boolean
   }
-
-  //converts the data in the json file into an interface array
   const ClassArray: ClassList[] = classData as ClassList[];
-
-  const handleCheckboxChange = (courseId: string) => {
-    const updatedClasses = ClassArray.map(course => {
-      if (course.id === courseId) {
-        return {
-          ...course,
-          taken: true
-        };
-      }
-      return course;
-    });
-
-    setSelectedClasses(selectedClasses.includes(courseId)
-      ? selectedClasses.filter((id) => id !== courseId)
-      : [...selectedClasses, courseId]
-    );
-    //printToJson(updatedClasses);
-  };
-
-  const handleSkipClick = () => {
-    setSelectedClasses([]);
-    setIsMainViewVisible(true);
-  };
-
-  const handleContinueClick = () => {
-    setIsMainViewVisible(true);
-  };
 
   return (
     <div className="new-view-container">
@@ -96,10 +66,8 @@ function NewView() {
 
         <div className="button-container">
           <button onClick={handleSkipClick} className="button button-secondary">Skip</button>
-          <button onClick={handleContinueClick} className="button">Continue</button>
+          <button onClick={()=>{handleContinueClick()}} className="button">Continue</button>
         </div>
-
-        {isMainViewVisible && <MainView />}
       </div>
     </div>
   );
