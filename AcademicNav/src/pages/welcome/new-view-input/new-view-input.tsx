@@ -1,5 +1,3 @@
-import { useState } from 'react';
-import MainView from '../../class-view/main-view/main-view';
 import './new-view-input.scss';
 import classData from '../../../data/scraped/test.json';
 import { useUser } from '../../../Providers/UserProv';
@@ -21,7 +19,7 @@ function NewView() {
   return (
     <div className="new-view-container">
       <div>
-        <p>Selected classes you have taken or are currently taking:</p>
+        <h2>Select classes you have taken or are currently taking:</h2>
 
         <ul className="checkbox-list">
           {Object.entries(

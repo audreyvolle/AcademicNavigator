@@ -1,17 +1,41 @@
 /* NewView.css */
 
-/* Style for the main container */
-.new-view-container {
-  padding: 20px;
-  border: 1px solid #ccc;
-  border-radius: 8px;
-  background-color:  #3083dcff;
+/* Style for the entire screen */
+body {
+  margin: 0;
+  padding: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background-color: #f0f0f0;
+  font-family: Arial, sans-serif;
 }
 
+/* Style for the main container */
+.new-view-container {
+  padding: 40px;
+  border-radius: 8px;
+  background-color: #fbf9ffff;
+  width: 90vw; /* Adjust the width as needed */
+  max-width: 1200px; /* Limit the maximum width for larger screens */
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  display: flex; /* Display items horizontally */
+  flex-direction: column; /* Align items vertically within the container */
+}
+
+/* Style for the title */
+h1 {
+  font-size: 28px;
+  margin-bottom: 20px;
+}
+
+/* Style for the list of classes */
 .checkbox-list {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
   grid-gap: 10px;
+  margin-bottom: 20px;
 }
 
 /* Style for each checkbox item */
@@ -25,10 +49,17 @@ ul {
   padding: 0;
 }
 
+/* Style for the input labels */
+label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: bold;
+}
+
 /* Style for the input elements */
 .input-field {
   margin: 10px 0;
-  padding: 8px;
+  padding: 10px;
   border: 1px solid #ccc;
   border-radius: 4px;
   width: 100%;
@@ -37,25 +68,38 @@ ul {
 
 /* Style for the buttons */
 .button-container {
-  margin-top: 20px;
   display: flex;
   justify-content: space-between;
+  align-items: center;
+  margin-top: 20px;
 }
 
 .button {
-  padding: 10px 20px;
+  padding: 12px 24px;
   background-color: #007bff;
   color: #fff;
   border: none;
   border-radius: 4px;
   cursor: pointer;
+  font-weight: bold;
+  transition: background-color 0.3s;
 }
 
 .button-secondary {
   background-color: #ccc;
 }
 
+.button:hover {
+  background-color: #0056b3;
+}
+
 /* Style for hiding the MainView initially */
 .main-view {
   display: none;
+}
+
+/* Style for h2 headings */
+h2 {
+  font-size: 24px;
+  margin: 20px 0;
 }
