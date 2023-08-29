@@ -17,8 +17,9 @@ const getId = () => `dndnode_${id++}`;
 const edges: { id: string; source: string; target: string; }[] | undefined = [];
 const semesters: string | string[] = [];
 const takenColor = 'rgba(178,255,102,1)';
-const readyColor = 'rgba(255,255,255,1)';
+const readyColor = 'rgb(255,255,255)';
 const unavailableColor = 'rgba(255,153,153,1)';
+let setColor = 'rgb(255,255,255)';
 
 const GraphView = () => {
   const { classArray, setClassArray } = useUser();
