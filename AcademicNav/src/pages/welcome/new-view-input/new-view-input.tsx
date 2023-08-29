@@ -3,7 +3,7 @@ import classData from '../../../data/scraped/test.json';
 import { useUser } from '../../../Providers/UserProv';
 
 function NewView() {
-  const {handleContinueClick,handleSkipClick,handleCheckboxChange,setIsMainViewVisible,selectedClasses,setSelectedClasses } = useUser();
+  const {handleContinueClick,handleSkipClick,handleCheckboxChange,setIsMainViewVisible,selectedClasses,setSelectedClasses, classArray } = useUser();
 
   interface ClassList {
     id: string,
@@ -14,7 +14,6 @@ function NewView() {
     isReadyToTake: boolean,
     taken: boolean
   }
-  const ClassArray: ClassList[] = classData as ClassList[];
 
   return (
     <div className="new-view-container">
@@ -23,7 +22,7 @@ function NewView() {
 
         <ul className="checkbox-list">
           {Object.entries(
-            ClassArray.reduce((groupedCourses: { [level: number]: ClassList[] }, course) => {
+            classArray.reduce((groupedCourses: { [level: number]: ClassList[] }, course) => {
               const courseId = course.id;
               if (courseId) {
                 const level = parseInt(courseId.substring(2, 3)); // Parse the level from the course ID
