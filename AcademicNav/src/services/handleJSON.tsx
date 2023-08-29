@@ -13,7 +13,7 @@ function printToJson(courseList: Course[]) {
   });
 }
 
-function readInClassList(jsonString: string): Course[] {
+/*function readInClassList(jsonString: string): Course[] {
   try {
     const courseList = JSON.parse(jsonString);
     if (Array.isArray(courseList)) {
@@ -25,6 +25,6 @@ function readInClassList(jsonString: string): Course[] {
     console.error('Error reading class list:', error);
     return [];
   }
-}
+}*/
 
-export { printToJson, readInClassList };
+export { printToJson };

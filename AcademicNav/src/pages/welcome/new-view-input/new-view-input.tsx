@@ -1,36 +1,57 @@
-import React, { useState } from 'react';
-import MainView from '../../class-view/main-view/main-view';
 import './new-view-input.scss';
+import classData from '../../../data/scraped/test.json';
 import { useUser } from '../../../Providers/UserProv';
 
 function NewView() {
-  const {handleContinueClick,handleSkipClick,handleCheckboxChange,setIsMainViewVisible,selectedClasses,setSelectedClasses } = useUser();
+  const {handleContinueClick,handleSkipClick,handleCheckboxChange,setIsMainViewVisible,selectedClasses,setSelectedClasses, classArray } = useUser();
 
-  const dummyClasses = [
-    'Class A',
-    'Class B',
-    'Class C',
-    // Add more dummy classes
-  ];
+  interface ClassList {
+    id: string,
+    title: string,
+    credits: number,
+    prerequisites: Array<string>,
+    prerequisitesTaken: Array<string>,
+    isReadyToTake: boolean,
+    taken: boolean
+  }
 
   return (
     <div className="new-view-container">
       <div>
-        <hr />
+        <h2>Select classes you have taken or are currently taking:</h2>
 
-        <p>Selected classes you have taken or are currently taking:</p>
         <ul className="checkbox-list">
-        {dummyClasses.map((className) => (
-            <li key={className}>
-              <label>
-                <input
-                  type="checkbox"
-                  checked={selectedClasses.includes(className)}
-                  onChange={() => handleCheckboxChange(className)}
-                />
-                {className}
-              </label>
-            </li>
+          {Object.entries(
+            classArray.reduce((groupedCourses: { [level: number]: ClassList[] }, course) => {
+              const courseId = course.id;
+              if (courseId) {
+                const level = parseInt(courseId.substring(2, 3)); // Parse the level from the course ID
+                if (!groupedCourses[level]) {
+                  groupedCourses[level] = [];
+                }
+                groupedCourses[level].push(course);
+              }
+              return groupedCourses;
+            }, {})
+          ).map(([level, coursesGroup]) => (
+            <div key={level}>
+              <h3>{level}00 Level Courses</h3>
+              <ul>
+                {coursesGroup.map((course) => (
+                  <li key={course.id}>
+                    <label htmlFor={course.id}>
+                      <input
+                        type="checkbox"
+                        id={course.id}
+                        checked={selectedClasses.includes(course.id)}
+                        onChange={() => handleCheckboxChange(course.id)}
+                      />
+                      {course.id}
+                    </label>
+                  </li>
+                ))}
+              </ul>
+            </div>
           ))}
         </ul>
 
