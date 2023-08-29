@@ -5,11 +5,13 @@ import GraphView from "./graph-view/graph-view";
 import BlockView from "./block-view/block-view";
 import ClassList from "../side-bar/class-list/class-list";
 import CriticalPath from "../side-bar/critical-path/critical-path";
+import { ReactFlowProvider } from "reactflow";
 
 function MainView() {
   return (
     <div>
       <div className="main-view">
+      <ReactFlowProvider>
         <div className="right-tabs">
           <Tabs>
             <TabList>
@@ -39,6 +41,7 @@ function MainView() {
             </TabPanel>
           </Tabs>
         </div>
+      </ReactFlowProvider>
       </div>
     </div>
   );

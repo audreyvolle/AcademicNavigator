@@ -16,7 +16,6 @@ interface ClassList {
   isReadyToTake: boolean,
   taken: boolean
 }
-const classArray: ClassList[] = classData as ClassList[];
 
 export interface exportedValue {
     selectedValue: string;
