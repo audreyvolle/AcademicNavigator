@@ -47,3 +47,45 @@
       max-width: 250px;
     }
   }
+.react-flow__edge-path, .react-flow__connection-path {
+    stroke: #000000;
+    stroke-width: 1;
+}
+
+.react-flow__node {
+    z-index: 1;
+}
+
+.react-flow__handle {
+    min-height: 0px;
+    min-width: 0px;
+    width: 45px;
+    height: 4px;
+    background: #4a4a4a;
+    border: none;
+    border-radius: unset;
+}
+
+.react-flow__handle-bottom {
+    left: 50%;
+    bottom: -5px;
+    transform: translate(-50%, 0);
+}
+
+.react-flow__handle-top {
+    left: 50%;
+    top: -5px;
+    transform: translate(-50%, 0);
+}
+
+.react-flow__node-group {
+    font-size: 30px;
+    border-radius: 8px;
+    z-index: 0;
+}
+
+.react-flow__node-default{
+    font-size:12px;
+}
+
+
