@@ -1,27 +1,47 @@
-/*
-    import react flow and have nodes that do not belong in the main view yet stored in this side bar to be dragged over.
-    be able to search for classes as well
-*/
-import { useReactFlowContext } from '../../react-flow';
+import React, { useState } from 'react';
+import ReactFlow, { useStore } from 'reactflow';
 
-function ClassList() {
-  const { nodes } = useReactFlowContext();
-
-  // Filter out the classes that are not taken yet
-  const classesNotTaken = nodes.filter((node) => !node.data.taken || node.data.taken);
-  //color the node red if there are prerequisites not placed that are blocking it
-  return (
-    <div className="class-list">
-      <h2>Classes Left to Take</h2>
-      <p>(Drag classes over to desired position)</p>
-      <ul>
-        {classesNotTaken.map((node) => (
-          <li key={node.data.label}>{node.data.label}</li>
-        ))}
-      </ul>
-    </div>
-  );
+interface ReactFlowNode {
+  id: string;
+  data: {
+    label: string;
+    taken: boolean;
+    isReadyToTake: boolean;
+    prerequisitesTaken: string[];
+  };
+  position: { x: number; y: number };
 }
 
-export default ClassList;
 
+interface ClassListProps {
+  nodes: ReactFlowNode[];
+  //setNodes: React.Dispatch<React.SetStateAction<ReactFlowNode[]>>;
+}
+
+const transformSelector = (state: { transform: any }) => state.transform;
+
+const ClassList: React.FC<ClassListProps> = ({ nodes }) => {
+  const transform = useStore(transformSelector);
+
+  const [selectedNodes, setSelectedNodes] = useState<string[]>([]);
+
+  const toggleNodeSelection = (nodeId: string) => {
+    setSelectedNodes((prevSelectedNodes) =>
+      prevSelectedNodes.includes(nodeId)
+        ? prevSelectedNodes.filter((id) => id !== nodeId)
+        : [...prevSelectedNodes, nodeId]
+    );
+  };
+
+  return (
+    <div className="class-list" style={{ width: '20vw', height: '75vh' }}>
+      <h2>Classes Left to Take</h2>
+      <p>(Drag classes over to desired position)</p>
+      <ReactFlow nodes={nodes}>
+
+      </ReactFlow>
+    </div>
+  );
+};
+
+export default ClassList;

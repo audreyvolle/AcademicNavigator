@@ -1,95 +1,103 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
-import { useUser } from '../../Providers/UserProv';
+import { useCallback } from 'react';
+import ReactFlow, {
+  ReactFlowProvider,
+  useNodesState,
+  useEdgesState,
+  addEdge,
+  Controls,
+  Connection,
+  Edge,
+} from 'reactflow';
+import 'reactflow/dist/style.css';
+import { Tab, Tabs, TabList, TabPanel } from "react-tabs";
+import "react-tabs/style/react-tabs.css";
 
-const ReactFlowContext = createContext({ nodes: [] as ReactFlowNode[], addNode: (newNode: ReactFlowNode) => {} });
+import ClassList from './side-bar/class-list/class-list';
+import CriticalPath from './side-bar/critical-path/critical-path';
+import GraphView from './main-view/graph-view/graph-view';
+import BlockView from './main-view/block-view/block-view';
 
-export const useReactFlowContext = () => useContext(ReactFlowContext);
+const initialNodes = [
+  {
+    id: 'provider-1',
+    type: 'input',
+    data: {
+      label: 'Node 1',
+      taken: false, // Add the properties needed by ReactFlowNode
+      isReadyToTake: true,
+      prerequisitesTaken: [],
+    },
+    position: { x: 250, y: 5 },
+  },
+  // ... other nodes
+];
 
-interface ReactFlowProviderProps {
-  children: React.ReactNode;
-}
-let edgeCount = 0;
-const edges: { id: string; source: string; target: string; }[] | undefined = [];
+const initialEdges = [
+  {
+    id: 'provider-e1-2',
+    source: 'provider-1',
+    target: 'provider-2',
+    animated: true,
+  },
+  { id: 'provider-e1-3', source: 'provider-1', target: 'provider-3' },
+];
 
-interface ClassList { //Used to store the data retrieved from the json file
-    id: string,
-    title: string,
-    credits: number,
-    prerequisites: Array<string>,
-    prerequisitesTaken: Array<string>,
-    isReadyToTake: boolean,
-    taken: boolean
-}
-
-function findEdges(value: string[], classes: ClassList[], edgeArray: { id: string; source: string; target: string; }[] | undefined = [], checkingId:string) {
-    //function that finds all the edges that the graph needs
-    value.forEach(function (prereqs) {
-        classes.forEach(function (section) {
-            if (section.title === prereqs) {
-                edgeCount++
-                edgeArray.push({id:'edge'+edgeCount, source: section.id, target:checkingId})
-            }
-        })
-    })
-}
-export const ReactFlowProvider: React.FC<ReactFlowProviderProps> = ({ children }) => {
-  const [nodes, setNodes] = useState<ReactFlowNode[]>([]);
-  const { classArray } = useUser(); // Assuming this hook provides classArray
-
-  useEffect(() => {
-    const xspacing = 100; // Set your desired x spacing
-    const yspacing = 100; // Set your desired y spacing
-    const takenColor = 'blue'; // Set your desired taken color
-    const readyColor = 'green'; // Set your desired ready color
-    const unavailableColor = 'gray'; // Set your desired unavailable color
-
-    const updatedNodes: ReactFlowNode[] = [];
-
-    classArray.forEach((value, count) => {
-      const position = { x: count * xspacing, y: count * yspacing };
-      const backgroundColor = value.taken
-        ? takenColor
-        : value.isReadyToTake
-        ? readyColor
-        : unavailableColor;
-
-      const node: ReactFlowNode = {
-        id: value.id,
-        position,
-        data: { label: value.title, taken: value.taken },
-        style: { backgroundColor },
-      };
-
-      updatedNodes.push(node);
-
-      if (value.prerequisites.length > 0) {
-        findEdges(value.prerequisites, classArray, edges, value.id);
-      }
-    });
-
-    setNodes(updatedNodes);
-  }, [classArray]);
-
-  const addNode = (newNode: ReactFlowNode) => {
-    setNodes((prevNodes) => [...prevNodes, newNode]);
-  };
+const ProviderFlow = () => {
+  const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
+  const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
+  const onConnect = useCallback((params: Edge | Connection) => setEdges((els) => addEdge(params, els)), []);
 
   return (
-    <ReactFlowContext.Provider value={{ nodes, addNode }}>
-      {children}
-    </ReactFlowContext.Provider>
+    <div className="providerflow">
+      <ReactFlowProvider>
+        <div className="reactflow-wrapper">
+          <ReactFlow
+            nodes={nodes}
+            edges={edges}
+            onNodesChange={onNodesChange}
+            onEdgesChange={onEdgesChange}
+            onConnect={onConnect}
+            fitView
+          >
+            <Controls />
+          </ReactFlow>
+        </div>
+        <div className="main-view">
+          <div className="right-tabs">
+            <Tabs>
+              <TabList>
+                <Tab>Graph View</Tab>
+                <Tab>Block View</Tab>
+              </TabList>
+              <TabPanel>
+                <GraphView nodes={nodes} />
+              </TabPanel>
+              <TabPanel>
+                <BlockView nodes={nodes} />
+              </TabPanel>
+            </Tabs>
+          </div>
+          <div className="left-tabs">
+            <Tabs>
+              <TabList>
+                <Tab>Class List</Tab>
+                <Tab>Critical Path</Tab>
+              </TabList>
+              <TabPanel>
+                <ClassList nodes={nodes} />
+              </TabPanel>
+              <TabPanel>
+                <CriticalPath nodes={nodes} />
+              </TabPanel>
+            </Tabs>
+          </div>
+      </div>
+      </ReactFlowProvider>
+    </div>
   );
 };
 
-interface ReactFlowNode {
-    id: string;
-    position: { x: number; y: number };
-    data: { label: string; taken: boolean }; // Adjust this structure according to your needs
-    style: { backgroundColor: string };
-  }
-  
-
-// Define the findEdges function and edges array
+export default ProviderFlow;
 
 
 
