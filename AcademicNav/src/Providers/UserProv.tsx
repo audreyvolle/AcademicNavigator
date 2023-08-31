@@ -13,7 +13,8 @@ interface ClassList {
   prerequisites: Array<string>,
   prerequisitesTaken: Array<string>,
   isReadyToTake: boolean,
-  taken: boolean
+  taken: boolean,
+  semester: string
 }
 
 export interface exportedValue {
