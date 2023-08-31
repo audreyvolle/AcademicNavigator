@@ -16,36 +16,37 @@ import ClassList from './side-bar/class-list/class-list';
 import CriticalPath from './side-bar/critical-path/critical-path';
 import GraphView from './main-view/graph-view/graph-view';
 import BlockView from './main-view/block-view/block-view';
+import { useUser } from '../../Providers/UserProv';
 
-const initialNodes = [
-  {
-    id: 'provider-1',
-    type: 'input',
-    data: {
-      label: 'Node 1',
-      taken: false, // Add the properties needed by ReactFlowNode
-      isReadyToTake: true,
-      prerequisitesTaken: [],
-    },
-    position: { x: 250, y: 5 },
-  },
-  // ... other nodes
-];
+interface ReactFlowNode {
+  id: string;
+  data: {
+    label: string;
+    taken: boolean;
+    isReadyToTake: boolean;
+    prerequisitesTaken: string[];
+  };
+  position: { x: number; y: number };
+}
 
-const initialEdges = [
-  {
-    id: 'provider-e1-2',
-    source: 'provider-1',
-    target: 'provider-2',
-    animated: true,
-  },
-  { id: 'provider-e1-3', source: 'provider-1', target: 'provider-3' },
-];
-
+let groupcount = 0;
+const groupspacing = 150
 const ProviderFlow = () => {
-  const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
-  const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
-  const onConnect = useCallback((params: Edge | Connection) => setEdges((els) => addEdge(params, els)), []);
+  const { classArray } = useUser();
+
+  const spacing = 75;
+  let count = 0;
+  const nodes: ReactFlowNode[] | { id: string; position: { x: number; y: number; }; data: { label: string[]; }; } | undefined = [];
+
+  classArray.forEach(function (value) {
+    nodes.push({ id: value.id, position: { x: 0, y: count * spacing }, data: { label: value.title, taken: value.taken, isReadyToTake: value.isReadyToTake, prerequisitesTaken: value.prerequisitesTaken } });
+    count++;
+  });
+
+  const [nodesState, setNodesState, onNodesStateChange] = useNodesState(nodes);
+  //const [edgesState, setEdgesState, onEdgesStateChange] = useEdgesState(initialEdges);
+  //const onConnect = useCallback((params: Edge | Connection) => setEdgesState((els) => addEdge(params, els)), []);
+
 
   return (
     <div className="providerflow">
@@ -53,10 +54,7 @@ const ProviderFlow = () => {
         <div className="reactflow-wrapper">
           <ReactFlow
             nodes={nodes}
-            edges={edges}
-            onNodesChange={onNodesChange}
-            onEdgesChange={onEdgesChange}
-            onConnect={onConnect}
+            
             fitView
           >
             <Controls />
@@ -91,7 +89,7 @@ const ProviderFlow = () => {
               </TabPanel>
             </Tabs>
           </div>
-      </div>
+        </div>
       </ReactFlowProvider>
     </div>
   );
@@ -101,3 +99,9 @@ export default ProviderFlow;
 
 
 
+/*
+edges={edges}
+            onNodesChange={onNodesChange}
+            onEdgesChange={onEdgesChange}
+            onConnect={onConnect}
+*/

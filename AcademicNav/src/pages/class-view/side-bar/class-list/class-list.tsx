@@ -37,9 +37,7 @@ const ClassList: React.FC<ClassListProps> = ({ nodes }) => {
     <div className="class-list" style={{ width: '20vw', height: '75vh' }}>
       <h2>Classes Left to Take</h2>
       <p>(Drag classes over to desired position)</p>
-      <ReactFlow nodes={nodes}>
-
-      </ReactFlow>
+      <ReactFlow nodes={nodes}></ReactFlow>
     </div>
   );
 };
