@@ -15,6 +15,7 @@ interface ReactFlowNode {
 
 interface ClassListProps {
   nodes: ReactFlowNode[];
+  //onDrop: (event: DragEvent<HTMLDivElement>) => void;
   //setNodes: React.Dispatch<React.SetStateAction<ReactFlowNode[]>>;
 }
 

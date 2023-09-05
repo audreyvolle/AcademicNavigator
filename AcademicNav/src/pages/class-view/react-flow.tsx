@@ -9,8 +9,8 @@ import ReactFlow, {
   Edge,
 } from 'reactflow';
 import 'reactflow/dist/style.css';
-import { Tab, Tabs, TabList, TabPanel } from "react-tabs";
-import "react-tabs/style/react-tabs.css";
+import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
+import 'react-tabs/style/react-tabs.css';
 
 import ClassList from './side-bar/class-list/class-list';
 import CriticalPath from './side-bar/critical-path/critical-path';
@@ -30,23 +30,60 @@ interface ReactFlowNode {
 }
 
 let groupcount = 0;
-const groupspacing = 150
+const groupspacing = 150;
 const ProviderFlow = () => {
   const { classArray } = useUser();
 
   const spacing = 75;
   let count = 0;
-  const nodes: ReactFlowNode[] | { id: string; position: { x: number; y: number; }; data: { label: string[]; }; } | undefined = [];
+  const nodes: ReactFlowNode[] = [];
+  const takenNodes: ReactFlowNode[] = [];
+  const notTakenNodes: ReactFlowNode[] = [];
 
   classArray.forEach(function (value) {
-    nodes.push({ id: value.id, position: { x: 0, y: count * spacing }, data: { label: value.title, taken: value.taken, isReadyToTake: value.isReadyToTake, prerequisitesTaken: value.prerequisitesTaken } });
+    const node = {
+      id: value.id,
+      position: { x: 0, y: count * spacing },
+      data: {
+        label: value.title,
+        taken: value.taken,
+        isReadyToTake: value.isReadyToTake,
+        prerequisitesTaken: value.prerequisitesTaken,
+      },
+    };
+
+    nodes.push(node);
+
+    if (value.taken) {
+      takenNodes.push(node);
+    } else {
+      notTakenNodes.push(node);
+    }
+
     count++;
   });
 
-  const [nodesState, setNodesState, onNodesStateChange] = useNodesState(nodes);
-  //const [edgesState, setEdgesState, onEdgesStateChange] = useEdgesState(initialEdges);
-  //const onConnect = useCallback((params: Edge | Connection) => setEdgesState((els) => addEdge(params, els)), []);
+  const onDrop = useCallback(
+    (event: React.DragEvent<HTMLDivElement>) => {
+      event.preventDefault();
 
+      const reactFlowBounds = reactFlowWrapper.current.getBoundingClientRect();
+      const type = event.dataTransfer.getData('application/reactflow');
+
+      // check if the dropped element is valid
+      if (typeof type === 'undefined' || !type) {
+        return;
+      }
+
+      const position = {
+        x: event.clientX - reactFlowBounds.left,
+        y: event.clientY - reactFlowBounds.top,
+      };
+    },
+    []
+  );
+
+  const [nodesState, setNodesState, onNodesStateChange] = useNodesState(nodes);
 
   return (
     <div className="providerflow">
@@ -68,10 +105,10 @@ const ProviderFlow = () => {
                 <Tab>Block View</Tab>
               </TabList>
               <TabPanel>
-                <GraphView nodes={nodes} />
+                <GraphView nodes={takenNodes} onDrop={onDrop}/>
               </TabPanel>
               <TabPanel>
-                <BlockView nodes={nodes} />
+                <BlockView nodes={takenNodes} onDrop={onDrop}/>
               </TabPanel>
             </Tabs>
           </div>
@@ -82,10 +119,10 @@ const ProviderFlow = () => {
                 <Tab>Critical Path</Tab>
               </TabList>
               <TabPanel>
-                <ClassList nodes={nodes} />
+                <ClassList nodes={notTakenNodes} onDrop={onDrop}/>
               </TabPanel>
               <TabPanel>
-                <CriticalPath nodes={nodes} />
+                <CriticalPath nodes={notTakenNodes} />
               </TabPanel>
             </Tabs>
           </div>

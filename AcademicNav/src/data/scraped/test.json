@@ -33,7 +33,7 @@
       "prerequisites": ["Introduction to Programming"],
       "prerequisitesTaken": ["Introduction to Programming"],
       "isReadyToTake": true,
-      "taken": true
+      "taken": false
     },
     {
       "id": "CS430",
