@@ -1,0 +1,16 @@
+{
+  "ExpandedNodes": [
+    "",
+    "\\AcademicNav",
+    "\\AcademicNav\\src",
+    "\\AcademicNav\\src\\data",
+    "\\AcademicNav\\src\\data\\scraped",
+    "\\AcademicNav\\src\\pages",
+    "\\AcademicNav\\src\\pages\\class-view",
+    "\\AcademicNav\\src\\pages\\class-view\\main-view",
+    "\\AcademicNav\\src\\pages\\class-view\\main-view\\graph-view",
+    "\\AcademicNav\\src\\Providers"
+  ],
+  "SelectedNode": "\\AcademicNav\\src\\data\\scraped\\test2.json",
+  "PreviewInSolutionExplorer": false
+}
