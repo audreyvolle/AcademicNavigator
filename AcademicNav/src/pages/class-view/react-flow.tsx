@@ -1,4 +1,4 @@
-import React, { useState, useRef, useCallback, useEffect } from 'react';
+import { useState, useRef, useCallback, useEffect } from 'react';
 import ReactFlow, {
   ReactFlowProvider,
   addEdge,
@@ -24,7 +24,7 @@ const initialNodes = [
 let id = 0;
 const getId = () => `dndnode_${id++}`;
 
-const MainView = () => {
+const Reac = () => {
   const reactFlowWrapper = useRef(null);
   const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
   const [edges, setEdges, onEdgesChange] = useEdgesState([]);
@@ -103,5 +103,5 @@ const MainView = () => {
   );
 };
 
-export default MainView;
+export default Reac;
 
