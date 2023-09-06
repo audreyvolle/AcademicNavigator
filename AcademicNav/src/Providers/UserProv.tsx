@@ -2,7 +2,6 @@ import { createContext, ReactNode, useContext, useState } from "react";
 import majorAbbreviationKey from '../assets/majorsAbrev';
 import majorFullKey from '../assets/majorsFull';
 import classData from '../data/scraped/test.json';
-import ClassList from "../pages/class-view/side-bar/class-list/class-list";
 
 //Think about it's a global state value. 
 //Add everything in exportValue
