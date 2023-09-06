@@ -1,144 +1,107 @@
-import { useCallback } from 'react';
+import React, { useState, useRef, useCallback, useEffect } from 'react';
 import ReactFlow, {
   ReactFlowProvider,
+  addEdge,
   useNodesState,
   useEdgesState,
-  addEdge,
   Controls,
-  Connection,
-  Edge,
+  ReactFlowInstance,
 } from 'reactflow';
 import 'reactflow/dist/style.css';
-import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
-import 'react-tabs/style/react-tabs.css';
 
-import ClassList from './side-bar/class-list/class-list';
-import CriticalPath from './side-bar/critical-path/critical-path';
-import GraphView from './main-view/graph-view/graph-view';
-import BlockView from './main-view/block-view/block-view';
-import { useUser } from '../../Providers/UserProv';
+import Sidebar from './side-bar/side-bar';
+import './side-bar.css';
 
-interface ReactFlowNode {
-  id: string;
-  data: {
-    label: string;
-    taken: boolean;
-    isReadyToTake: boolean;
-    prerequisitesTaken: string[];
-  };
-  position: { x: number; y: number };
-}
+const initialNodes = [
+  {
+    id: '1',
+    type: 'input',
+    data: { label: 'input node' },
+    position: { x: 250, y: 5 },
+  },
+];
 
-let groupcount = 0;
-const groupspacing = 150;
-const ProviderFlow = () => {
-  const { classArray } = useUser();
+let id = 0;
+const getId = () => `dndnode_${id++}`;
 
-  const spacing = 75;
-  let count = 0;
-  const nodes: ReactFlowNode[] = [];
-  const takenNodes: ReactFlowNode[] = [];
-  const notTakenNodes: ReactFlowNode[] = [];
+const MainView = () => {
+  const reactFlowWrapper = useRef(null);
+  const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
+  const [edges, setEdges, onEdgesChange] = useEdgesState([]);
+  const [reactFlowInstance, setReactFlowInstance] = useState<ReactFlowInstance | null>(null);
 
-  classArray.forEach(function (value) {
-    const node = {
-      id: value.id,
-      position: { x: 0, y: count * spacing },
-      data: {
-        label: value.title,
-        taken: value.taken,
-        isReadyToTake: value.isReadyToTake,
-        prerequisitesTaken: value.prerequisitesTaken,
-      },
-    };
-
-    nodes.push(node);
-
-    if (value.taken) {
-      takenNodes.push(node);
-    } else {
-      notTakenNodes.push(node);
+  // Use useEffect to mimic onInit when reactFlowInstance changes
+  useEffect(() => {
+    if (reactFlowInstance) {
+      // reactFlowInstance is available, perform initialization here
+      console.log('Component is initialized');
     }
+  }, [reactFlowInstance]);
 
-    count++;
-  });
+  const onConnect = useCallback((params: any) => setEdges((eds) => addEdge(params, eds)), []);
+
+  const onDragOver = useCallback((event: any) => {
+    event.preventDefault();
+    event.dataTransfer.dropEffect = 'move';
+  }, []);
 
   const onDrop = useCallback(
-    (event: React.DragEvent<HTMLDivElement>) => {
+    (event: any) => {
       event.preventDefault();
 
-      const reactFlowBounds = reactFlowWrapper.current.getBoundingClientRect();
-      const type = event.dataTransfer.getData('application/reactflow');
+      const reactFlowBounds = reactFlowWrapper.current as HTMLElement | null;
 
-      // check if the dropped element is valid
-      if (typeof type === 'undefined' || !type) {
-        return;
+      if (reactFlowBounds) {
+        const type = event.dataTransfer.getData('application/reactflow');
+
+        // check if the dropped element is valid
+        if (typeof type === 'undefined' || !type) {
+          return;
+        }
+
+        if (reactFlowInstance) {
+          const position = reactFlowInstance.project({
+            x: event.clientX - reactFlowBounds.getBoundingClientRect().left,
+            y: event.clientY - reactFlowBounds.getBoundingClientRect().top,
+          });
+
+          const newNode = {
+            id: getId(),
+            type,
+            position,
+            data: { label: `${type} node` },
+          };
+
+          setNodes((nds) => nds.concat(newNode));
+        }
       }
-
-      const position = {
-        x: event.clientX - reactFlowBounds.left,
-        y: event.clientY - reactFlowBounds.top,
-      };
     },
-    []
+    [reactFlowInstance]
   );
 
-  const [nodesState, setNodesState, onNodesStateChange] = useNodesState(nodes);
-
   return (
-    <div className="providerflow">
+    <div className="dndflow">
       <ReactFlowProvider>
-        <div className="reactflow-wrapper">
+        <div className="reactflow-wrapper" ref={reactFlowWrapper} style={{ width: '66vw', height: '80vh' }}>
           <ReactFlow
             nodes={nodes}
-            
+            edges={edges}
+            onNodesChange={onNodesChange}
+            onEdgesChange={onEdgesChange}
+            onConnect={onConnect}
+            onInit={setReactFlowInstance} // Initialize reactFlowInstance when the component mounts
+            onDrop={onDrop}
+            onDragOver={onDragOver}
             fitView
           >
             <Controls />
           </ReactFlow>
         </div>
-        <div className="main-view">
-          <div className="right-tabs">
-            <Tabs>
-              <TabList>
-                <Tab>Graph View</Tab>
-                <Tab>Block View</Tab>
-              </TabList>
-              <TabPanel>
-                <GraphView nodes={takenNodes} onDrop={onDrop}/>
-              </TabPanel>
-              <TabPanel>
-                <BlockView nodes={takenNodes} onDrop={onDrop}/>
-              </TabPanel>
-            </Tabs>
-          </div>
-          <div className="left-tabs">
-            <Tabs>
-              <TabList>
-                <Tab>Class List</Tab>
-                <Tab>Critical Path</Tab>
-              </TabList>
-              <TabPanel>
-                <ClassList nodes={notTakenNodes} onDrop={onDrop}/>
-              </TabPanel>
-              <TabPanel>
-                <CriticalPath nodes={notTakenNodes} />
-              </TabPanel>
-            </Tabs>
-          </div>
-        </div>
+        <Sidebar />
       </ReactFlowProvider>
     </div>
   );
 };
 
-export default ProviderFlow;
+export default MainView;
 
-
-
-/*
-edges={edges}
-            onNodesChange={onNodesChange}
-            onEdgesChange={onEdgesChange}
-            onConnect={onConnect}
-*/

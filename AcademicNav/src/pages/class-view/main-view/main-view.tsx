@@ -1,16 +1,16 @@
-import "react-tabs/style/react-tabs.css";
+/*import "react-tabs/style/react-tabs.css";
 import './main-view.scss';
 import { ReactFlowProvider } from "reactflow";
 import { useState } from "react";
 import ProviderFlow from "../react-flow";
-/*import { Tab, Tabs, TabList, TabPanel } from "react-tabs";
+import { Tab, Tabs, TabList, TabPanel } from "react-tabs";
 import GraphView from "./graph-view/graph-view";
 import BlockView from "./block-view/block-view";
 import ClassList from "../side-bar/class-list/class-list";
 import CriticalPath from "../side-bar/critical-path/critical-path";
 */
 
-function MainView() {
+/*function MainView() {
   const [nodes, setNodes] = useState([]); // Initialize with your desired initial nodes
 
   return (
@@ -24,7 +24,7 @@ function MainView() {
   );
 }
 
-export default MainView;
+export default MainView;*/
 
 
 /*<div className="right-tabs">
