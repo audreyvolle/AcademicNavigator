@@ -16,7 +16,7 @@ const SideBar = ({ classArray }: SideBarProps) => {
   const onDragStart = (event: any, nodeType: any, nodeId: string) => {
     event.dataTransfer.setData('application/reactflow', nodeType);
     event.dataTransfer.effectAllowed = 'move';
-    event.dataTransfer.setData('nodeId', nodeId); // Set the node's ID for reference
+    event.dataTransfer.setData('nodeId', nodeId);
   };
 
   // Filter classArray to get only items with taken === false
