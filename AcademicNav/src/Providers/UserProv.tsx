@@ -83,23 +83,40 @@ export const UserProvider = ({children}: { children: ReactNode}) => {
     //printToJson(courseList);
     }
 
-    const handleCheckboxChange = (className: string) => {
-        if (selectedClasses.includes(className)) {
-          setSelectedClasses(selectedClasses.filter((c) => c !== className));
-        } else {
-          setSelectedClasses([...selectedClasses, className]);
-          const updatedClasses = classArray.map(course => {
-            if (course.id === className) {
-              return {
-                ...course,
-                taken: true
-              };
+    const handleCheckboxChange = (className: string) => { //need to handle if the box goes from checked to unchecked (set back to taken=false, semester="", and remove the class from preRequisitestaken)
+      if (selectedClasses.includes(className)) {
+        setSelectedClasses(selectedClasses.filter((c) => c !== className));
+      } else {
+        setSelectedClasses([...selectedClasses, className]);
+        const updatedClasses = classArray.map((course) => {
+          // Check if the course is the selected one
+          if (course.id === className) {
+            // Update the course's taken status
+            const updatedCourse = {
+              ...course,
+              semester: "done",
+              taken: true
+            };
+    
+            return updatedCourse;
+          }
+          return course;
+        });
+    
+        // Now that updatedClasses is defined, update prerequisitesTaken based on the prerequisites
+        classArray.forEach((updatedCourse) => {
+          updatedCourse.prerequisites.forEach((prerequisite) => {
+            const prerequisiteIndex = classArray.findIndex((c) => c.title === prerequisite);
+            if (prerequisiteIndex !== -1) {
+              updatedClasses[prerequisiteIndex].prerequisitesTaken.push(updatedCourse.title);
             }
-            return course;
           });
-          setClassArray(updatedClasses);
-        }
-      };
+        });
+        console.log(updatedClasses);
+        setClassArray(updatedClasses);
+      }
+    };
+    
     
       const handleSkipClick = () => {
         setIsMainViewVisible(true);
