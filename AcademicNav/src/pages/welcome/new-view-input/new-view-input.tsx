@@ -1,9 +1,8 @@
 import './new-view-input.scss';
-import classData from '../../../data/scraped/test.json';
 import { useUser } from '../../../Providers/UserProv';
 
 function NewView() {
-  const {handleContinueClick,handleSkipClick,handleCheckboxChange,setIsMainViewVisible,selectedClasses,setSelectedClasses, classArray } = useUser();
+  const {handleContinueClick,handleSkipClick,handleCheckboxChange, selectedClasses, classArray } = useUser();
 
   interface ClassList {
     id: string,
