@@ -10,36 +10,15 @@ import ReactFlow, {
 import 'reactflow/dist/style.css';
 import SideBar from '../../side-bar/side-bar';
 import './graph-view.scss';
-
-interface ClassList {
-  id: string,
-  title: string,
-  credits: number,
-  prerequisites: Array<string>,
-  prerequisitesTaken: Array<string>,
-  isReadyToTake: boolean,
-  taken: boolean
-}
-
-interface SideBarProps {
-  classArray: ClassList[];
-}
-
-const initialNodes = [
-  {
-    id: '1',
-    type: 'input',
-    data: { label: 'input node' },
-    position: { x: 250, y: 5 },
-  },
-];
+import { useUser } from '../../../../Providers/UserProv';
 
 let id = 0;
 const getId = () => `dndnode_${id++}`;
 
-const GraphView = ({ classArray }: SideBarProps) => {
+const GraphView = () => {
+  const { classArray, setClassArray } = useUser();
   const reactFlowWrapper = useRef(null);
-  const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
+  const [nodes, setNodes, onNodesChange] = useNodesState([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState([]);
   const [reactFlowInstance, setReactFlowInstance] = useState<ReactFlowInstance | null>(null);
 
@@ -84,7 +63,16 @@ const GraphView = ({ classArray }: SideBarProps) => {
             position,
             data: { label: `${type}` },
           };
+          const classToMove = classArray.find((classItem) => classItem.title === type);
 
+        if (classToMove) {
+          // Set taken to true for the class being moved
+          const updatedClassArray = classArray.map((classItem) =>
+            classItem === classToMove ? { ...classItem, taken: true } : classItem // MISAEL CHANGE THIS TO ALSO UPDATE THE SEMESTER AND OTHER VARIABLES!!
+            );
+          setClassArray(updatedClassArray);
+          console.log(classArray);
+        }
           setNodes((nds) => nds.concat(newNode));
         }
       }
@@ -110,7 +98,7 @@ const GraphView = ({ classArray }: SideBarProps) => {
             <Controls />
           </ReactFlow>
         </div>
-        <SideBar classArray={classArray} />
+        <SideBar />
       </ReactFlowProvider>
     </div>
   );

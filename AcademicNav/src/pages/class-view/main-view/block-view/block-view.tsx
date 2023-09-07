@@ -8,39 +8,17 @@ import ReactFlow, {
   ReactFlowInstance,
 } from 'reactflow';
 import 'reactflow/dist/style.css';
-
 import SideBar from '../../side-bar/side-bar';
 import './block-view.scss';
-
-interface ClassList {
-  id: string,
-  title: string,
-  credits: number,
-  prerequisites: Array<string>,
-  prerequisitesTaken: Array<string>,
-  isReadyToTake: boolean,
-  taken: boolean
-}
-
-interface SideBarProps {
-  classArray: ClassList[];
-}
-
-const initialNodes = [
-  {
-    id: '1',
-    type: 'input',
-    data: { label: 'input node' },
-    position: { x: 250, y: 5 },
-  },
-];
+import { useUser } from '../../../../Providers/UserProv';
 
 let id = 0;
 const getId = () => `dndnode_${id++}`;
 
-const BlockView = ({ classArray }: SideBarProps) => {
+const BlockView = () => {
+  const { classArray, setClassArray } = useUser();
   const reactFlowWrapper = useRef(null);
-  const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
+  const [nodes, setNodes, onNodesChange] = useNodesState([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState([]);
   const [reactFlowInstance, setReactFlowInstance] = useState<ReactFlowInstance | null>(null);
 
@@ -83,10 +61,20 @@ const BlockView = ({ classArray }: SideBarProps) => {
             id: getId(),
             type,
             position,
-            data: { label: `${type} node` },
+            data: { label: `${type}` },
           };
+          
+          const classToMove = classArray.find((classItem) => classItem.title === type);
 
-          setNodes((nds) => nds.concat(newNode));
+          if (classToMove) {
+            // Set taken to true for the class being moved
+            const updatedClassArray = classArray.map((classItem) =>
+              classItem === classToMove ? { ...classItem, taken: true } : classItem // DARIN CHANGE THIS TO ALSO UPDATE THE SEMESTER AND OTHER VARIABLES!!
+              );
+            setClassArray(updatedClassArray);
+            console.log(classArray);
+          }
+            setNodes((nds) => nds.concat(newNode));
         }
       }
     },
@@ -103,7 +91,7 @@ const BlockView = ({ classArray }: SideBarProps) => {
             onNodesChange={onNodesChange}
             onEdgesChange={onEdgesChange}
             onConnect={onConnect}
-            onInit={setReactFlowInstance} // Initialize reactFlowInstance when the component mounts
+            onInit={setReactFlowInstance}
             onDrop={onDrop}
             onDragOver={onDragOver}
             fitView
@@ -111,7 +99,7 @@ const BlockView = ({ classArray }: SideBarProps) => {
             <Controls />
           </ReactFlow>
         </div>
-        <SideBar classArray={classArray}/>
+        <SideBar />
       </ReactFlowProvider>
     </div>
   );

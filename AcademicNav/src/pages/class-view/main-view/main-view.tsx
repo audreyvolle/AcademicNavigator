@@ -4,21 +4,7 @@ import { Tab, Tabs, TabList, TabPanel } from "react-tabs";
 import GraphView from "./graph-view/graph-view";
 import BlockView from "./block-view/block-view";
 
-interface ClassList {
-  id: string,
-  title: string,
-  credits: number,
-  prerequisites: Array<string>,
-  prerequisitesTaken: Array<string>,
-  isReadyToTake: boolean,
-  taken: boolean
-}
-
-interface SideBarProps {
-  classArray: ClassList[];
-}
-
-const MainView = ({ classArray }: SideBarProps) => {
+const MainView = () => {
   return (
     <div>
       <div className="main-view">
@@ -29,10 +15,10 @@ const MainView = ({ classArray }: SideBarProps) => {
               <Tab>Block View</Tab>
             </TabList>
             <TabPanel>
-              <GraphView classArray={classArray}/>
+              <GraphView />
             </TabPanel>
             <TabPanel>
-              <BlockView classArray={classArray}/>
+              <BlockView />
             </TabPanel>
           </Tabs>
         </div>

@@ -1,3 +1,6 @@
+import { useState } from 'react';
+import { useUser } from '../../../Providers/UserProv';
+
 interface ClassList {
   id: string;
   title: string;
@@ -8,19 +11,24 @@ interface ClassList {
   taken: boolean;
 }
 
-interface SideBarProps {
-  classArray: ClassList[];
-}
+const SideBar = () => {
+  const { classArray } = useUser();
+  const [classesNotTaken, setClassesNotTaken] = useState(
+    classArray.filter((classItem) => !classItem.taken)
+  );
 
-const SideBar = ({ classArray }: SideBarProps) => {
   const onDragStart = (event: any, nodeType: any, nodeId: string) => {
     event.dataTransfer.setData('application/reactflow', nodeType);
     event.dataTransfer.effectAllowed = 'move';
     event.dataTransfer.setData('nodeId', nodeId);
   };
 
-  // Filter classArray to get only items with taken === false
-  const classesNotTaken = classArray.filter((classItem) => !classItem.taken);
+  const onDragEnd = (event: any, nodeId: string) => {
+    console.log(event);
+    setClassesNotTaken((prevClasses) =>
+      prevClasses.filter((classItem) => classItem.id !== nodeId)
+    );
+  };
 
   return (
     <aside>
@@ -31,6 +39,7 @@ const SideBar = ({ classArray }: SideBarProps) => {
           key={classItem.id}
           className="dndnode"
           onDragStart={(event) => onDragStart(event, classItem.title, classItem.id)}
+          onDragEnd={(event) => onDragEnd(event, classItem.id)}
           draggable
         >
           {classItem.title}
@@ -41,5 +50,3 @@ const SideBar = ({ classArray }: SideBarProps) => {
 };
 
 export default SideBar;
-
-
