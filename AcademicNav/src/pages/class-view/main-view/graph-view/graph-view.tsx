@@ -65,14 +65,14 @@ const GraphView = () => {
           };
           const classToMove = classArray.find((classItem) => classItem.title === type);
 
-        if (classToMove) {
-          // Set taken to true for the class being moved
-          const updatedClassArray = classArray.map((classItem) =>
-            classItem === classToMove ? { ...classItem, taken: true } : classItem // MISAEL CHANGE THIS TO ALSO UPDATE THE SEMESTER AND OTHER VARIABLES!!
+          if (classToMove) {
+            // Set taken to true for the class being moved
+            const updatedClassArray = classArray.map((classItem) =>
+              classItem === classToMove ? { ...classItem, taken: true } : classItem // MISAEL CHANGE THIS TO ALSO UPDATE THE SEMESTER AND OTHER VARIABLES!!
             );
-          setClassArray(updatedClassArray);
-          console.log(classArray);
-        }
+            setClassArray(updatedClassArray);
+            console.log(classArray);
+          }
           setNodes((nds) => nds.concat(newNode));
         }
       }

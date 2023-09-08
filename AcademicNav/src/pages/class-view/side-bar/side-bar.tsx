@@ -3,13 +3,14 @@ import { useUser } from '../../../Providers/UserProv';
 import './side-bar.scss';
 import questionMark from '/public/images/question-mark.png';
 interface ClassList {
-  id: string;
-  title: string;
-  credits: number;
-  prerequisites: Array<string>;
-  prerequisitesTaken: Array<string>;
-  isReadyToTake: boolean;
-  taken: boolean;
+  id: string,
+  title: string,
+  credits: number,
+  prerequisites: Array<string>,
+  prerequisitesTaken: Array<string>,
+  isReadyToTake: boolean,
+  taken: boolean,
+  semester: string
 }
 
 interface ModalProps {
