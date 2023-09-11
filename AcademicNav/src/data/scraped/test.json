@@ -6,7 +6,8 @@
       "prerequisites": ["none"],
       "prerequisitesTaken": [],
       "isReadyToTake": true,
-      "taken": false
+      "taken": false,
+      "description":""
     },
     {
       "id": "class2",
@@ -45,4 +46,5 @@
       "taken": false
     }
   ]
+  
   

@@ -5,7 +5,6 @@ import majorAbbreviationKey from '../../assets/majorsAbrev';
 import majorFullKey from '../../assets/majorsFull';
 import Course from '../../assets/course';
 import { useUser } from '../../Providers/UserProv';
-import { CourseConverter } from '../../data/dataConvert';
 //import { printToJson } from '../../services/handleJSON';
 
 const Welcome = () => {
@@ -47,7 +46,6 @@ const Welcome = () => {
   }
 
 
-  CourseConverter();
   return (
     <>
     {selectedValue===""?<div className="welcome-container">
