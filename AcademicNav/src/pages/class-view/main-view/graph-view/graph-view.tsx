@@ -9,8 +9,10 @@ import {
     Controls,
     WrapNodeProps,
     useNodesState,
-    useEdgesState
+    useEdgesState,
+    addEdge
 } from 'reactflow';
+import SideBar from '../../side-bar/side-bar';
 import { useUser } from '../../../../Providers/UserProv';
 
 
@@ -49,13 +51,13 @@ const GraphView = () => {
     
     //const reactFlowWrapper = useRef(null);
     const { classArray, setClassArray } = useUser();
+    const reactFlowWrapper = useRef(null);
     const [nodes, setNodes, onNodesChange] = useNodesState([]);
     const [edges, setEdges, onEdgesChange] = useEdgesState([]);
-    const [reactFlowInstance, setReactFlowInstance] = useState(null);
+    const [reactFlowInstance, setReactFlowInstance] = useState<ReactFlowInstance | null>(null);
     const [isLoading, setIsLoading] = useState(true);
-    const [edges, setEdges, onEdgesChange] = useEdgesState([]);
     //gets the class data from UserProv.tsx
-    const { classArray } = useUser();
+    //const { classArray } = useUser();
     //console.log(classArray)
     useEffect(() => {
         classArray.forEach(function (value) {
@@ -121,70 +123,65 @@ const GraphView = () => {
             }
             semesterClassCount[parentId]++
         })
-        semesterClassCount[parentId]++
-    })
-
 
         console.log('right before onClick is registered')
         setIsLoading(false)
     // eslint-disable-next-line react-hooks/exhaustive-deps
-}, []);
+    }, []);
 
-const onConnect = useCallback((params: any) => setEdges((eds) => addEdge(params, eds)), []);
+    const onConnect = useCallback((params: any) => setEdges((eds) => addEdge(params, eds)), []);
 
-const onDragOver = useCallback((event: any) => {
-    event.preventDefault();
-    event.dataTransfer.dropEffect = 'move';
-}, []);
-
-const onDrop = useCallback(
-    (event: any) => {
+    const onDragOver = useCallback((event: any) => {
         event.preventDefault();
+        event.dataTransfer.dropEffect = 'move';
+    }, []);
+    //edit this to use the group system
+    const onDrop = useCallback(
+        (event: any) => {
+            event.preventDefault();
 
-        const reactFlowBounds = reactFlowWrapper.current as HTMLElement | null;
+            const reactFlowBounds = reactFlowWrapper.current as HTMLElement | null;
 
-        if (reactFlowBounds) {
-            const type = event.dataTransfer.getData('application/reactflow');
+            if (reactFlowBounds) {
+                const type = event.dataTransfer.getData('application/reactflow');
 
-            // check if the dropped element is valid
-            if (typeof type === 'undefined' || !type) {
-                return;
-            }
-
-            if (reactFlowInstance) {
-                const position = reactFlowInstance.project({
-                    x: event.clientX - reactFlowBounds.getBoundingClientRect().left,
-                    y: event.clientY - reactFlowBounds.getBoundingClientRect().top,
-                });
-
-                const newNode = {
-                    id: getId(),
-                    type,
-                    position,
-                    data: { label: `${type}` },
-                };
-                const classToMove = classArray.find((classItem) => classItem.title === type);
-
-                if (classToMove) {
-                    // Set taken to true for the class being moved
-                    const updatedClassArray = classArray.map((classItem) =>
-                        classItem === classToMove ? { ...classItem, taken: true } : classItem // MISAEL CHANGE THIS TO ALSO UPDATE THE SEMESTER AND OTHER VARIABLES!!
-                    );
-                    setClassArray(updatedClassArray);
-                    console.log(classArray);
+                // check if the dropped element is valid
+                if (typeof type === 'undefined' || !type) {
+                    return;
                 }
-                setNodes((nds) => nds.concat(newNode));
+
+                if (reactFlowInstance) {
+                    const position = reactFlowInstance.project({
+                        x: event.clientX - reactFlowBounds.getBoundingClientRect().left,
+                        y: event.clientY - reactFlowBounds.getBoundingClientRect().top,
+                    });
+
+                    const newNode = {
+                        id: getId(),
+                        type,
+                        position,
+                        data: { label: `${type}` },
+                    };
+                    const classToMove = classArray.find((classItem) => classItem.title === type);
+
+                    if (classToMove) {
+                        // Set taken to true for the class being moved
+                        const updatedClassArray = classArray.map((classItem) =>
+                            classItem === classToMove ? { ...classItem, taken: true } : classItem // MISAEL CHANGE THIS TO ALSO UPDATE THE SEMESTER AND OTHER VARIABLES!!
+                        );
+                        setClassArray(updatedClassArray);
+                        console.log(classArray);
+                    }
+                    setNodes((nds) => nds.concat(newNode));
+                }
             }
-        }
-    },
-    [reactFlowInstance]
-);
+        },
+        [reactFlowInstance]
+    );
 
     const onClick = useCallback((event: React.MouseEvent, node: Node) => {
         event.preventDefault()
         if (node.id === 'addSemester') {
-            let semOutput = "";
-            const lastindex = semesters[semesters.length - 1]
             let semOutput = "";
             const lastindex = semesters[semesters.length - 1]
 
@@ -254,7 +251,7 @@ return (
                     panOnDrag={false}
                     zoomOnDoubleClick={false}
                     onNodeClick={onClick}
-                    fitView
+                    //fitView
                 >
                     <Controls />
                 </ReactFlow>
@@ -292,8 +289,6 @@ function customSort(arr: string[]): string[] {
             return aYear - bYear
         }
         return aSeason - bSeason
-    });
-}
     });
 }
 
