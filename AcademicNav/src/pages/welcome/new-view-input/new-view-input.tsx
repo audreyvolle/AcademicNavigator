@@ -1,9 +1,27 @@
 import './new-view-input.scss';
-import classData from '../../../data/scraped/test.json';
 import { useUser } from '../../../Providers/UserProv';
+import { useState } from 'react';
+import questionMark from '/public/images/question-mark.png';
+
+interface ModalProps {
+  onClose: () => void;
+}
+
+const Modal = ({ onClose }: ModalProps) => (
+  <div className="modal">
+    <div className="modal-content">
+      <h3>Help</h3>
+      <p>
+        Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
+      </p>
+      <button onClick={onClose}>Close</button>
+    </div>
+  </div>
+);
 
 function NewView() {
-  const {handleContinueClick,handleSkipClick,handleCheckboxChange,setIsMainViewVisible,selectedClasses,setSelectedClasses, classArray } = useUser();
+  const { handleContinueClick, handleSkipClick, handleCheckboxChange, selectedClasses, classArray } = useUser();
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   interface ClassList {
     id: string,
@@ -15,10 +33,27 @@ function NewView() {
     taken: boolean
   }
 
+  const openModal = () => {
+    setIsModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+  };
+
   return (
     <div className="new-view-container">
       <div>
-        <h2>Select classes you have taken or are currently taking:</h2>
+        <h2>
+          Select classes you have taken or are currently taking:
+          <button className="help-button" onClick={openModal}>
+            <img
+              src={questionMark}
+              alt="Help"
+              className="question-mark-img"
+            />
+          </button>
+        </h2>
 
         <ul className="checkbox-list">
           {Object.entries(
@@ -63,9 +98,10 @@ function NewView() {
 
         <div className="button-container">
           <button onClick={handleSkipClick} className="button button-secondary">Skip</button>
-          <button onClick={()=>{handleContinueClick()}} className="button">Continue</button>
+          <button onClick={() => { handleContinueClick() }} className="button">Continue</button>
         </div>
       </div>
+      {isModalOpen && <Modal onClose={closeModal} />}
     </div>
   );
 }

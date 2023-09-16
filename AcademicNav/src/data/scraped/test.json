@@ -3,10 +3,11 @@
       "id": "CS101",
       "title": "Introduction to Programming",
       "credits": 3,
-      "prerequisites": ["none"],
+      "prerequisites": [],
       "prerequisitesTaken": [],
       "isReadyToTake": true,
-      "taken": false
+      "taken": false,
+      "semester": ""
     },
     {
       "id": "CS202",
@@ -15,16 +16,18 @@
       "prerequisites": ["Introduction to Programming"],
       "prerequisitesTaken": [],
       "isReadyToTake": false,
-      "taken": false
+      "taken": false,
+      "semester": ""
     },
     {
       "id": "CS303",
       "title": "Database Systems",
       "credits": 3,
-      "prerequisites": ["none"],
+      "prerequisites": [],
       "prerequisitesTaken": [],
       "isReadyToTake": true,
-      "taken": false
+      "taken": false,
+      "semester": ""
     },
     {
       "id": "CS404",
@@ -33,7 +36,8 @@
       "prerequisites": ["Introduction to Programming"],
       "prerequisitesTaken": ["Introduction to Programming"],
       "isReadyToTake": true,
-      "taken": true
+      "taken": false,
+      "semester": ""
     },
     {
       "id": "CS430",
@@ -42,7 +46,8 @@
       "prerequisites": ["Data Structures and Algorithms", "Database Systems"],
       "prerequisitesTaken": ["Data Structures and Algorithms"],
       "isReadyToTake": true,
-      "taken": false
+      "taken": false,
+      "semester": ""
     }
   ]
   
