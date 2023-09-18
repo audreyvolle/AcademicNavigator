@@ -44,11 +44,15 @@ const MainView = () => {
     setIsModalOpen(false);
   };
 
+  function saveWorkSpace() {
+
+  }
+
   return (
     <div>
       <div className="main-view">
         <div className="top-bar">
-          <button className="save">Save Work Space</button>
+          <button className="save" onClick={saveWorkSpace}>Save Work Space</button>
           <button className="help-button" onClick={openModal}>
             <img
               src={questionMark}

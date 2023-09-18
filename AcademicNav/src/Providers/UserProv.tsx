@@ -201,19 +201,3 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
 export function useUser() {
   return useContext(UserInfoContext);
 }
-
-/*const classs = classArray.map((course) => {
-  if (course.id === className) {
-    const updatedPostReq = classArray.map((postReq) => {
-      postReq.prerequisites.forEach((prerequisite) => {
-        if(prerequisite === course.title){
-          postReq.prerequisitesTaken.push(course.title)
-          if(postReq.prerequisitesTaken.length === postReq.prerequisites.length){
-            postReq.isReadyToTake = true;
-          }
-        }
-      });
-      return postReq;
-    });
-  }
-});*/
