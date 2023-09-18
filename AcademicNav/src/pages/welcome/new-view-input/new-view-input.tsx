@@ -11,13 +11,22 @@ const Modal = ({ onClose }: ModalProps) => (
   <div className="modal">
     <div className="modal-content">
       <h3>Help</h3>
-      <p>
-        Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
-      </p>
+      <ul>
+        <li>
+          <strong>Class Selection:</strong> Check each box by classes you have taken, or are currently taking this far in your academic career. This will put these classes in a "done" pile and allow you to put post-requisite classes on your schedule.
+        </li>
+        <li>
+          <strong>Credit Hours Per Semester:</strong> This is the amount of credit hours you plan on taking per semester. It is advised to pick the maximum credit hours you plan on taking, as putting in less is acceptable, but putting in more than this value will not be allowed.
+        </li>
+        <li>
+          <strong>Graduation Semester:</strong> This is the semester that you plan on graduating. You can add a semester inside the schedule if you find this necessary. This target helps in creating a path/goal.
+        </li>
+      </ul>
       <button onClick={onClose}>Close</button>
     </div>
   </div>
 );
+
 
 function NewView() {
   const { handleContinueClick, handleSkipClick, handleCheckboxChange, selectedClasses, classArray } = useUser();
