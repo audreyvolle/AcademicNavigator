@@ -21,9 +21,11 @@ const Modal = ({ onClose }: ModalProps) => (
   <div className="modal">
     <div className="modal-content">
       <h3>Help</h3>
-     <p>
-     Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
-     </p>
+      <ul>
+        <li>
+          <strong>Class List:</strong> This is a list of classes that you have not taken or added to your schedule yet. You may move any class that does not have prerequisites that have not been placed into either view on the left. Moving a class into either view will also add it to the other view.
+        </li>
+      </ul>
       <button onClick={onClose}>Close</button>
     </div>
   </div>
@@ -58,34 +60,34 @@ const SideBar = () => {
   };
   return (
     <aside>
-    <div>
-      <h2>
-        Class List
-        <button className="help-button" onClick={openModal}>
-          <img
-            src={questionMark}
-            alt="Help"
-            className="question-mark-img"
-          />
-        </button>
-      </h2>
-      <div className="description">
-        You can drag these classes into a semester on the left
+      <div>
+        <h2>
+          Class List
+          <button className="help-button" onClick={openModal}>
+            <img
+              src={questionMark}
+              alt="Help"
+              className="question-mark-img"
+            />
+          </button>
+        </h2>
+        <div className="description">
+          You can drag these classes into a semester on the left
+        </div>
       </div>
-    </div>
-    {classesNotTaken.map((classItem: ClassList) => (
-      <div
-        key={classItem.id}
-        className="dndnode"
-        onDragStart={(event) => onDragStart(event, classItem.title, classItem.id)}
-        onDragEnd={(event) => onDragEnd(event, classItem.id)}
-        draggable
-      >
-        {classItem.title}
-      </div>
-    ))}
-    {isModalOpen && <Modal onClose={closeModal} />}
-  </aside>
+      {classesNotTaken.map((classItem: ClassList) => (
+        <div
+          key={classItem.id}
+          className="dndnode"
+          onDragStart={(event) => onDragStart(event, classItem.title, classItem.id)}
+          onDragEnd={(event) => onDragEnd(event, classItem.id)}
+          draggable
+        >
+          {classItem.title}
+        </div>
+      ))}
+      {isModalOpen && <Modal onClose={closeModal} />}
+    </aside>
   );
 };
 
