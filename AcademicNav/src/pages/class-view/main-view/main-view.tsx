@@ -47,15 +47,13 @@ const MainView = () => {
   };
 
   function saveWorkSpace() {
-    //const obj = { hello: 'world' };
     const blob = new Blob([JSON.stringify(classArray, null, 2)], { type: 'application/json' });
-
     saveFile(blob);
   }
 
   const saveFile = async (blob: any) => {
     const a = document.createElement('a');
-    a.download = 'my-file.json';
+    a.download = 'my-schedule.json';
     a.href = URL.createObjectURL(blob);
     a.addEventListener('click', (e) => {
       setTimeout(() => URL.revokeObjectURL(a.href), 30 * 1000);
