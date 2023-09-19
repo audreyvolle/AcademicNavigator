@@ -7,7 +7,6 @@ import {
     ReactFlowInstance,
     ReactFlowProvider,
     Controls,
-    WrapNodeProps,
     useNodesState,
     useEdgesState,
     addEdge
@@ -43,9 +42,6 @@ const unavailableColor = 'rgba(255,153,153,1)';
 let setColor = 'rgb(255,255,255)';
 const addSemesterColor = 'rgb(128,128,128)'
 
-let id = 0;
-const getId = () => `dndnode_${id++}`;
-
 const GraphView = () => {
 
     //const reactFlowWrapper = useRef(null);
@@ -55,12 +51,7 @@ const GraphView = () => {
     const [edges, setEdges, onEdgesChange] = useEdgesState([]);
     const [reactFlowInstance, setReactFlowInstance] = useState<ReactFlowInstance | null>(null);
     const [isLoading, setIsLoading] = useState(true);
-    const [hoveredNode, setHoveredNode] = useState(null)
-    const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 })
 
-    //gets the class data from UserProv.tsx
-    //const { classArray } = useUser();
-    //console.log(classArray)
     useEffect(() => {
         groupcount = 0;
         classArray.forEach(function (value) {
@@ -72,7 +63,6 @@ const GraphView = () => {
         semesterClassCount = new Array(semesters.length).fill(0);
         console.log('adding the semesters as groups')
         semesters.forEach(function (value) {
-            //const groupposition = groupcount * groupspacing
             nodes.push({
                 id: value,
                 data: { label: value },
@@ -128,8 +118,6 @@ const GraphView = () => {
             }
             semesterClassCount[parentId]++
         })
-
-        //console.log('right before onClick is registered')
         setIsLoading(false)
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
@@ -137,7 +125,6 @@ const GraphView = () => {
     const onConnect = useCallback((params: any) => setEdges((eds) => addEdge(params, eds)), []);
 
     const onDragOver = useCallback((event: any) => {
-        //console.log("Drag Over triggered")
         event.preventDefault();
         event.dataTransfer.dropEffect = 'move';
     }, []);
@@ -145,13 +132,12 @@ const GraphView = () => {
     const onDrop = useCallback(
         (event: any) => {
             event.preventDefault();
-            //console.log("onDrop triggered")
+            
             const reactFlowBounds = reactFlowWrapper.current as HTMLElement | null;
-            const { clientX, clientY } = event
-            //console.log(node)
+            
             if (reactFlowBounds) {
                 const type = event.dataTransfer.getData('application/reactflow');
-                //console.log("if (reactFlowBounds) triggered")
+                
                 // check if the dropped element is valid
                 if (typeof type === 'undefined' || !type) {
                     return;
@@ -163,7 +149,7 @@ const GraphView = () => {
                         y: event.clientY - reactFlowBounds.getBoundingClientRect().top,
                     });
                     //console.log("if (reactflowInstance) triggered")
-                    setMousePosition({ x: clientX, y: clientY });
+
                     //checks which group the mouse position is over if it is over a group
                     for (const element of nodes) {
                         parentId = semesters.findIndex((semester) => semester === element.id)
@@ -175,13 +161,12 @@ const GraphView = () => {
                             position.y >= element.position.y &&
                             position.y <= element.position.y + element.height
                         ) {
-                            setHoveredNode(element);
-                            console.log(element.id)
+                            console.log("The Semester dragged onto is " + element.id)
                             const classToMove = classArray.find((classItem) => classItem.title === type);
                             
                             const newNode = 
                             {
-                                id: getId(),
+                                id: classArray[classArray.findIndex((name) => name.title === `${type}`)].id,
                                 position: { x: semesterClassCount[parentId] * xspacing + initspacing, y: yspacing },
                                 data: { label: `${type}` }, style: { backgroundColor: setColor },
                                 parentNode: element.id,
@@ -191,6 +176,7 @@ const GraphView = () => {
                                 dragging: false,
                                 focusable: false
                             }
+                            
                             semesterClassCount[parentId]++
                             if (classToMove) {
                                 // Set taken to true for the class being moved
@@ -203,13 +189,6 @@ const GraphView = () => {
                             setNodes((nds) => nds.concat(newNode));
                         }
                     }
-                    //const newNode = {
-                    //    id: getId(),
-                    //    position,
-                    //    data: { label: `${type}` },
-                    //};
-                    
-                    //setNodes((nds) => nds.concat(newNode));
                 }
             }
         },
@@ -259,7 +238,7 @@ const GraphView = () => {
         console.log(nodes)
         console.log(groupcount)
     }, [nodes, setNodes])
-    //console.log('returning')
+
     if (isLoading) {
         return <div>Loading...</div>;
     }
@@ -280,9 +259,6 @@ return (
                     panOnDrag={false}
                     zoomOnDoubleClick={false}
                     onNodeClick={onClick}
-                    //onNodeMouseEnter={onNodeMouseEnter}
-                    //onNodeMouseLeave={onNodeMouseLeave}
-                    //onNodeDrag={onNodeDrag }
                     //fitView
                 >
                     <Controls />
