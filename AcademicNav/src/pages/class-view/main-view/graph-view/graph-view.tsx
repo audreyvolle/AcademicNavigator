@@ -33,8 +33,6 @@ let edgeCount = 0;
 let parentId = 0;
 
 //arrays
-//const initnodes: Node<unknown, string | undefined>[] | { id: string; position: { x: number; y: number; }; data: { label: string; }; }[] | undefined = [];
-//const edges: { id: string; source: string; target: string; }[] | undefined = [];
 const semesters: string | string[] = [];
 
 //colors
@@ -48,7 +46,7 @@ let id = 0;
 const getId = () => `dndnode_${id++}`;
 
 const GraphView = () => {
-    
+
     //const reactFlowWrapper = useRef(null);
     const { classArray, setClassArray } = useUser();
     const reactFlowWrapper = useRef(null);
@@ -56,10 +54,14 @@ const GraphView = () => {
     const [edges, setEdges, onEdgesChange] = useEdgesState([]);
     const [reactFlowInstance, setReactFlowInstance] = useState<ReactFlowInstance | null>(null);
     const [isLoading, setIsLoading] = useState(true);
+    const [hoveredNode, setHoveredNode] = useState(null)
+    const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 })
+
     //gets the class data from UserProv.tsx
     //const { classArray } = useUser();
     //console.log(classArray)
     useEffect(() => {
+        groupcount = 0;
         classArray.forEach(function (value) {
             if (!semesters.includes(value.semester) && value.semester != null) {
                 semesters.push(value.semester);
@@ -77,7 +79,9 @@ const GraphView = () => {
                 className: 'light',
                 style: { backgroundColor: 'rgba(225,225,225,0)', width: groupwidth, height: groupheight },
                 selectable: false,
-                connectable: false
+                connectable: false,
+                draggable: false,
+                zIndex: 1
             })
             groupcount++
         })
@@ -89,7 +93,9 @@ const GraphView = () => {
             className: 'light',
             style: { backgroundColor: addSemesterColor, width: groupwidth, height: groupheight },
             selectable: false,
-            connectable: false
+            connectable: false,
+            draggable: false,
+            zIndex: 1
         })
         console.log('registering the classes as nodes')
         classArray.forEach(function (value) {
@@ -112,10 +118,10 @@ const GraphView = () => {
                         data: { label: value.title }, style: { backgroundColor: setColor },
                         parentNode: value.semester,
                         expandParent: true,
-                        selectable: true,
-                        draggable: true,
+                        selectable: false,
+                        draggable: false,
                         dragging: false,
-                        focusable: true,
+                        focusable: false
                     })
             }
             if (value.prerequisites.length > 0) {
@@ -124,7 +130,7 @@ const GraphView = () => {
             semesterClassCount[parentId]++
         })
 
-        console.log('right before onClick is registered')
+        //console.log('right before onClick is registered')
         setIsLoading(false)
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
@@ -132,19 +138,22 @@ const GraphView = () => {
     const onConnect = useCallback((params: any) => setEdges((eds) => addEdge(params, eds)), []);
 
     const onDragOver = useCallback((event: any) => {
+        //console.log("Drag Over triggered")
         event.preventDefault();
         event.dataTransfer.dropEffect = 'move';
     }, []);
+
     //edit this to use the group system
     const onDrop = useCallback(
         (event: any) => {
             event.preventDefault();
-
+            //console.log("onDrop triggered")
             const reactFlowBounds = reactFlowWrapper.current as HTMLElement | null;
-
+            const { clientX, clientY } = event
+            //console.log(node)
             if (reactFlowBounds) {
                 const type = event.dataTransfer.getData('application/reactflow');
-
+                //console.log("if (reactFlowBounds) triggered")
                 // check if the dropped element is valid
                 if (typeof type === 'undefined' || !type) {
                     return;
@@ -155,28 +164,42 @@ const GraphView = () => {
                         x: event.clientX - reactFlowBounds.getBoundingClientRect().left,
                         y: event.clientY - reactFlowBounds.getBoundingClientRect().top,
                     });
+                    //console.log("if (reactflowInstance) triggered")
+                    setMousePosition({ x: clientX, y: clientY });
 
-                    const newNode = {
-                        id: getId(),
-                        type,
-                        position,
-                        data: { label: `${type}` },
-                    };
+                    for (const element of nodes) {
+                        if (
+                            element.id != null &&
+                            semesters.findIndex((semester) => semester === element.id) != -1 &&
+                            position.x >= element.position.x &&
+                            position.x <= element.position.x + element.width &&
+                            position.y >= element.position.y &&
+                            position.y <= element.position.y + element.height
+                        ) {
+                            setHoveredNode(element);
+                            console.log(element.id)
+                        }
+                    }
+                    //const newNode = {
+                    //    id: getId(),
+                    //    position,
+                    //    data: { label: `${type}` },
+                    //};
                     const classToMove = classArray.find((classItem) => classItem.title === type);
 
                     if (classToMove) {
                         // Set taken to true for the class being moved
                         const updatedClassArray = classArray.map((classItem) =>
                             classItem === classToMove ? { ...classItem, taken: true } : classItem // MISAEL CHANGE THIS TO ALSO UPDATE THE SEMESTER AND OTHER VARIABLES!!
-                        );
+                        );                                                                        // I WILL OK!!!
                         setClassArray(updatedClassArray);
                         console.log(classArray);
                     }
-                    setNodes((nds) => nds.concat(newNode));
+                    //setNodes((nds) => nds.concat(newNode));
                 }
             }
         },
-        [reactFlowInstance]
+        [classArray, nodes, reactFlowInstance, setClassArray]
     );
 
     const onClick = useCallback((event: React.MouseEvent, node: Node) => {
@@ -201,20 +224,13 @@ const GraphView = () => {
                 className: 'light',
                 style: { backgroundColor: 'rgba(225,225,225,0)', width: groupwidth, height: groupheight },
                 selectable: false,
-                connectable: false
+                connectable: false,
+                draggable: false,
+                zIndex: 2
             })
             groupcount++
 
             const nodeToUpdate = nodes.findIndex((nnode) => nnode.id === node.id)
-            //nodes.push({
-            //    id: 'addSemester',
-            //    data: { label: 'Add Semester' },
-            //    position: { x: groupxposition, y: groupcount * groupspacing },
-            //    className: 'light',
-            //    style: { backgroundColor: addSemesterColor, width: groupwidth, height: groupheight },
-            //    selectable: false,
-            //    connectable: false
-            //})
 
             if (nodeToUpdate !== -1) {
                 const updatedNodes = [...nodes]
@@ -229,15 +245,15 @@ const GraphView = () => {
         }
         console.log(nodes)
         console.log(groupcount)
-    }, [nodes])
-    console.log('returning')
+    }, [nodes, setNodes])
+    //console.log('returning')
     if (isLoading) {
         return <div>Loading...</div>;
     }
 return (
     <div className="dndflow">
         <ReactFlowProvider>
-            <div className="reactflow-wrapper" ref={reactFlowWrapper} style={{ width: '66vw', height: '80vh' }}>
+            <div className="reactflow-wrapper" ref={reactFlowWrapper} style={{ width: '66vw', height: '80vh' }} >
                 <ReactFlow
                     nodes={nodes}
                     edges={edges}
@@ -251,6 +267,9 @@ return (
                     panOnDrag={false}
                     zoomOnDoubleClick={false}
                     onNodeClick={onClick}
+                    //onNodeMouseEnter={onNodeMouseEnter}
+                    //onNodeMouseLeave={onNodeMouseLeave}
+                    //onNodeDrag={onNodeDrag }
                     //fitView
                 >
                     <Controls />
