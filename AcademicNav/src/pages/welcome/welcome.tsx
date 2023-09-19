@@ -1,11 +1,7 @@
-import React, { useState } from 'react';
 import NewView from './new-view-input/new-view-input';
 import './welcome.scss';
-import majorAbbreviationKey from '../../assets/majorsAbrev';
-import majorFullKey from '../../assets/majorsFull';
 import Course from '../../assets/course';
 import { useUser } from '../../Providers/UserProv';
-//import { printToJson } from '../../services/handleJSON';
 
 const Welcome = () => {
   const { selectedValue, setSelectedValue, handleDropdownChange } = useUser();
