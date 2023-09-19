@@ -5,6 +5,7 @@ import GraphView from "./graph-view/graph-view";
 import BlockView from "./block-view/block-view";
 import questionMark from '/public/images/question-mark.png';
 import { useState } from "react";
+import { useUser } from "../../../Providers/UserProv";
 
 interface ModalProps {
   onClose: () => void;
@@ -14,7 +15,7 @@ const Modal = ({ onClose }: ModalProps) => (
   <div className="modal">
     <div className="modal-content">
       <h3>Help</h3>
-      <p>Simply drag and drop classes to the semester you wish to take them. If this is not allowed to do a prerequisite or credit hour restriction, you will be notified.</p>
+      <p>Simply drag and drop classes to the semester you wish to take them. If this is not allowed due to a prerequisite or credit hour restriction, you will be notified.</p>
       <ul>
         <li>
           <strong>Graph View:</strong> This tab provides a graphical representation of your schedule, allowing you to visualize prerequisite and post-requisite relationships.
@@ -36,6 +37,7 @@ const Modal = ({ onClose }: ModalProps) => (
 
 const MainView = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const { classArray } = useUser();
   const openModal = () => {
     setIsModalOpen(true);
   };
@@ -45,8 +47,21 @@ const MainView = () => {
   };
 
   function saveWorkSpace() {
+    //const obj = { hello: 'world' };
+    const blob = new Blob([JSON.stringify(classArray, null, 2)], { type: 'application/json' });
 
+    saveFile(blob);
   }
+
+  const saveFile = async (blob: any) => {
+    const a = document.createElement('a');
+    a.download = 'my-file.json';
+    a.href = URL.createObjectURL(blob);
+    a.addEventListener('click', (e) => {
+      setTimeout(() => URL.revokeObjectURL(a.href), 30 * 1000);
+    });
+    a.click();
+  };
 
   return (
     <div>

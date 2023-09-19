@@ -11,14 +11,14 @@ const Modal = ({ onClose }: ModalProps) => (
   <div className="modal">
     <div className="modal-content">
       <h3>Work Spaces</h3>
-      
+
       <button onClick={onClose}>Close</button>
     </div>
   </div>
 );
 
 const Welcome = () => {
-  const { selectedValue, setSelectedValue, handleDropdownChange, setClassArray, classArray } = useUser();
+  const { selectedValue, setSelectedValue, handleDropdownChange, setClassArray, classArray, setIsMainViewVisible } = useUser();
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const handleLoadWorkspace = () => {
@@ -43,11 +43,11 @@ const Welcome = () => {
         try {
           const parsedContent = JSON.parse(fileContent);
           setClassArray(parsedContent);
+          setIsMainViewVisible(true);
         } catch (error) {
           console.error("Error parsing the file content as JSON:", error);
         }
       };
-
       reader.readAsText(selectedFile);
     }
   };
