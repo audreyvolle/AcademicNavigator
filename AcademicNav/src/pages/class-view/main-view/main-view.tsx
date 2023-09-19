@@ -51,6 +51,10 @@ const MainView = () => {
     saveFile(blob);
   }
 
+  function editCredits(){
+
+  }
+
   const saveFile = async (blob: any) => {
     const a = document.createElement('a');
     a.download = 'my-schedule.json';
@@ -65,6 +69,7 @@ const MainView = () => {
     <div>
       <div className="main-view">
         <div className="top-bar">
+          <button className="credits" onClick={editCredits}>Edit Credit Hours</button>
           <button className="save" onClick={saveWorkSpace}>Save Work Space</button>
           <button className="help-button" onClick={openModal}>
             <img

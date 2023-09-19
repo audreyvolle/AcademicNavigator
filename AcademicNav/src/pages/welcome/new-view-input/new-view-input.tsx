@@ -29,7 +29,7 @@ const Modal = ({ onClose }: ModalProps) => (
 
 
 function NewView() {
-  const { handleContinueClick, handleSkipClick, handleCheckboxChange, selectedClasses, classArray } = useUser();
+  const { handleContinueClick, handleSkipClick, handleCheckboxChange, selectedClasses, classArray, setCreditHours, setCurrentSemester, setGraduationSemester } = useUser();
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   interface ClassList {
@@ -41,6 +41,62 @@ function NewView() {
     isReadyToTake: boolean,
     taken: boolean
   }
+
+const currentDate = new Date();
+const currentYear = currentDate.getFullYear();
+const currentMonth = currentDate.getMonth() + 1;
+
+const currentSemesterField = document.getElementById('current') as HTMLSelectElement;
+const graduationSemesterField = document.getElementById('graduation') as HTMLSelectElement;
+
+const semesters = ['Spring', 'Fall'];
+
+function calculateGraduationSemesterOptions(currentSemesterValue: any) {
+  const parts = currentSemesterValue.split(' ');
+  const currentSemester = parts[0];
+  const currentYear = parseInt(parts[1]);
+
+  const graduationSemesterOptions = [];
+
+  let minGraduationYear = currentYear + 4;
+  if (currentSemester === 'Fall' && currentMonth <= 6) {
+    minGraduationYear--;
+  }
+
+  for (let year = minGraduationYear; year <= 2050; year++) {
+    for (const semester of semesters) {
+      graduationSemesterOptions.push(`${semester} ${year}`);
+    }
+  }
+
+  return graduationSemesterOptions;
+}
+
+for (let year = currentYear; year <= 2050; year++) {
+  for (const semester of semesters) {
+    if (year === currentYear && semesters.indexOf(semester) === 0 && currentMonth > 6) {
+      continue;
+    }
+    const option = document.createElement('option');
+    option.value = `${semester} ${year}`;
+    option.text = `${semester} ${year}`;
+    currentSemesterField?.appendChild(option);
+  }
+}
+
+currentSemesterField?.addEventListener('change', function () {
+  const selectedCurrentSemester = currentSemesterField.value;
+  const graduationSemesterOptions = calculateGraduationSemesterOptions(selectedCurrentSemester);
+
+  graduationSemesterField.innerHTML = '';
+
+  for (const optionValue of graduationSemesterOptions) {
+    const option = document.createElement('option');
+    option.value = optionValue;
+    option.text = optionValue;
+    graduationSemesterField?.appendChild(option);
+  }
+});
 
   const openModal = () => {
     setIsModalOpen(true);
@@ -100,10 +156,13 @@ function NewView() {
         </ul>
 
         <label htmlFor="credits">Credit Hours Per Semester (between 1 and 20):</label>
-        <input type="number" id="credits" name="credits" min="1" max="20" className="input-field" />
+        <input type="number" id="credits" name="credits" min="1" max="20" className="input-field"/>
 
-        <label htmlFor="graduation">Graduation Semester:</label>
-        <input type="text" id="graduation" name="graduation" className="input-field" />
+        <label htmlFor="current">Current Semester: </label>
+        <select id="current" name="current" className="input-field"></select>
+
+        <label htmlFor="graduation">Target Graduation Semester: </label>
+        <select id="graduation" name="graduation" className="input-field"></select>
 
         <div className="button-container">
           <button onClick={handleSkipClick} className="button button-secondary">Skip</button>
