@@ -7,7 +7,7 @@
     "prerequisitesTaken": [],
     "isReadyToTake": true,
     "taken": false,
-    "semester": "Spring 2022"
+    "semester": "Spring 2024"
   },
   {
     "id": "CS202",
@@ -17,7 +17,7 @@
     "prerequisitesTaken": [],
     "isReadyToTake": false,
     "taken": false,
-    "semester": "Spring 2023"
+    "semester": "Spring 2024"
   },
   {
     "id": "CS303",
@@ -27,7 +27,7 @@
     "prerequisitesTaken": [],
     "isReadyToTake": true,
     "taken": false,
-    "semester": "Fall 2022"
+    "semester": "Fall 2023"
   },
   {
     "id": "CS404",
@@ -37,7 +37,7 @@
     "prerequisitesTaken": [ "Introduction to Programming" ],
     "isReadyToTake": true,
     "taken": false,
-    "semester": "Spring 2023"
+    "semester": "Spring 2025"
   },
   {
     "id": "CS430",

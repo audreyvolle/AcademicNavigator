@@ -9,8 +9,9 @@
     "\\AcademicNav\\src\\pages\\class-view",
     "\\AcademicNav\\src\\pages\\class-view\\main-view",
     "\\AcademicNav\\src\\pages\\class-view\\main-view\\graph-view",
+    "\\AcademicNav\\src\\pages\\class-view\\side-bar",
     "\\AcademicNav\\src\\Providers"
   ],
-  "SelectedNode": "\\AcademicNav\\src\\data\\scraped\\test2.json",
+  "SelectedNode": "\\AcademicNav\\src\\data\\scraped\\test.json",
   "PreviewInSolutionExplorer": false
 }
