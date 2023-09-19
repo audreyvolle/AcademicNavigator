@@ -1,25 +1,10 @@
 import NewView from './new-view-input/new-view-input';
 import './welcome.scss';
 import { useUser } from '../../Providers/UserProv';
-import { useEffect, useState } from 'react';
-
-interface ModalProps {
-  onClose: () => void;
-}
-
-const Modal = ({ onClose }: ModalProps) => (
-  <div className="modal">
-    <div className="modal-content">
-      <h3>Work Spaces</h3>
-
-      <button onClick={onClose}>Close</button>
-    </div>
-  </div>
-);
+import { useEffect } from 'react';
 
 const Welcome = () => {
   const { selectedValue, setSelectedValue, handleDropdownChange, setClassArray, classArray, setIsMainViewVisible } = useUser();
-  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const handleLoadWorkspace = () => {
     const fileInput = document.getElementById('fileInput');
@@ -50,15 +35,6 @@ const Welcome = () => {
       };
       reader.readAsText(selectedFile);
     }
-  };
-  
-
-  const openModal = () => {
-    setIsModalOpen(true);
-  };
-
-  const closeModal = () => {
-    setIsModalOpen(false);
   };
 
   return (
@@ -100,7 +76,6 @@ const Welcome = () => {
             </div>
           </div>
         </div>
-        {isModalOpen && <Modal onClose={closeModal} />}
       </div> : <NewView />
       }
     </>
