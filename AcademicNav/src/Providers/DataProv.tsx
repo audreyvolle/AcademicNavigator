@@ -19,6 +19,7 @@ type TransformedData = {
     taken: boolean;
     description: string;
     number: number;
+    semester: string;
 };
 
 
@@ -40,6 +41,7 @@ const initialState:exportedValue = {
             taken: false,
             description: "",
             number: 1,
+            semester: "",
         }
     ],
 };
@@ -527,6 +529,7 @@ export const DataProvider = ({children}: { children: ReactNode}) => {
                 prerequisitesAND: prerequisitesAND,
                 prerequisitesOR: prerequisitesOR,
                 number: number,
+                semester: "",
             };
         });
     

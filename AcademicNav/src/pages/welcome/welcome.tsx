@@ -11,57 +11,38 @@ const Welcome = () => {
   const { selectedValue, setSelectedValue, handleDropdownChange } = useUser();
   let courseList: Course[];
 
-  const handleLoadWorkspace = () => {
-    
-  };
-
-  
-  function buildUrlForMajor(majorAbbreviation: string, majorFull: string) {
-    const baseUrl = 'https://www.siue.edu/academics/undergraduate/courses/index.shtml';
-    const reqBaseURL = 'https://www.siue.edu/academics/undergraduate/degrees-and-programs/';
-    const reqTail = '/degree-requirements.shtml';
-    const queryString = `?subject=${majorAbbreviation}`;
-    const reqQueryString = `?${majorFull}`;
-    const classListURL = baseUrl + queryString;
-    const requirementsURL = reqBaseURL + reqQueryString + reqTail;
-
-    //scrapeCourseList(classListURL);
-    //scrapeDegreeRequirements(requirementsURL);
-    //printToJson(courseList);
-  }
-
-  function scrapeCourseList(courseURL: string){
-    /*scrape and populate the courseList array
-    {
-
-    }
-    */
-  }
-
-  function scrapeDegreeRequirements(requirementURL: string){
-    /*
-      fill in the other fields of the courseList array
-    */
-
-  }
-
+  const handleLoadWorkspace = () => { };
 
   return (
     <>
-    {selectedValue===""?<div className="welcome-container">
-    <h1>Welcome to Academic Navigator</h1>
-    <button type="button" onClick={handleLoadWorkspace}>
-      Load Previous Work Space
-    </button>
-    <p>Select a Major to Get Started</p>
-    <select value={selectedValue} onChange={(e)=>{handleDropdownChange(e)}}>
-      <option value="">Select an option</option>
-      <option value="computer-science-ba">Computer Science BA</option>
-      <option value="computer-science-bs">Computer Science BS</option>
-      <option value="public-health">Public Health</option>
-    </select>
-    </div>:<NewView />
-    }
+      {selectedValue === "" ? <div className="welcome-container">
+        <div className="main-container">
+          <div className="left-panel">
+            <p>Select a Major to Get Started</p>
+            <select value={selectedValue} onChange={(e) => { handleDropdownChange(e) }} className='major-dropdown'>
+              <option value="">Select your degree option</option>
+              <option value="computer-science-ba">Computer Science BA</option>
+              <option value="computer-science-bs">Computer Science BS</option>
+              <option value="public-health">Public Health</option>
+            </select>
+            <hr></hr>
+            <div className='load-container'>
+              <p className='load-text'>Returning user? </p>
+              <button type="button" onClick={handleLoadWorkspace} className='load-workspace'>
+                LOAD
+              </button>
+            </div>
+          </div>
+          <div className="vertical-line"></div>
+          <div className="right-panel">
+            <div className="welcome">
+              <h1>Academic Navigator</h1>
+              <p>Welcome! Select your major from the drop down to generate a schedule, or click LOAD to modify an existing schedule.</p>
+            </div>
+          </div>
+        </div>
+      </div> : <NewView />
+      }
     </>
   );
 }
