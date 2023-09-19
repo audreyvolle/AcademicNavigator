@@ -142,7 +142,6 @@ const GraphView = () => {
         event.dataTransfer.dropEffect = 'move';
     }, []);
 
-    //edit this to use the group system
     const onDrop = useCallback(
         (event: any) => {
             event.preventDefault();
@@ -165,7 +164,7 @@ const GraphView = () => {
                     });
                     //console.log("if (reactflowInstance) triggered")
                     setMousePosition({ x: clientX, y: clientY });
-
+                    //checks which group the mouse position is over if it is over a group
                     for (const element of nodes) {
                         parentId = semesters.findIndex((semester) => semester === element.id)
                         if (
@@ -243,7 +242,7 @@ const GraphView = () => {
                 draggable: false
             })
             groupcount++
-
+            semesterClassCount.push(0)
             const nodeToUpdate = nodes.findIndex((nnode) => nnode.id === node.id)
 
             if (nodeToUpdate !== -1) {
