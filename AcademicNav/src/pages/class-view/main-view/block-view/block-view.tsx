@@ -46,7 +46,7 @@ const BlockView = () => {
     //populate the semesters array
     classArray.forEach(function (value) {
 
-        if (!coreSemesters.includes(value.semester) && value.semester != null && value.semester != "") {
+        if (!coreSemesters.includes(value.semester) && value.semester != null && value.semester != "" && !value.taken) {
             coreSemesters.push(value.semester);
         }
     })
