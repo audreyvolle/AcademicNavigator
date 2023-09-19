@@ -52,6 +52,7 @@ const GraphView = () => {
     const [reactFlowInstance, setReactFlowInstance] = useState<ReactFlowInstance | null>(null);
     const [isLoading, setIsLoading] = useState(true);
     const [showWarning, setShowWarning] = useState(false);
+    const [warningMessage, setWarningMessage] = useState('');
 
     useEffect(() => {
         groupcount = 0;
@@ -188,6 +189,8 @@ const GraphView = () => {
                                 console.log(classArray);
                             }
                             setNodes((nds) => nds.concat(newNode));
+                            //TESTING!! REMOVE AT LATER DATE
+                            triggerWarning("Added class to semester " + element.id)
                         }
                     }
                 }
@@ -244,8 +247,9 @@ const GraphView = () => {
         return <div>Loading...</div>;
     }
 
-    const triggerWarning = () => {
+    const triggerWarning = (message: React.SetStateAction<string>) => {
         console.log('Triggering warning...');
+        setWarningMessage(message);
         setShowWarning(true);
         setTimeout(() => {
             setShowWarning(false);
@@ -276,10 +280,9 @@ return (
                 </ReactFlow>
             </div>
             <SideBar />
-            <button onClick={triggerWarning}>[PH] Button</button>
             {showWarning && (
                 <div className={`warning-box ${showWarning ? 'show' : 'hide'}`} >
-                    <div className="message">This is a warning message.</div>
+                    <div className="message">{warningMessage}</div>
                 </div>
             )}
         </ReactFlowProvider>
