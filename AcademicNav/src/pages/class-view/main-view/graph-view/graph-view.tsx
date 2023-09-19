@@ -51,6 +51,7 @@ const GraphView = () => {
     const [edges, setEdges, onEdgesChange] = useEdgesState([]);
     const [reactFlowInstance, setReactFlowInstance] = useState<ReactFlowInstance | null>(null);
     const [isLoading, setIsLoading] = useState(true);
+    const [showWarning, setShowWarning] = useState(false);
 
     useEffect(() => {
         groupcount = 0;
@@ -242,6 +243,16 @@ const GraphView = () => {
     if (isLoading) {
         return <div>Loading...</div>;
     }
+
+    const triggerWarning = () => {
+        console.log('Triggering warning...');
+        setShowWarning(true);
+        setTimeout(() => {
+            setShowWarning(false);
+            console.log('Disabling warning...');
+        }, 5000); // 5000 milliseconds (5 seconds)
+    };
+
 return (
     <div className="dndflow">
         <ReactFlowProvider>
@@ -265,6 +276,12 @@ return (
                 </ReactFlow>
             </div>
             <SideBar />
+            <button onClick={triggerWarning}>[PH] Button</button>
+            {showWarning && (
+                <div className={`warning-box ${showWarning ? 'show' : 'hide'}`} >
+                    <div className="message">This is a warning message.</div>
+                </div>
+            )}
         </ReactFlowProvider>
     </div>
 );
