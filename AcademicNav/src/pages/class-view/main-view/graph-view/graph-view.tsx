@@ -34,6 +34,7 @@ let parentId = 0;
 
 //arrays
 const semesters: string | string[] = [];
+let semesterClassCount: number[] = [];
 
 //colors
 const takenColor = 'rgba(178,255,102,1)';
@@ -68,7 +69,7 @@ const GraphView = () => {
             }
         })
         customSort(semesters)
-        const semesterClassCount = new Array(semesters.length).fill(0);
+        semesterClassCount = new Array(semesters.length).fill(0);
         console.log('adding the semesters as groups')
         semesters.forEach(function (value) {
             //const groupposition = groupcount * groupspacing
@@ -80,8 +81,7 @@ const GraphView = () => {
                 style: { backgroundColor: 'rgba(225,225,225,0)', width: groupwidth, height: groupheight },
                 selectable: false,
                 connectable: false,
-                draggable: false,
-                zIndex: 1
+                draggable: false
             })
             groupcount++
         })
@@ -94,8 +94,7 @@ const GraphView = () => {
             style: { backgroundColor: addSemesterColor, width: groupwidth, height: groupheight },
             selectable: false,
             connectable: false,
-            draggable: false,
-            zIndex: 1
+            draggable: false
         })
         console.log('registering the classes as nodes')
         classArray.forEach(function (value) {
@@ -168,9 +167,10 @@ const GraphView = () => {
                     setMousePosition({ x: clientX, y: clientY });
 
                     for (const element of nodes) {
+                        parentId = semesters.findIndex((semester) => semester === element.id)
                         if (
                             element.id != null &&
-                            semesters.findIndex((semester) => semester === element.id) != -1 &&
+                            parentId != -1 &&
                             position.x >= element.position.x &&
                             position.x <= element.position.x + element.width &&
                             position.y >= element.position.y &&
@@ -178,6 +178,30 @@ const GraphView = () => {
                         ) {
                             setHoveredNode(element);
                             console.log(element.id)
+                            const classToMove = classArray.find((classItem) => classItem.title === type);
+                            
+                            const newNode = 
+                            {
+                                id: getId(),
+                                position: { x: semesterClassCount[parentId] * xspacing + initspacing, y: yspacing },
+                                data: { label: `${type}` }, style: { backgroundColor: setColor },
+                                parentNode: element.id,
+                                expandParent: true,
+                                selectable: false,
+                                draggable: false,
+                                dragging: false,
+                                focusable: false
+                            }
+                            semesterClassCount[parentId]++
+                            if (classToMove) {
+                                // Set taken to true for the class being moved
+                                const updatedClassArray = classArray.map((classItem) =>
+                                    classItem === classToMove ? { ...classItem, taken: true, semester: element.id} : classItem // MISAEL CHANGE THIS TO ALSO UPDATE THE SEMESTER AND OTHER VARIABLES!!
+                                );                                                                        // I WILL OK!!!
+                                setClassArray(updatedClassArray);
+                                console.log(classArray);
+                            }
+                            setNodes((nds) => nds.concat(newNode));
                         }
                     }
                     //const newNode = {
@@ -185,21 +209,12 @@ const GraphView = () => {
                     //    position,
                     //    data: { label: `${type}` },
                     //};
-                    const classToMove = classArray.find((classItem) => classItem.title === type);
-
-                    if (classToMove) {
-                        // Set taken to true for the class being moved
-                        const updatedClassArray = classArray.map((classItem) =>
-                            classItem === classToMove ? { ...classItem, taken: true } : classItem // MISAEL CHANGE THIS TO ALSO UPDATE THE SEMESTER AND OTHER VARIABLES!!
-                        );                                                                        // I WILL OK!!!
-                        setClassArray(updatedClassArray);
-                        console.log(classArray);
-                    }
+                    
                     //setNodes((nds) => nds.concat(newNode));
                 }
             }
         },
-        [classArray, nodes, reactFlowInstance, setClassArray]
+        [classArray, nodes, reactFlowInstance, setClassArray, setNodes]
     );
 
     const onClick = useCallback((event: React.MouseEvent, node: Node) => {
@@ -225,8 +240,7 @@ const GraphView = () => {
                 style: { backgroundColor: 'rgba(225,225,225,0)', width: groupwidth, height: groupheight },
                 selectable: false,
                 connectable: false,
-                draggable: false,
-                zIndex: 2
+                draggable: false
             })
             groupcount++
 
