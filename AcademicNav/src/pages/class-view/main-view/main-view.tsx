@@ -37,13 +37,21 @@ const Modal = ({ onClose }: ModalProps) => (
 
 const MainView = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const { classArray } = useUser();
+  const { classArray, setCreditHours, creditHours } = useUser();
+
   const openModal = () => {
     setIsModalOpen(true);
   };
 
   const closeModal = () => {
     setIsModalOpen(false);
+  };
+
+  const handleCreditHoursChange = (event: any) => {
+    const newCreditHours = Math.min(20, Math.max(1, event.target.value));
+    if (newCreditHours > 0 && newCreditHours <= 20) {
+      setCreditHours(newCreditHours);
+    }
   };
 
   function saveWorkSpace() {
@@ -55,7 +63,7 @@ const MainView = () => {
     const a = document.createElement('a');
     a.download = 'my-schedule.json';
     a.href = URL.createObjectURL(blob);
-    a.addEventListener('click', (e) => {
+    a.addEventListener('click', () => {
       setTimeout(() => URL.revokeObjectURL(a.href), 30 * 1000);
     });
     a.click();
@@ -65,6 +73,17 @@ const MainView = () => {
     <div>
       <div className="main-view">
         <div className="top-bar">
+          <label htmlFor="creditHours">Credit Hours Per Semester:</label>
+          <input
+            type="number"
+            id="creditHours"
+            name="creditHours"
+            min="1"
+            max="20"
+            className="input-field"
+            value={creditHours}
+            onChange={handleCreditHoursChange}
+          />
           <button className="save" onClick={saveWorkSpace}>Save Work Space</button>
           <button className="help-button" onClick={openModal}>
             <img
