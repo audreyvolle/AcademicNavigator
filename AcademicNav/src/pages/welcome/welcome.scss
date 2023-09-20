@@ -1,23 +1,103 @@
-.welcome-container {
-    text-align: center;
-    padding: 20px;
-    background-color: #fbf9ffff;
-    border: 1px solid #ccc;
-  
-    h1 {
-      font-size: 24px;
-      margin-bottom: 10px;
-    }
-  
-    p {
-      font-size: 18px;
-      margin-bottom: 20px;
-    }
-  
-    select {
-      font-size: 16px;
-      padding: 5px 10px;
-      margin-bottom: 20px;
-    }
+/* Styles for the main container */
+.main-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px;
+  background-color: #fbf9ffff;
+  border: 1px solid #ccc;
+}
+
+hr {
+  margin: 40px;
+}
+
+/* Styles for the left panel */
+.left-panel {
+  flex: 1;
+  padding: 20px;
+  text-align: center;
+}
+
+.left-panel p {
+  font-size: 20px;
+  margin-bottom: 10px;
+}
+
+.left-panel select {
+  font-size: 20px;
+  padding: 5px 10px;
+  margin-bottom: 10px;
+}
+
+.left-panel button {
+  font-size: 25px;
+  padding: 5px 10px;
+}
+
+/* Styles for the vertical line */
+.vertical-line {
+  width: 1px;
+  background-color: #0a0a0a;
+  height: 100%;
+  margin: 0 20px;
+}
+
+/* Styles for the right panel */
+.right-panel {
+  flex: 1;
+  padding: 20px;
+  text-align: left;
+}
+
+.right-panel .welcome {
+  text-align: center;
+}
+
+.right-panel h1 {
+  font-size: 100px;
+  margin-bottom: 10px;
+}
+
+.right-panel p {
+  font-size: 18px;
+  margin-bottom: 10px;
+}
+
+/* Styles for the select element with class 'major-dropdown' */
+.major-dropdown {
+  font-size: 16px;
+  padding: 8px 12px;
+  margin-bottom: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background-color: #ffffff;
+  width: 80%; /* Adjust the width as needed */
+}
+
+.load-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.load-text {
+  margin-right: 10px; /* Adjust the spacing between the <p> and <button> */
+}
+
+/* Styles for the button with class 'load-workspace' */
+.load-workspace {
+  font-size: 16px;
+  padding: 10px 20px;
+  background-color: #333;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+
+  /* Hover effect */
+  &:hover {
+    background-color: #555;
   }
-  
+}

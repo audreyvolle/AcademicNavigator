@@ -55,10 +55,10 @@ const GraphView = () => {
     const [showWarning, setShowWarning] = useState(false);
     const [warningMessage, setWarningMessage] = useState('');
 
-    useEffect(() => {
+    useEffect(() => {//used to set up the semesters and classes that have a semester set on them
         //cleans up the empty semesters at the end
         if (semesters.length > 0) {
-            console.log(semesters)
+            //console.log(semesters)
             let emptySemesters = -1;
             for (let i = semesters.length; i > 0; i--) {
                 if (semesterClassCount[i-1] > 0) {
@@ -66,21 +66,21 @@ const GraphView = () => {
                     break
                 }
             }
-            console.log(emptySemesters)
+            //console.log(emptySemesters)
             if (emptySemesters != -1) {
-                console.log("slicing")
+                //console.log("slicing")
                 const slicedSemesters = semesters.slice(0, emptySemesters)
                 semesters.splice(0,semesters.length)
-                console.log(slicedSemesters)
+                //console.log(slicedSemesters)
                 slicedSemesters.forEach(function (value) {
                     semesters.push(value)
                 })
             }
-            console.log(semesters)
+            //console.log(semesters)
         }
         groupcount = 0;
         classArray.forEach(function (value) {
-            if (!semesters.includes(value.semester) && value.semester != null && value.semester != "none") {
+            if (!semesters.includes(value.semester) && value.semester != null && value.semester != "") {
                 semesters.push(value.semester);
             }
         })
@@ -124,7 +124,7 @@ const GraphView = () => {
                 setColor = unavailableColor
             }
             parentId = semesters.findIndex(item => item === value.semester)
-            if (value.semester != null && value.semester != "none") {
+            if (value.semester != null && value.semester != "") {
                 nodes.push(
                     {
                         id: value.id,
@@ -221,7 +221,7 @@ const GraphView = () => {
     );
 
     //used for node deletion
-    const onNodeDoubleClick = useCallback((event: React.MouseEvent, node: Node) => {
+    const onNodeDoubleClick = useCallback((event: React.MouseEvent, node: Node) => { //use for deleting a class node or semester node
         event.preventDefault()
         if (node.id === 'addSemester') {
             console.log("add semester double clicked, how did you do this...")
@@ -254,7 +254,7 @@ const GraphView = () => {
                     triggerWarning("Cannot Remove a Semester that has classes")
                 }
             } else {
-                triggerWarning("Can only remove the last semester")
+                triggerWarning("Can only remove the last semester (Temp)")
                 console.log("non last semester double clicked")
                 return
             }
@@ -269,7 +269,7 @@ const GraphView = () => {
             setNodes(updatedNodes)
 
             const updatedClassArray = classArray.map((classItem) =>
-                classItem === classInfo ? { ...classItem, taken: false, semester: "none" } : classItem // MISAEL CHANGE THIS TO ALSO UPDATE THE SEMESTER AND OTHER VARIABLES!!
+                classItem === classInfo ? { ...classItem, taken: false, semester: "" } : classItem // MISAEL CHANGE THIS TO ALSO UPDATE THE SEMESTER AND OTHER VARIABLES!!
             );                                                                                             // I WILL OK!!!
             setClassArray(updatedClassArray);
 
@@ -277,7 +277,7 @@ const GraphView = () => {
         }
     },[classArray, nodes, setClassArray, setNodes]);
 
-    const onClick = useCallback((event: React.MouseEvent, node: Node) => {
+    const onClick = useCallback((event: React.MouseEvent, node: Node) => { //used for the add semester button
         event.preventDefault()
         if (node.id === 'addSemester') {
             let semOutput = "";
@@ -323,7 +323,7 @@ const GraphView = () => {
         return <div>Loading...</div>;
     }
 
-    const triggerWarning = (message: React.SetStateAction<string>) => {
+    const triggerWarning = (message: React.SetStateAction<string>) => { //used to alert the user of a warning or some error
         setShowWarning(false);
         console.log('Triggering warning...');
         setWarningMessage(message);
@@ -385,7 +385,7 @@ function findEdges(value: string[], classes: any[], edgeArray: { id: string; sou
     return edgeCount
 }
 
-function customSort(arr: string[]): string[] {
+function customSort(arr: string[]): string[] {//sorting the semesters by year and Fall/Spring
     return arr.sort((a, b) => {
         const aYear = parseInt(a.match(/\d+/)[0])
         const bYear = parseInt(b.match(/\d+/)[0])
