@@ -9,8 +9,7 @@ import {
     Controls,
     useNodesState,
     useEdgesState,
-    addEdge,
-    Handle
+    addEdge
 } from 'reactflow';
 import SideBar from '../../side-bar/side-bar';
 import { useUser } from '../../../../Providers/UserProv';
@@ -57,8 +56,27 @@ const GraphView = () => {
     const [warningMessage, setWarningMessage] = useState('');
 
     useEffect(() => {
+        //cleans up the empty semesters at the end
         if (semesters.length > 0) {
-            semesters.splice(0,semesters.length)
+            console.log(semesters)
+            let emptySemesters = -1;
+            for (let i = semesters.length; i > 0; i--) {
+                if (semesterClassCount[i-1] > 0) {
+                    emptySemesters = i
+                    break
+                }
+            }
+            console.log(emptySemesters)
+            if (emptySemesters != -1) {
+                console.log("slicing")
+                const slicedSemesters = semesters.slice(0, emptySemesters)
+                semesters.splice(0,semesters.length)
+                console.log(slicedSemesters)
+                slicedSemesters.forEach(function (value) {
+                    semesters.push(value)
+                })
+            }
+            console.log(semesters)
         }
         groupcount = 0;
         classArray.forEach(function (value) {
@@ -194,8 +212,6 @@ const GraphView = () => {
                                 console.log(classArray);
                             }
                             setNodes((nds) => nds.concat(newNode));
-                            //TESTING!! REMOVE AT LATER DATE
-                            triggerWarning("Added class to semester " + element.id)
                         }
                     }
                 }
@@ -298,8 +314,6 @@ const GraphView = () => {
                 };
                 setNodes(updatedNodes);
             }
-            triggerWarning("Added semester " + semOutput)
-            //node = { node, { data: { position: { x: 33, y: groupcount * groupspacing } } }}
         }
         //console.log(nodes)
         //console.log(groupcount)
