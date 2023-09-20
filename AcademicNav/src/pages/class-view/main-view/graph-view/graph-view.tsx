@@ -46,7 +46,7 @@ const addSemesterColor = 'rgb(128,128,128)'
 const GraphView = () => {
 
     //const reactFlowWrapper = useRef(null);
-    const { classArray, setClassArray } = useUser();
+    const { classArray, setClassArray, currentSemester } = useUser();
     const reactFlowWrapper = useRef(null);
     const [nodes, setNodes, onNodesChange] = useNodesState([]);
     const [edges, setEdges, onEdgesChange] = useEdgesState([]);
@@ -79,6 +79,9 @@ const GraphView = () => {
             //console.log(semesters)
         }
         groupcount = 0;
+        if (!semesters.includes(currentSemester)) {
+            semesters.push(currentSemester);
+        }
         classArray.forEach(function (value) {
             if (!semesters.includes(value.semester) && value.semester != null && value.semester != "") {
                 semesters.push(value.semester);
