@@ -20,9 +20,9 @@ const CriticalPath = () => {
   const selectedSVG = svgFiles[selectedValue as keyof typeof svgFiles];
 
   return (
-    <div>
+    <div className='critical-path-container'>
       {selectedSVG && (
-        <img src={selectedSVG} alt={`SVG for ${selectedValue}`} />
+        <img className='critical-path-img' src={selectedSVG} alt={`SVG for ${selectedValue}`} />
       )}
     </div>
   );

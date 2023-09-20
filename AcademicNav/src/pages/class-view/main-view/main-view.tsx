@@ -25,6 +25,9 @@ const Modal = ({ onClose }: ModalProps) => (
           <strong>Block View:</strong> This tab displays your schedule in a block-like format, similar to a typical schedule layout.
         </li>
         <li>
+          <strong>Critical Path:</strong> This tab displays a graphical view of classes which have pre-requisites to help guide you in placing classes on you schedule.
+        </li>
+        <li>
           <strong>Save Workspace:</strong> Click "Save Workspace" to save your current work so that you can work on it or refer to it later.
         </li>
         <li>
