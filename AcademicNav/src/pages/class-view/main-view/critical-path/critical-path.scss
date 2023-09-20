@@ -4,28 +4,46 @@
 .critical-path-container {
     text-align: center;
     margin: 10px;
-    width: 100%; /* Set the width to take up the full available space */
-    max-height: 80vh; /* Limit the maximum height to 80% of viewport height */
-    overflow: auto; /* Add scrollbars if the content overflows the container */
-    display: flex; /* Use flexbox to center content vertically and horizontally */
-    flex-direction: column; /* Stack children vertically */
-    align-items: center; /* Center horizontally */
-    justify-content: center; /* Center vertically */
+    width: 100%;
+    max-height: 80vh;
+    overflow: auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
   }
   
   /* Style the heading */
   .critical-path-heading {
     font-size: 24px;
-    color: #333; /* Change the color to your preference */
+    color: #333;
     margin-bottom: 5px;
   }
   
   /* Style the image */
   .critical-path-img {
-    max-width: 100%; /* Ensure the image scales down if it's larger than the container */
-    max-height: 100%; /* Limit the maximum height of the image to the container's height */
-    border: 2px solid #ccc; /* Add a border for visual separation */
-    border-radius: 5px; /* Add rounded corners */
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); /* Add a subtle box shadow */
-    margin-top: 5px; /* Add some spacing between the heading and the image */
+    max-width: 100%;
+    max-height: 100%;
+    border: 2px solid #ccc;
+    border-radius: 5px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    margin-top: 5px;
+  }
+
+  .major-dropdown {
+    font-size: 16px;
+    padding: 8px 12px;
+    margin-bottom: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    background-color: #ffffff;
+    width: 100%;
+  }
+
+  .help-button-cp {
+    background: none;
+    border: none;
+    cursor: pointer;
+    display: inline-block;
+    vertical-align: middle;
   }
