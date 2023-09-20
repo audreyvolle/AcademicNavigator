@@ -79,7 +79,9 @@ const GraphView = () => {
             //console.log(semesters)
         }
         groupcount = 0;
-        semesters.push(currentSemester)
+        if (!semesters.includes(currentSemester)) {
+            semesters.push(currentSemester);
+        }
         classArray.forEach(function (value) {
             if (!semesters.includes(value.semester) && value.semester != null && value.semester != "") {
                 semesters.push(value.semester);
