@@ -6,6 +6,7 @@ import BlockView from "./block-view/block-view";
 import questionMark from '/public/images/question-mark.png';
 import { useState } from "react";
 import { useUser } from "../../../Providers/UserProv";
+import CriticalPath from "./critical-path/critical-path";
 
 interface ModalProps {
   onClose: () => void;
@@ -98,12 +99,16 @@ const MainView = () => {
             <TabList>
               <Tab>Graph View</Tab>
               <Tab>Block View</Tab>
+              <Tab>Critical Path</Tab>
             </TabList>
             <TabPanel>
               <GraphView />
             </TabPanel>
             <TabPanel>
               <BlockView />
+            </TabPanel>
+            <TabPanel>
+              <CriticalPath />
             </TabPanel>
           </Tabs>
         </div>
