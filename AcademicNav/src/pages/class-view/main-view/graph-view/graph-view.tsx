@@ -9,7 +9,8 @@ import {
     Controls,
     useNodesState,
     useEdgesState,
-    addEdge
+    addEdge,
+    Handle
 } from 'reactflow';
 import SideBar from '../../side-bar/side-bar';
 import { useUser } from '../../../../Providers/UserProv';
@@ -30,6 +31,7 @@ const groupheight = 125
 let groupcount = 0;
 let edgeCount = 0;
 let parentId = 0;
+const warningMessageDuration = 3500;
 
 //arrays
 const semesters: string | string[] = [];
@@ -55,9 +57,12 @@ const GraphView = () => {
     const [warningMessage, setWarningMessage] = useState('');
 
     useEffect(() => {
+        if (semesters.length > 0) {
+            semesters.splice(0,semesters.length)
+        }
         groupcount = 0;
         classArray.forEach(function (value) {
-            if (!semesters.includes(value.semester) && value.semester != null) {
+            if (!semesters.includes(value.semester) && value.semester != null && value.semester != "none") {
                 semesters.push(value.semester);
             }
         })
@@ -101,7 +106,7 @@ const GraphView = () => {
                 setColor = unavailableColor
             }
             parentId = semesters.findIndex(item => item === value.semester)
-            if (value.semester != null) {
+            if (value.semester != null && value.semester != "none") {
                 nodes.push(
                     {
                         id: value.id,
@@ -168,7 +173,7 @@ const GraphView = () => {
                             
                             const newNode = 
                             {
-                                id: classArray[classArray.findIndex((name) => name.title === `${type}`)].id,
+                                id: classToMove.id,
                                 position: { x: semesterClassCount[parentId] * xspacing + initspacing, y: yspacing },
                                 data: { label: `${type}` }, style: { backgroundColor: setColor },
                                 parentNode: element.id,
@@ -184,7 +189,7 @@ const GraphView = () => {
                                 // Set taken to true for the class being moved
                                 const updatedClassArray = classArray.map((classItem) =>
                                     classItem === classToMove ? { ...classItem, taken: true, semester: element.id} : classItem // MISAEL CHANGE THIS TO ALSO UPDATE THE SEMESTER AND OTHER VARIABLES!!
-                                );                                                                        // I WILL OK!!!
+                                );                                                                                             // I WILL OK!!!
                                 setClassArray(updatedClassArray);
                                 console.log(classArray);
                             }
@@ -198,6 +203,63 @@ const GraphView = () => {
         },
         [classArray, nodes, reactFlowInstance, setClassArray, setNodes]
     );
+
+    //used for node deletion
+    const onNodeDoubleClick = useCallback((event: React.MouseEvent, node: Node) => {
+        event.preventDefault()
+        if (node.id === 'addSemester') {
+            console.log("add semester double clicked, how did you do this...")
+            return
+        }
+        else if (semesters.findIndex((semester) => semester === node.id) != -1) {
+            const semesterLastIndex = semesters.length - 1;
+            if (semesters.findIndex((semester) => semester === node.id) === semesterLastIndex) {
+                if (semesterClassCount[semesterLastIndex] === 0) {
+                    console.log("last semester double clicked")
+                    const semesterToRemove = semesters[semesterLastIndex]
+                    groupcount--;
+                    semesters.pop()
+                    semesterClassCount.pop()
+                    console.log(nodes)
+                    nodes.splice(nodes.findIndex((node) => node.id === semesterToRemove), 1)
+                    const nodeToUpdate = nodes.findIndex((nnode) => nnode.id === 'addSemester')
+
+                    if (nodeToUpdate !== -1) {
+                        const updatedNodes = [...nodes]
+                        updatedNodes[nodeToUpdate] = {
+                            ...updatedNodes[nodeToUpdate],
+                            position: { x: groupxposition, y: groupcount * groupspacing },
+                        };
+                        setNodes(updatedNodes);
+                    }
+                    //setNodes(nodes)
+                    return
+                } else {
+                    triggerWarning("Cannot Remove a Semester that has classes")
+                }
+            } else {
+                triggerWarning("Can only remove the last semester")
+                console.log("non last semester double clicked")
+                return
+            }
+        }
+        else {
+            console.log("class node doubleclicked")
+            const classInfo = classArray.find((element) => element.id === node.id)
+            const semesterId = semesters.findIndex((semester) => semester === classInfo.semester)
+
+            semesterClassCount[semesterId]--
+            const updatedNodes = nodes.filter((element) => element.id !== node.id);
+            setNodes(updatedNodes)
+
+            const updatedClassArray = classArray.map((classItem) =>
+                classItem === classInfo ? { ...classItem, taken: false, semester: "none" } : classItem // MISAEL CHANGE THIS TO ALSO UPDATE THE SEMESTER AND OTHER VARIABLES!!
+            );                                                                                             // I WILL OK!!!
+            setClassArray(updatedClassArray);
+
+            return
+        }
+    },[classArray, nodes, setClassArray, setNodes]);
 
     const onClick = useCallback((event: React.MouseEvent, node: Node) => {
         event.preventDefault()
@@ -236,11 +298,11 @@ const GraphView = () => {
                 };
                 setNodes(updatedNodes);
             }
-
+            triggerWarning("Added semester " + semOutput)
             //node = { node, { data: { position: { x: 33, y: groupcount * groupspacing } } }}
         }
-        console.log(nodes)
-        console.log(groupcount)
+        //console.log(nodes)
+        //console.log(groupcount)
     }, [nodes, setNodes])
 
     if (isLoading) {
@@ -248,13 +310,15 @@ const GraphView = () => {
     }
 
     const triggerWarning = (message: React.SetStateAction<string>) => {
+        setShowWarning(false);
         console.log('Triggering warning...');
         setWarningMessage(message);
         setShowWarning(true);
+
         setTimeout(() => {
             setShowWarning(false);
             console.log('Disabling warning...');
-        }, 5000); // 5000 milliseconds (5 seconds)
+        }, warningMessageDuration);
     };
 
 return (
@@ -274,17 +338,18 @@ return (
                     panOnDrag={false}
                     zoomOnDoubleClick={false}
                     onNodeClick={onClick}
+                    onNodeDoubleClick={ onNodeDoubleClick }
                     //fitView
                 >
                     <Controls />
                 </ReactFlow>
             </div>
             <SideBar />
-            {showWarning && (
+            {
                 <div className={`warning-box ${showWarning ? 'show' : 'hide'}`} >
                     <div className="message">{warningMessage}</div>
                 </div>
-            )}
+            }
         </ReactFlowProvider>
     </div>
 );
