@@ -14,7 +14,23 @@
   align-items: center;
   padding: 5px 5px;
   background-color: #f0f0f0;
+  gap: 10px;
   //border-bottom: 1px solid #ccc;
+}
+
+label {
+  font-weight: bold;
+  font-size: 14px;
+  align-self: center;
+}
+
+input.input-field {
+  padding: 8px;
+  width: 60px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 14px;
+  margin-right: 15px;
 }
 
 /* Style for the "Save Work Space" button */
@@ -27,6 +43,11 @@
   border-radius: 4px;
   cursor: pointer;
   transition: background-color 0.3s ease;
+
+  /* Hover effect */
+  &:hover {
+    background-color: #555;
+  }
 }
 
 .credits {
@@ -37,6 +58,11 @@
   border-radius: 4px;
   cursor: pointer;
   transition: background-color 0.3s ease;
+
+  /* Hover effect */
+  &:hover {
+    background-color: #555;
+  }
 }
 
 /* Style for the "Help" button */

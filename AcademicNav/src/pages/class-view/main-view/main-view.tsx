@@ -37,7 +37,8 @@ const Modal = ({ onClose }: ModalProps) => (
 
 const MainView = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const { classArray } = useUser();
+  const { classArray, setCreditHours, creditHours } = useUser();
+
   const openModal = () => {
     setIsModalOpen(true);
   };
@@ -46,13 +47,16 @@ const MainView = () => {
     setIsModalOpen(false);
   };
 
+  const handleCreditHoursChange = (event: any) => {
+    const newCreditHours = Math.min(20, Math.max(1, event.target.value));
+    if (newCreditHours > 0 && newCreditHours <= 20) {
+      setCreditHours(newCreditHours);
+    }
+  };
+
   function saveWorkSpace() {
     const blob = new Blob([JSON.stringify(classArray, null, 2)], { type: 'application/json' });
     saveFile(blob);
-  }
-
-  function editCredits(){
-
   }
 
   const saveFile = async (blob: any) => {
@@ -69,7 +73,17 @@ const MainView = () => {
     <div>
       <div className="main-view">
         <div className="top-bar">
-          <button className="credits" onClick={editCredits}>Edit Credit Hours</button>
+          <label htmlFor="creditHours">Credit Hours Per Semester:</label>
+          <input
+            type="number"
+            id="creditHours"
+            name="creditHours"
+            min="1"
+            max="20"
+            className="input-field"
+            value={creditHours}
+            onChange={handleCreditHoursChange}
+          />
           <button className="save" onClick={saveWorkSpace}>Save Work Space</button>
           <button className="help-button" onClick={openModal}>
             <img
