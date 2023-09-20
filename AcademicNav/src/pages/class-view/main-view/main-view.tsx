@@ -63,7 +63,7 @@ const MainView = () => {
     const a = document.createElement('a');
     a.download = 'my-schedule.json';
     a.href = URL.createObjectURL(blob);
-    a.addEventListener('click', (e) => {
+    a.addEventListener('click', () => {
       setTimeout(() => URL.revokeObjectURL(a.href), 30 * 1000);
     });
     a.click();

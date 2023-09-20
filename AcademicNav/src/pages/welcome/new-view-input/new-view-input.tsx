@@ -27,11 +27,8 @@ const Modal = ({ onClose }: ModalProps) => (
   </div>
 );
 
-
 function NewView() {
-  const currentDate = new Date();
-  const currentYear = currentDate.getFullYear();
-  const { handleContinueClick, handleSkipClick, handleCheckboxChange, selectedClasses, classArray, setCreditHours, setCurrentSemester, setGraduationSemester, currentSemester, graduationSemester } = useUser();
+  const { handleContinueClick, handleSkipClick, handleCheckboxChange, selectedClasses, classArray, setCreditHours, setCurrentSemester, setGraduationSemester } = useUser();
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   interface ClassList {
@@ -44,6 +41,8 @@ function NewView() {
     taken: boolean
   }
 
+  const currentDate = new Date();
+  const currentYear = currentDate.getFullYear();
   const currentMonth = currentDate.getMonth() + 1; // Month is 0-indexed, so we add 1
 
   // Create an array of semester names
@@ -77,13 +76,10 @@ function NewView() {
     const currentSemesterField = document.getElementById('current') as HTMLSelectElement;
     setCurrentSemester(currentSemesterField.value);
     const graduationSemesterField = document.getElementById('graduation') as HTMLSelectElement;
-    console.log("current semester" + currentSemester);
-    //setGraduationSemester(graduationSemesterField.value);
-    //console.log("graduation semseter" + graduationSemester);
+    
     // Calculate and set the initial graduation semester value to +4 years from the current semester
     const initialGraduationSemester = calculateGraduationSemesterOptions(currentSemesterField.value)[4]; // Change the index as needed
     setGraduationSemester(initialGraduationSemester);
-    console.log("graduation semseter" + graduationSemester);
 
     // Populate the current semester dropdown
     for (let year = currentYear; year <= 2050; year++) {
@@ -95,8 +91,15 @@ function NewView() {
         option.value = `${semester} ${year}`;
         option.text = `${semester} ${year}`;
         currentSemesterField?.appendChild(option);
+        const option2 = document.createElement('option');
+        option2.value = `${semester} ${year}`;
+        option2.text = `${semester} ${year}`;
+        graduationSemesterField?.appendChild(option2);
       }
     }
+
+    setCurrentSemester(currentSemesterField.value);
+    setGraduationSemester(graduationSemesterField.value);
 
     // Event listener for when the user selects a current semester
     currentSemesterField?.addEventListener('change', function () {
@@ -108,13 +111,14 @@ function NewView() {
 
       // Add the calculated options to the graduation semester dropdown
       for (const optionValue of graduationSemesterOptions) {
-        const option = document.createElement('option');
-        option.value = optionValue;
-        option.text = optionValue;
-        graduationSemesterField?.appendChild(option);
+        const option2 = document.createElement('option');
+        option2.value = optionValue;
+        option2.text = optionValue;
+        graduationSemesterField?.appendChild(option2);
       }
     });
   }, [currentYear, currentMonth]);
+
   const openModal = () => {
     setIsModalOpen(true);
   };
@@ -173,13 +177,13 @@ function NewView() {
         </ul>
 
         <label htmlFor="credits">Credit Hours Per Semester (between 1 and 20):</label>
-        <input type="number" id="credits" name="credits" min="1" max="20" className="input-field-credits" onChange={() => setCreditHours}/>
+        <input type="number" id="credits" name="credits" min="1" max="20" className="input-field-credits" onChange={(e) => setCreditHours(parseInt(e.target.value))}/>
 
         <label htmlFor="current">Current Semester: </label>
-        <select id="current" name="current" className="input-field" onChange={() => setCurrentSemester}></select>
+        <select id="current" name="current" className="input-field" onChange={(e) => setCurrentSemester(e.target.value)}></select>
 
         <label htmlFor="graduation">Target Graduation Semester: </label>
-        <select id="graduation" name="graduation" className="input-field" onChange={() => setGraduationSemester}></select>
+        <select id="graduation" name="graduation" className="input-field" onChange={(e) => setGraduationSemester(e.target.value)}></select>
 
         <div className="button-container">
           <button onClick={handleSkipClick} className="button button-secondary">Skip</button>
