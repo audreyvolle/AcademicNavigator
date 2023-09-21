@@ -73,7 +73,7 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
   const handleDropdownChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     const selectedValue = event.target.value;
     setSelectedValue(selectedValue);
-
+    console.log(selectedValue);
     // Get the corresponding major abbreviation from the key
     const selectedMajorAbbreviation = majorAbbreviationKey[selectedValue];
     const majorFullName = majorFullKey[selectedValue];

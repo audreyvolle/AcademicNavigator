@@ -6,6 +6,7 @@ import BlockView from "./block-view/block-view";
 import questionMark from '/public/images/question-mark.png';
 import { useState } from "react";
 import { useUser } from "../../../Providers/UserProv";
+import CriticalPath from "./critical-path/critical-path";
 
 interface ModalProps {
   onClose: () => void;
@@ -22,6 +23,9 @@ const Modal = ({ onClose }: ModalProps) => (
         </li>
         <li>
           <strong>Block View:</strong> This tab displays your schedule in a block-like format, similar to a typical schedule layout.
+        </li>
+        <li>
+          <strong>Critical Path:</strong> This tab displays a graphical view of classes which have pre-requisites to help guide you in placing classes on you schedule.
         </li>
         <li>
           <strong>Save Workspace:</strong> Click "Save Workspace" to save your current work so that you can work on it or refer to it later.
@@ -98,12 +102,16 @@ const MainView = () => {
             <TabList>
               <Tab>Graph View</Tab>
               <Tab>Block View</Tab>
+              <Tab>Critical Path</Tab>
             </TabList>
             <TabPanel>
               <GraphView />
             </TabPanel>
             <TabPanel>
               <BlockView />
+            </TabPanel>
+            <TabPanel>
+              <CriticalPath />
             </TabPanel>
           </Tabs>
         </div>

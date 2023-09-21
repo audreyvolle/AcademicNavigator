@@ -534,7 +534,7 @@ export const DataProvider = ({children}: { children: ReactNode}) => {
         });
     
         setCourses(transformedData);
-        
+        console.log(transformedData);
       }, []);
 
     const value = {
