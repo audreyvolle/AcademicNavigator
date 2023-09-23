@@ -2,19 +2,27 @@ import { createContext, ReactNode, useContext, useState } from "react";
 import majorAbbreviationKey from '../assets/majorsAbrev';
 import majorFullKey from '../assets/majorsFull';
 import classData from '../data/scraped/test.json';
-
+import { useData } from "./DataProv";
 //Think about it's a global state value. 
 //Add everything in exportValue
 //Set up the initial state
+
+type PrerequisiteType = {
+  id: string;
+  Grade: string;
+  concurrency: boolean;
+};
+
 interface ClassList {
   id: string,
   title: string,
   credits: number,
-  prerequisites: Array<string>,
+  prerequisitesOR: PrerequisiteType[],
+  prerequisitesAND: PrerequisiteType[],
   prerequisitesTaken: Array<string>,
   isReadyToTake: boolean,
   taken: boolean,
-  semester: string
+  semester: string,
 }
 
 export interface exportedValue {
@@ -54,6 +62,7 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
   const [isMainViewVisible, setIsMainViewVisible] = useState<boolean>(false);
   const [selectedClasses, setSelectedClasses] = useState<string[]>([]);
   const [classArray, setClassArray] = useState<ClassList[]>([]);
+  const {courses} = useData();
 
   const handleDropdownChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     const selectedValue = event.target.value;
@@ -65,9 +74,10 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
     if (selectedMajorAbbreviation) {
       buildUrlForMajor(selectedMajorAbbreviation, majorFullName);
     }
-    setClassArray(classData as ClassList[]);
+    setClassArray(courses as ClassList[]);
   };
 
+  console.log(courses)
   function buildUrlForMajor(majorAbbreviation: string, majorFull: string) {
     const baseUrl = 'https://www.siue.edu/academics/undergraduate/courses/index.shtml';
     const reqBaseURL = 'https://www.siue.edu/academics/undergraduate/degrees-and-programs/';
@@ -141,16 +151,16 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
       // Update prerequisites for other courses
       const updatedClassArray = updatedClasses.map((course) => {
         if (course.id !== className) {
-          const updatedPrerequisitesTaken = course.prerequisites.map(
-            (prerequisite) => {
-              if (prerequisite === className) {
+          const updatedPrerequisitesTaken = course.prerequisitesOR.map(
+            (prerequisitesOR) => {
+              if (prerequisitesOR.id === className) {
                 return course.title;
               }
-              return prerequisite;
+              return prerequisitesOR;
             }
           );
           const isReadyToTake =
-            updatedPrerequisitesTaken.length === course.prerequisites.length;
+            updatedPrerequisitesTaken.length === course.prerequisitesOR.length;
           return {
             ...course,
             prerequisitesTaken: updatedPrerequisitesTaken,
@@ -160,10 +170,8 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
         return course;
       });
       console.log(updatedClassArray);
-      setClassArray(updatedClassArray);
     }
   };
-
 
   const handleSkipClick = () => {
     setIsMainViewVisible(true);
@@ -201,19 +209,3 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
 export function useUser() {
   return useContext(UserInfoContext);
 }
-
-/*const classs = classArray.map((course) => {
-  if (course.id === className) {
-    const updatedPostReq = classArray.map((postReq) => {
-      postReq.prerequisites.forEach((prerequisite) => {
-        if(prerequisite === course.title){
-          postReq.prerequisitesTaken.push(course.title)
-          if(postReq.prerequisitesTaken.length === postReq.prerequisites.length){
-            postReq.isReadyToTake = true;
-          }
-        }
-      });
-      return postReq;
-    });
-  }
-});*/

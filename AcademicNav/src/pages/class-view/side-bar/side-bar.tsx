@@ -2,15 +2,25 @@ import { useState } from 'react';
 import { useUser } from '../../../Providers/UserProv';
 import './side-bar.scss';
 import questionMark from '/public/images/question-mark.png';
+
+type PrerequisiteType = {
+  id: string;
+  Grade: string;
+  concurrency: boolean;
+};
+
+
+
 interface ClassList {
   id: string,
   title: string,
   credits: number,
-  prerequisites: Array<string>,
+  prerequisitesOR: PrerequisiteType[],
+  prerequisitesAND: PrerequisiteType[],
   prerequisitesTaken: Array<string>,
   isReadyToTake: boolean,
   taken: boolean,
-  semester: string
+  semester: string,
 }
 
 interface ModalProps {
@@ -75,6 +85,7 @@ const SideBar = () => {
           You can drag these classes into a semester on the left
         </div>
       </div>
+      <div className='classesContainer'>
       {classesNotTaken.map((classItem: ClassList) => (
         <div
           key={classItem.id}
@@ -86,6 +97,7 @@ const SideBar = () => {
           {classItem.title}
         </div>
       ))}
+      </div>
       {isModalOpen && <Modal onClose={closeModal} />}
     </aside>
   );

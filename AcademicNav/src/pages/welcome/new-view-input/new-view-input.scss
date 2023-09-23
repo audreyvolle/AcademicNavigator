@@ -36,6 +36,19 @@ h1 {
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
   grid-gap: 10px;
   margin-bottom: 20px;
+  .classesContainer {
+    max-height: 10vh;
+    overflow-y: scroll;
+    background-color: white;
+    border: 1px solid #ccc;
+
+    ul li{
+      transition: all 0.3s ease;
+    }
+    ul li:hover{
+      background-color: #ccc;
+    }
+  }
 }
 
 /* Style for each checkbox item */
