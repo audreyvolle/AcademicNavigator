@@ -21,6 +21,12 @@ h2 {
     margin-bottom: 20px;
     color: #666;
 }
+.classesContainer{
+    max-height: 60vh;
+    overflow-y: scroll;
+    background-color: white;
+    border: 1px solid #ccc;
+}
 
 .dndnode {
     background-color: #fff;
