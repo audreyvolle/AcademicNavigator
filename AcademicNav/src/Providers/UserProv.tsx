@@ -79,10 +79,11 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
   const [graduationSemester, setGraduationSemester] = useState<string>("");
   const {courses} = useData();
 
+
   const handleDropdownChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     const selectedValue = event.target.value;
     setSelectedValue(selectedValue);
-
+    console.log(selectedValue);
     // Get the corresponding major abbreviation from the key
     const selectedMajorAbbreviation = majorAbbreviationKey[selectedValue];
     const majorFullName = majorFullKey[selectedValue];
@@ -229,3 +230,4 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
 export function useUser() {
   return useContext(UserInfoContext);
 }
+
