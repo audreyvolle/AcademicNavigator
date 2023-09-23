@@ -80,6 +80,36 @@ function NewView() {
     return graduationOptions;
   }
 
+  const currentDate = new Date();
+  const currentYear = currentDate.getFullYear();
+  const currentMonth = currentDate.getMonth() + 1; // Month is 0-indexed, so we add 1
+
+  // Create an array of semester names
+  const semesters = ['Spring', 'Fall'];
+
+  // Function to calculate graduation semester options based on current semester
+  function calculateGraduationSemesterOptions(currentSemesterValue: any) {
+    const parts = currentSemesterValue.split(' ');
+    const currentSemester = parts[0];
+    const currentYear = parseInt(parts[1]);
+
+    // Calculate the minimum year for graduation
+    let minGraduationYear = currentYear + 4;
+    if (currentSemester === 'Fall' && currentMonth <= 6) {
+      minGraduationYear--;
+    }
+
+    // Generate graduation semester options
+    const graduationOptions = [];
+    for (let year = minGraduationYear; year <= 2050; year++) {
+      for (const semester of semesters) {
+        graduationOptions.push(`${semester} ${year}`);
+      }
+    }
+
+    return graduationOptions;
+  }
+
   useEffect(() => {
     // Get references to the current and graduation semester dropdowns
     const currentSemesterField = document.getElementById('current') as HTMLSelectElement;
