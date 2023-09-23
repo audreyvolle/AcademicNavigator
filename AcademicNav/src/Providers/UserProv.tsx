@@ -38,6 +38,12 @@ export interface exportedValue {
   handleContinueClick: () => void;
   classArray: ClassList[];
   setClassArray: React.Dispatch<React.SetStateAction<ClassList[]>>;
+  creditHours: number;
+  setCreditHours: React.Dispatch<React.SetStateAction<number>>;
+  currentSemester: string;
+  setCurrentSemester: React.Dispatch<React.SetStateAction<string>>;
+  graduationSemester: string;
+  setGraduationSemester: React.Dispatch<React.SetStateAction<string>>;
 }
 
 const initialState: exportedValue = {
@@ -45,6 +51,9 @@ const initialState: exportedValue = {
   isMainViewVisible: false,
   selectedClasses: [],
   classArray: [],
+  creditHours: 15,
+  currentSemester: '',
+  graduationSemester: '',
   setSelectedClasses: () => { },
   setIsMainViewVisible: () => { },
   setSelectedValue: () => { },
@@ -52,7 +61,10 @@ const initialState: exportedValue = {
   handleCheckboxChange: () => { },
   handleSkipClick: () => { },
   handleContinueClick: () => { },
-  setClassArray: () => { }
+  setClassArray: () => { },
+  setCreditHours: () => { },
+  setCurrentSemester: () => { },
+  setGraduationSemester: () => { }
 };
 
 export const UserInfoContext = createContext<exportedValue>(initialState);
@@ -62,6 +74,9 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
   const [isMainViewVisible, setIsMainViewVisible] = useState<boolean>(false);
   const [selectedClasses, setSelectedClasses] = useState<string[]>([]);
   const [classArray, setClassArray] = useState<ClassList[]>([]);
+  const [creditHours, setCreditHours] = useState<number>(15);
+  const [currentSemester, setCurrentSemester] = useState<string>("");
+  const [graduationSemester, setGraduationSemester] = useState<string>("");
   const {courses} = useData();
 
   const handleDropdownChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
@@ -77,7 +92,6 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
     setClassArray(courses as ClassList[]);
   };
 
-  console.log(courses)
   function buildUrlForMajor(majorAbbreviation: string, majorFull: string) {
     const baseUrl = 'https://www.siue.edu/academics/undergraduate/courses/index.shtml';
     const reqBaseURL = 'https://www.siue.edu/academics/undergraduate/degrees-and-programs/';
@@ -194,7 +208,13 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
     handleSkipClick,
     handleContinueClick,
     setClassArray,
-    classArray
+    classArray,
+    creditHours,
+    currentSemester,
+    graduationSemester,
+    setCreditHours,
+    setCurrentSemester,
+    setGraduationSemester
   };
 
 
