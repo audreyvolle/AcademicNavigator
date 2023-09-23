@@ -2,6 +2,7 @@ import './new-view-input.scss';
 import { useUser } from '../../../Providers/UserProv';
 import { useEffect, useState } from 'react';
 import questionMark from '/public/images/question-mark.png';
+import { useData } from '../../../Providers/DataProv';
 
 interface ModalProps {
   onClose: () => void;
@@ -26,20 +27,27 @@ const Modal = ({ onClose }: ModalProps) => (
     </div>
   </div>
 );
+type PrerequisiteType = {
+  id: string;
+  Grade: string;
+  concurrency: boolean;
+};
+
+interface ClassList {
+  id: string,
+  title: string,
+  credits: number,
+  prerequisitesOR: PrerequisiteType[],
+  prerequisitesAND: PrerequisiteType[],
+  prerequisitesTaken: Array<string>,
+  isReadyToTake: boolean,
+  taken: boolean,
+  semester: string,
+}
 
 function NewView() {
   const { handleContinueClick, handleSkipClick, handleCheckboxChange, selectedClasses, classArray, setCreditHours, setCurrentSemester, setGraduationSemester } = useUser();
   const [isModalOpen, setIsModalOpen] = useState(false);
-
-  interface ClassList {
-    id: string,
-    title: string,
-    credits: number,
-    prerequisites: Array<string>,
-    prerequisitesTaken: Array<string>,
-    isReadyToTake: boolean,
-    taken: boolean
-  }
 
   const currentDate = new Date();
   const currentYear = currentDate.getFullYear();
@@ -141,40 +149,43 @@ function NewView() {
           </button>
         </h2>
 
-        <ul className="checkbox-list">
+
+        {<ul className="checkbox-list">
           {Object.entries(
-            classArray.reduce((groupedCourses: { [level: number]: ClassList[] }, course) => {
-              const courseId = course.id;
+            classArray.reduce((groupedCourses: { [level: number]: ClassList[] }, classes) => {
+              const courseId = classes;
               if (courseId) {
-                const level = parseInt(courseId.substring(2, 3)); // Parse the level from the course ID
+                const level = parseInt(courseId.id.replace(/\D/g, '')[0],10); // Parse the level from the course ID
                 if (!groupedCourses[level]) {
                   groupedCourses[level] = [];
                 }
-                groupedCourses[level].push(course);
+                groupedCourses[level].push(courseId);
               }
               return groupedCourses;
             }, {})
           ).map(([level, coursesGroup]) => (
             <div key={level}>
               <h3>{level}00 Level Courses</h3>
-              <ul>
-                {coursesGroup.map((course) => (
-                  <li key={course.id}>
-                    <label htmlFor={course.id}>
-                      <input
-                        type="checkbox"
-                        id={course.id}
-                        checked={selectedClasses.includes(course.id)}
-                        onChange={() => handleCheckboxChange(course.id)}
-                      />
-                      {course.id}
-                    </label>
-                  </li>
-                ))}
-              </ul>
+              <div className='classesContainer'>
+                <ul>
+                  {coursesGroup.map((course) => (
+                    <li key={course.id}>
+                      <label htmlFor={course.id}>
+                        <input
+                          type="checkbox"
+                          id={course.id}
+                          checked={selectedClasses.includes(course.id)}
+                          onChange={() => handleCheckboxChange(course.id)}
+                        />
+                        {course.id}
+                      </label>
+                    </li>
+                  ))}
+                </ul>
+              </div>
             </div>
           ))}
-        </ul>
+        </ul>}
 
         <label htmlFor="credits">Credit Hours Per Semester (between 1 and 20):</label>
         <input type="number" id="credits" name="credits" min="1" max="20" className="input-field-credits" onChange={(e) => setCreditHours(parseInt(e.target.value))}/>
