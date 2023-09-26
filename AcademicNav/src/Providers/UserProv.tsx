@@ -1,7 +1,4 @@
 import { createContext, ReactNode, useContext, useState } from "react";
-import majorAbbreviationKey from '../assets/majorsAbrev';
-import majorFullKey from '../assets/majorsFull';
-import classData from '../data/scraped/test.json';
 import { useData } from "./DataProv";
 //Think about it's a global state value. 
 //Add everything in exportValue
@@ -26,8 +23,8 @@ interface ClassList {
 }
 
 export interface exportedValue {
-  selectedValue: string;
-  setSelectedValue: React.Dispatch<React.SetStateAction<string>>;
+  major: string;
+  setMajor: React.Dispatch<React.SetStateAction<string>>;
   handleDropdownChange: (event: React.ChangeEvent<HTMLSelectElement>) => void;
   isMainViewVisible: boolean;
   setIsMainViewVisible: React.Dispatch<React.SetStateAction<boolean>>;
@@ -47,7 +44,7 @@ export interface exportedValue {
 }
 
 const initialState: exportedValue = {
-  selectedValue: '',
+  major: '',
   isMainViewVisible: false,
   selectedClasses: [],
   classArray: [],
@@ -56,7 +53,7 @@ const initialState: exportedValue = {
   graduationSemester: '',
   setSelectedClasses: () => { },
   setIsMainViewVisible: () => { },
-  setSelectedValue: () => { },
+  setMajor: () => { },
   handleDropdownChange: () => { },
   handleCheckboxChange: () => { },
   handleSkipClick: () => { },
@@ -70,7 +67,7 @@ const initialState: exportedValue = {
 export const UserInfoContext = createContext<exportedValue>(initialState);
 
 export const UserProvider = ({ children }: { children: ReactNode }) => {
-  const [selectedValue, setSelectedValue] = useState<string>("");
+  const [major, setMajor] = useState<string>("");
   const [isMainViewVisible, setIsMainViewVisible] = useState<boolean>(false);
   const [selectedClasses, setSelectedClasses] = useState<string[]>([]);
   const [classArray, setClassArray] = useState<ClassList[]>([]);
@@ -82,30 +79,10 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
 
   const handleDropdownChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     const selectedValue = event.target.value;
-    setSelectedValue(selectedValue);
+    setMajor(selectedValue);
     console.log(selectedValue);
-    // Get the corresponding major abbreviation from the key
-    const selectedMajorAbbreviation = majorAbbreviationKey[selectedValue];
-    const majorFullName = majorFullKey[selectedValue];
-    if (selectedMajorAbbreviation) {
-      buildUrlForMajor(selectedMajorAbbreviation, majorFullName);
-    }
     setClassArray(courses as ClassList[]);
   };
-
-  function buildUrlForMajor(majorAbbreviation: string, majorFull: string) {
-    const baseUrl = 'https://www.siue.edu/academics/undergraduate/courses/index.shtml';
-    const reqBaseURL = 'https://www.siue.edu/academics/undergraduate/degrees-and-programs/';
-    const reqTail = '/degree-requirements.shtml';
-    const queryString = `?subject=${majorAbbreviation}`;
-    const reqQueryString = `?${majorFull}`;
-    const classListURL = baseUrl + queryString;
-    const requirementsURL = reqBaseURL + reqQueryString + reqTail;
-
-    //scrapeCourseList(classListURL);
-    //scrapeDegreeRequirements(requirementsURL);
-    //printToJson(courseList);
-  }
 
   const handleCheckboxChange = (className: string) => {
     let classTitle = "";
@@ -166,7 +143,7 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
       // Update prerequisites for other courses
       const updatedClassArray = updatedClasses.map((course) => {
         if (course.id !== className) {
-          const updatedPrerequisitesTaken = course.prerequisitesOR.map(
+          const updatedORPrerequisitesTaken = course.prerequisitesOR.map(
             (prerequisitesOR) => {
               if (prerequisitesOR.id === className) {
                 return course.title;
@@ -174,11 +151,23 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
               return prerequisitesOR;
             }
           );
-          const isReadyToTake =
-            updatedPrerequisitesTaken.length === course.prerequisitesOR.length;
+          const isReadyToTakeOR =
+          updatedORPrerequisitesTaken.length === course.prerequisitesOR.length;
+          const updatedANDPrerequisitesTaken = course.prerequisitesOR.map(
+            (prerequisitesOR) => {
+              if (prerequisitesOR.id === className) {
+                return course.title;
+              }
+              return prerequisitesOR;
+            }
+          );
+          const isReadyToTakeAND =
+          updatedANDPrerequisitesTaken.length === course.prerequisitesAND.length;
+          const isReadyToTake = isReadyToTakeOR  &&  isReadyToTakeAND;
           return {
             ...course,
-            prerequisitesTaken: updatedPrerequisitesTaken,
+            prerequisitesORTaken: updatedORPrerequisitesTaken,
+            prerequisitesANDTaken:updatedANDPrerequisitesTaken,
             isReadyToTake,
           };
         }
@@ -193,13 +182,98 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const handleContinueClick = () => {
+    createCriticalPath();
     setIsMainViewVisible(true);
   };
 
+  const createCriticalPath = () => {
+    const criticalPath: any[] = [];
+    if (major == 'computer-science-ba' || major == 'computer-science-bs') {
+       // Populate the prerequisites dictionaries
+       classArray.forEach((course) => {
+        //console.log(course);
+       });
+    }
+    //console.log("critical Path: ");
+    //console.log(criticalPath);
+    //setClassArray(criticalPath);
+  }
+
+  const createCriticalPath2 = () => {
+    const criticalPath: any[] = [];
+    if (major == 'computer-science-ba' || major == 'computer-science-bs') {
+      // Create dictionaries to store prerequisites and counts
+      const prerequisitesAND: any = {}; // Store prerequisites that are ANDed
+      const prerequisitesOR: any = {};  // Store prerequisites that are ORed
+      const semesters: any = {};
+  
+      // Populate the prerequisites dictionaries
+      classArray.forEach((course) => {
+        const courseId = course.id;
+        const coursePrerequisitesAND = course.prerequisitesAND || [];
+        const coursePrerequisitesOR = course.prerequisitesOR || [];
+  
+        prerequisitesAND[courseId] = coursePrerequisitesAND;
+        prerequisitesOR[courseId] = coursePrerequisitesOR;
+        semesters[courseId] = course.semester;
+      });
+  
+      // Function to check if a course can be taken based on OR prerequisites
+      const canTakeCourse = (courseId: any) => {
+        const orPrerequisites = prerequisitesOR[courseId];
+        if (orPrerequisites) {
+          for (const prerequisite of orPrerequisites) {
+            if (criticalPath.some((completedCourse) => completedCourse.id === prerequisite.id)) {
+              return true;
+            }
+          }
+          return false;
+        }
+        return true;
+      };
+  
+      // Topological sorting loop
+      while (true) {
+        let found = false;
+  
+        // Iterate through the courses
+        for (const courseId in prerequisitesAND) {
+          if (prerequisitesAND[courseId].every((prerequisite: any) =>
+            criticalPath.some((completedCourse) => completedCourse.id === prerequisite.id)) && canTakeCourse(courseId)) {
+            // Course has all prerequisites completed (AND) and can be taken (OR), add it to the critical path
+            criticalPath.push({
+              id: courseId,
+              semester: semesters[courseId],
+            });
+  
+            // Remove the course from prerequisites dictionaries
+            delete prerequisitesAND[courseId];
+            delete prerequisitesOR[courseId];
+            found = true;
+          }
+        }
+  
+        // If no courses were found to add, break the loop
+        if (!found) {
+          break;
+        }
+      }
+  
+      // Sort the critical path by semester
+      criticalPath.sort((a, b) => a.semester.localeCompare(b.semester));
+    } else if (major == 'public-health') {
+      // Do nothing for now
+    }
+    console.log("critical Path: ");
+    //console.log(criticalPath);
+    //setClassArray(criticalPath);
+  };
+  
+
   const value = {
     //here is the value we should export
-    selectedValue,
-    setSelectedValue,
+    major,
+    setMajor,
     handleDropdownChange,
     isMainViewVisible,
     setIsMainViewVisible,

@@ -2,7 +2,6 @@ import './new-view-input.scss';
 import { useUser } from '../../../Providers/UserProv';
 import { useEffect, useState } from 'react';
 import questionMark from '/public/images/question-mark.png';
-import { useData } from '../../../Providers/DataProv';
 
 interface ModalProps {
   onClose: () => void;

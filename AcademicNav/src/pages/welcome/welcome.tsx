@@ -4,7 +4,7 @@ import { useUser } from '../../Providers/UserProv';
 import { useEffect } from 'react';
 
 const Welcome = () => {
-  const { selectedValue, setSelectedValue, handleDropdownChange, setClassArray, classArray, setIsMainViewVisible } = useUser();
+  const { major, handleDropdownChange, setClassArray, classArray, setIsMainViewVisible } = useUser();
 
   const handleLoadWorkspace = () => {
     const fileInput = document.getElementById('fileInput');
@@ -39,11 +39,11 @@ const Welcome = () => {
 
   return (
     <>
-      {selectedValue === "" ? <div className="welcome-container">
+      {major === "" ? <div className="welcome-container">
         <div className="main-container">
           <div className="left-panel">
             <p>Select a Major to Get Started</p>
-            <select value={selectedValue} onChange={(e) => { handleDropdownChange(e) }} className='major-dropdown'>
+            <select value={major} onChange={(e) => { handleDropdownChange(e) }} className='major-dropdown'>
               <option value="">Select your degree option</option>
               <option value="computer-science-ba">Computer Science BA</option>
               <option value="computer-science-bs">Computer Science BS</option>
