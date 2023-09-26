@@ -42,12 +42,9 @@ const Modal = ({ onClose }: ModalProps) => (
 );
 
 const SideBar = () => {
-  const { classArray } = useUser();
+  const {classesNotTaken, setClassesNotTaken} = useUser();
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [classesNotTaken, setClassesNotTaken] = useState(
-    classArray.filter((classItem) => !classItem.taken)
-  );
-
+  
   const onDragStart = (event: any, nodeType: any, nodeId: string) => {
     event.dataTransfer.setData('application/reactflow', nodeType);
     event.dataTransfer.effectAllowed = 'move';
@@ -94,7 +91,7 @@ const SideBar = () => {
           onDragEnd={(event) => onDragEnd(event, classItem.id)}
           draggable
         >
-          {classItem.title}
+          {classItem.id} - {classItem.title}
         </div>
       ))}
       </div>

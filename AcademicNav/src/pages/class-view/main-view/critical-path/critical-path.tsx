@@ -6,7 +6,6 @@ import computerScienceBA from '/public/images/critical-path-images/computer-scie
 import computerScienceBS from '/public/images/critical-path-images/computer-science-bs.svg';
 import publicHealth from '/public/images/critical-path-images/public-health.svg';
 import test from '/public/images/critical-path-images/test.svg';
-import questionMark from '/public/images/question-mark.png';
 
 interface ModalProps {
   onClose: () => void;
@@ -15,7 +14,7 @@ interface ModalProps {
 const Modal = ({ onClose }: ModalProps) => (
   <div className="modal">
     <div className="modal-content">
-      <h3>Help</h3>
+      <h3>Legend</h3>
       <ul>
         <li>
           <strong>Dotted lines: </strong>Represent OR relationships. This class OR that class should be taken to fullfill the requirement.
@@ -77,16 +76,12 @@ const CriticalPath = () => {
         </div>
       ) : (
         <div>
-           <h1 className='critical-path-heading'>
-            {majorName} Critical Path
-            <button className="help-button-cp" onClick={openModal}>
-              <img
-                src={questionMark}
-                alt="Help"
-                className="question-mark-img"
-              />
-            </button>
-          </h1>
+          <div className="heading-wrapper">
+            <h1 className='critical-path-heading'>
+              {majorName} Critical Path
+            </h1>
+            <button className="legend" onClick={openModal}>Legend</button>
+          </div>
           <img
             className='critical-path-img'
             src={svgFiles[major as keyof typeof svgFiles]}

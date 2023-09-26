@@ -1,4 +1,4 @@
-import { createContext, ReactNode, useContext, useState } from "react";
+import { createContext, ReactNode, useContext, useEffect, useState } from "react";
 import { useData } from "./DataProv";
 //Think about it's a global state value. 
 //Add everything in exportValue
@@ -35,6 +35,8 @@ export interface exportedValue {
   handleContinueClick: () => void;
   classArray: ClassList[];
   setClassArray: React.Dispatch<React.SetStateAction<ClassList[]>>;
+  classesNotTaken: ClassList[];
+  setClassesNotTaken: React.Dispatch<React.SetStateAction<ClassList[]>>;
   creditHours: number;
   setCreditHours: React.Dispatch<React.SetStateAction<number>>;
   currentSemester: string;
@@ -51,6 +53,7 @@ const initialState: exportedValue = {
   creditHours: 15,
   currentSemester: '',
   graduationSemester: '',
+  classesNotTaken: [],
   setSelectedClasses: () => { },
   setIsMainViewVisible: () => { },
   setMajor: () => { },
@@ -61,7 +64,8 @@ const initialState: exportedValue = {
   setClassArray: () => { },
   setCreditHours: () => { },
   setCurrentSemester: () => { },
-  setGraduationSemester: () => { }
+  setGraduationSemester: () => { },
+  setClassesNotTaken: () => { },
 };
 
 export const UserInfoContext = createContext<exportedValue>(initialState);
@@ -74,14 +78,20 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
   const [creditHours, setCreditHours] = useState<number>(15);
   const [currentSemester, setCurrentSemester] = useState<string>("");
   const [graduationSemester, setGraduationSemester] = useState<string>("");
+  const [classesNotTaken, setClassesNotTaken] = useState<ClassList[]>([]);
+
   const {courses} = useData();
 
+  useEffect(() => {
+    setClassesNotTaken(classArray.filter((classItem: ClassList) => !classItem.taken));
+  },[classArray]);
 
   const handleDropdownChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     const selectedValue = event.target.value;
     setMajor(selectedValue);
     console.log(selectedValue);
     setClassArray(courses as ClassList[]);
+    setClassesNotTaken(courses as ClassList[]);
   };
 
   const handleCheckboxChange = (className: string) => {
@@ -289,7 +299,9 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
     graduationSemester,
     setCreditHours,
     setCurrentSemester,
-    setGraduationSemester
+    setGraduationSemester,
+    classesNotTaken,
+    setClassesNotTaken,
   };
 
 
