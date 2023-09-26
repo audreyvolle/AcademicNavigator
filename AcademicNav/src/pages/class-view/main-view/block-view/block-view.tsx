@@ -9,7 +9,6 @@ import 'reactflow/dist/style.css';
 import SideBar from '../../side-bar/side-bar';
 import './block-view.scss';
 import { useUser } from '../../../../Providers/UserProv';
-//import testData from '../../../../data/scraped/test2.json';
 
 
 
@@ -25,22 +24,30 @@ const addSemesterColor = 'rgb(128,128,128)'
 
 
 
-
-let id = 0;
-const getId = () => `dndnode_${id++}`;
-
 const BlockView = () => {
     const { classArray, setClassArray } = useUser();
-    //const classArray = testData;
     const reactFlowWrapper = useRef(null);
     const [reactFlowInstance, setReactFlowInstance] = useState<ReactFlowInstance | null>(null);
     const [nodes, setNodes, onNodesChange] = useNodesState([]);
-    const [hoverSem, setHoverSem] = useState("");
 
-    //let hoverSem
+
     let groupCount = 0;
     let parentID = 0;
     let col = 0;
+
+    useEffect(() => {
+        if (reactFlowInstance) {
+            // reactFlowInstance is available, perform initialization here
+            console.log('Component is initialized');
+        }
+
+    }, [reactFlowInstance, classArray]);
+
+
+
+
+
+
 
 
     //populate the semesters array
@@ -51,37 +58,22 @@ const BlockView = () => {
         }
     })
 
-    //sort semesters by year/season
-    customSort(coreSemesters)
 
-
-    const semesters: string[] = fillSemesters(lastSemester(coreSemesters)); //coreSemesters[coreSemesters.length - 1]
+    const semesters: string[] = fillSemesters(lastSemester(coreSemesters)); //Fills semesters with every semester from now until the last registered class
     const semesterClassCount = new Array(semesters.length).fill(0);
 
     //create nodes for each semester
     semesters.forEach(function (value) {
-        if (value == hoverSem) {
-            nodes.push({
-                id: value,
-                data: { label: value },
-                position: { x: 25 + (col * 425), y: 25 + (groupCount * 275) },
-                className: 'light',
-                style: { backgroundColor: 'rgba(225,225,225,0)', width: 400, height: 250, fontSize: 20, borderColor: 'green', borderWidth: 'thick' },
-                selectable: false,
-                connectable: false
-            })
-        }
-        else {
-            nodes.push({
-                id: value,
-                data: { label: value },
-                position: { x: 25 + (col * 425), y: 25 + (groupCount * 275) },
-                className: 'light',
-                style: { backgroundColor: 'rgba(225,225,225,0)', width: 400, height: 250, fontSize: 20 },
-                selectable: false,
-                connectable: false
-            })
-        }
+
+        nodes.push({
+            id: value,
+            data: { label: value },
+            position: { x: 25 + (col * 425), y: 25 + (groupCount * 275) },
+            className: 'light',
+            style: { backgroundColor: 'rgba(225,225,225,0)', width: 400, height: 250, fontSize: 20 },
+            selectable: false,
+            connectable: false
+        })
 
         if (col == 0) {
             col++
@@ -145,6 +137,16 @@ const BlockView = () => {
         }
     })
 
+
+
+
+
+
+
+
+
+
+    //Click Event Handler
     const onClick = useCallback((event: React.MouseEvent, node: Node) => {
         event.preventDefault()
         if (node.id === 'addSemester') {
@@ -191,6 +193,8 @@ const BlockView = () => {
             console.log(nodes)
             console.log(groupCount)
         }
+
+        /*
         else {
             if (node.parentNode) {
                 setHoverSem(node.parentNode)
@@ -200,15 +204,9 @@ const BlockView = () => {
             }
         }
 
-    }, [groupCount, nodes, col, semesters, coreSemesters, setHoverSem])
+        */
 
-
-    useEffect(() => {
-        if (reactFlowInstance) {
-            // reactFlowInstance is available, perform initialization here
-            console.log('Component is initialized');
-        }
-    }, [reactFlowInstance]);
+    }, [groupCount, nodes, col, semesters])
 
     //Drag Event Handler
     const onDragOver = useCallback((event: any) => {
@@ -232,46 +230,49 @@ const BlockView = () => {
                     return;
                 }
 
-                //find the class in the classArray
-                /*classArray.forEach(function (value) {
-                    if (value.title == type) {
-                        //set it's semester to the label of the parent node
-                        value.semester = hoverSem
-                    }
-                })*/
-
                 if (reactFlowInstance) {
                     const position = reactFlowInstance.project({
                         x: event.clientX - reactFlowBounds.getBoundingClientRect().left,
                         y: event.clientY - reactFlowBounds.getBoundingClientRect().top,
                     });
 
-                    const newNode = {
-                        id: getId(),
-                        type,
-                        position,
-                        data: { label: `${type}` },
-                    };
+                    //loop through all nodes
+                    for (const element of nodes) {
+                        const parentId = semesters.findIndex((semester) => semester === element.id);
 
-                    const classToMove = classArray.find((classItem) => classItem.title === type);
+                        //if the target node's ID is a semester with a block and the cursor is over it
+                        if (
+                            element.id != null &&
+                            parentId != -1 &&
+                            position.x >= element.position.x &&
+                            position.x <= element.position.x + element.width &&
+                            position.y >= element.position.y &&
+                            position.y <= element.position.y + element.height
+                        ) {
+                            console.log("The Semester dragged onto is " + element.id)
+                            const classToMove = classArray.find((classItem) => classItem.title === type);
 
-                    if (classToMove) {
-                        // Set taken to true for the class being moved
-                        const updatedClassArray = classArray.map((classItem) =>
-                            classItem === classToMove ? { ...classItem, semester: hoverSem } : classItem // DARIN CHANGE THIS TO ALSO UPDATE THE SEMESTER AND OTHER VARIABLES!!
-                        );
-                        setClassArray(updatedClassArray);
-                        console.log(classArray);
+
+                            if (classToMove) {
+                                const updatedClassArray = classArray.map((classItem) => classItem === classToMove ? {
+                                    ...classItem, semester: element.id
+                                } : classItem);
+
+                                setClassArray(updatedClassArray);
+                                console.log(classArray);
+
+                            }
+
+                            //setNodes(nodes);
+
+                        } //end of if
                     }
-                    //setNodes((nds) => nds.concat(newNode));
-                    setNodes((nds) =>
-                        nds.map((node) => (node.id === newNode.id ? newNode : node))
-                    );
+                    
                 }
 
             }
         },
-        [reactFlowInstance, setNodes, classArray, setClassArray, hoverSem]
+        [reactFlowInstance, setClassArray, classArray, nodes, semesters, setNodes]
     );
 
     //sets hoverSem to the id of the semester block being moused over
