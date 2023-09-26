@@ -12,7 +12,7 @@ import {
     addEdge
 } from 'reactflow';
 import SideBar from '../../side-bar/side-bar';
-import { useUser } from '../../../../Providers/UserProv';
+import { useUser, PrerequisiteType } from '../../../../Providers/UserProv';
 
 
 //spacing
@@ -61,7 +61,7 @@ const GraphView = () => {
             //console.log(semesters)
             let emptySemesters = -1;
             for (let i = semesters.length; i > 0; i--) {
-                if (semesterClassCount[i-1] > 0) {
+                if (semesterClassCount[i-1] > 0 || (i === 1 && emptySemesters === - 1)) {
                     emptySemesters = i
                     break
                 }
@@ -141,11 +141,15 @@ const GraphView = () => {
                         focusable: false
                     })
             }
-            if (value.prerequisites.length > 0) {
-                edgeCount = findEdges(value.prerequisites, classArray, edges, value.id, edgeCount);
+            if (value.prerequisitesAND.length > 0) {
+                edgeCount = findEdges(value.prerequisitesAND, classArray, edges, value.id, edgeCount);
+            }
+            if (value.prerequisitesOR.length > 0) {
+                edgeCount = findEdges(value.prerequisitesOR, classArray, edges, value.id, edgeCount);
             }
             semesterClassCount[parentId]++
         })
+        setColor = readyColor
         setIsLoading(false)
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
@@ -373,12 +377,12 @@ return (
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-function findEdges(value: string[], classes: any[], edgeArray: { id: string; source: string; target: string; }[] | undefined = [], checkingId: string, edgeCount: number) {
+function findEdges(prerequisites: PrerequisiteType[], classes: any[], edgeArray: { id: string; source: string; target: string; }[] | undefined = [], checkingId: string, edgeCount: number) {
     //function that finds all the edges that the graph needs
-    value.forEach(function (prereqs) {
-        if (prereqs != "none") {
+    prerequisites.forEach(function (prereqs) {
+        if (prereqs.id != "none") {
             classes.forEach(function (section) {
-                if (section.title === prereqs) {
+                if (section.id === prereqs.id) {
                     edgeCount++
                     edgeArray.push({ id: 'edge' + edgeCount, source: section.id, target: checkingId })
                 }
