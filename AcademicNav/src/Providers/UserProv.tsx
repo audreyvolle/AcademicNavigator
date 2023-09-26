@@ -7,7 +7,7 @@ import { useData } from "./DataProv";
 //Add everything in exportValue
 //Set up the initial state
 
-type PrerequisiteType = {
+export type PrerequisiteType = {
   id: string;
   Grade: string;
   concurrency: boolean;
