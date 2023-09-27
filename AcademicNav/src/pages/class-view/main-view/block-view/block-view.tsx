@@ -78,11 +78,11 @@ const BlockView = () => {
         groupCount = 0;
         col = 0;
 
-        /*
+        //ADD BACK IN AFTER MERGE
         if (!semesters.includes(currentSemester)) {
             semesters.push(currentSemester);
         }
-        */
+        
 
 
         classArray.forEach(function (value) {
