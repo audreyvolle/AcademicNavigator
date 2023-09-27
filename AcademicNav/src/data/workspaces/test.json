@@ -1,7 +1,7 @@
 [
     {
       "id": "CS101",
-      "title": "Introduction to Programming",
+      "title": "Introduction PP",
       "credits": 3,
       "prerequisites": [],
       "prerequisitesTaken": [],
@@ -11,17 +11,17 @@
     },
     {
       "id": "CS202",
-      "title": "Data Structures and Algorithms",
+      "title": "Data SSSSS",
       "credits": 4,
       "prerequisites": ["Introduction to Programming"],
       "prerequisitesTaken": [],
       "isReadyToTake": false,
       "taken": false,
-      "semester": "Spring 2024"
+      "semester": ""
     },
     {
       "id": "CS303",
-      "title": "Database Systems",
+      "title": "Database SSSSS",
       "credits": 3,
       "prerequisites": [],
       "prerequisitesTaken": [],
@@ -31,7 +31,7 @@
     },
     {
       "id": "CS404",
-      "title": "Web Development",
+      "title": "Web DDDD",
       "credits": 3,
       "prerequisites": ["Introduction to Programming"],
       "prerequisitesTaken": ["Introduction to Programming"],
@@ -41,7 +41,7 @@
     },
     {
       "id": "CS430",
-      "title": "Software Engineering",
+      "title": "Software EEEE",
       "credits": 4,
       "prerequisites": ["Data Structures and Algorithms", "Database Systems"],
       "prerequisitesTaken": ["Data Structures and Algorithms"],

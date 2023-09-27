@@ -1,3 +1,30 @@
+.warning-box {
+    display: block;
+    position: fixed;
+    top: 115%;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: red;
+    color: white;
+    padding: 10px 20px;
+    border-radius: 5px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+    transition: top 0.3s ease-in-out;
+}
+
+.warning-box.show {
+    top: 85%
+}
+
+.warning-box.hide {
+    top: 115%;
+}
+
+.message {
+    font-size: 16px;
+    text-align: center;
+}
+
 .dndflow {
     flex-direction: column;
     display: flex;

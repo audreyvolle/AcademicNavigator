@@ -36,6 +36,19 @@ h1 {
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
   grid-gap: 10px;
   margin-bottom: 20px;
+  .classesContainer {
+    max-height: 10vh;
+    overflow-y: scroll;
+    background-color: white;
+    border: 1px solid #ccc;
+
+    ul li{
+      transition: all 0.3s ease;
+    }
+    ul li:hover{
+      background-color: #ccc;
+    }
+  }
 }
 
 /* Style for each checkbox item */
@@ -66,6 +79,16 @@ label {
   box-sizing: border-box;
 }
 
+.input-field-credits {
+  margin: 10px 0;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+
 /* Style for the buttons */
 .button-container {
   display: flex;
@@ -76,7 +99,7 @@ label {
 
 .button {
   padding: 12px 24px;
-  background-color: #007bff;
+  background-color: #333;
   color: #fff;
   border: none;
   border-radius: 4px;
@@ -90,7 +113,7 @@ label {
 }
 
 .button:hover {
-  background-color: #0056b3;
+  background-color: #555;
 }
 
 /* Style for hiding the MainView initially */
@@ -144,12 +167,18 @@ h2 {
   font-size: 1.5rem;
   margin-bottom: 10px;
   color: #333;
+  text-align: center;
 }
 
-.modal p {
+.modal ul {
+  list-style-type: none;
+  padding: 0;
+}
+
+.modal li {
   font-size: 1rem;
   color: #666;
-  margin-bottom: 20px;
+  margin-bottom: 10px;
 }
 
 .modal button {
