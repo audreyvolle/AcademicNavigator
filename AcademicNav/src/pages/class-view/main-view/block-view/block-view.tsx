@@ -78,7 +78,7 @@ const BlockView = () => {
         groupCount = 0;
         col = 0;
 
-        //ADD BACK IN AFTER MERGE
+        //get the current semester
         if (!semesters.includes(currentSemester)) {
             semesters.push(currentSemester);
         }
@@ -86,7 +86,7 @@ const BlockView = () => {
 
 
         classArray.forEach(function (value) {
-            if (!semesters.includes(value.semester) && value.semester != null && value.semester != "") {
+            if (!semesters.includes(value.semester) && value.semester != null && value.semester != "" && value.semester != "done") {
                 semesters.push(value.semester);
             }
         })
@@ -146,9 +146,9 @@ const BlockView = () => {
             }
 
             parentID = semesters.findIndex(item => item === value.semester)
-            if (value.semester != null && value.semester != "") {
+            if (value.semester != null && value.semester != "" && value.semester != "done") {
                 
-                if (!value.taken) {
+                //if (!value.taken) {  //Removed condition for filtering out taken classes.
                     nodes.push(
                         {
                             id: value.id,
@@ -164,7 +164,7 @@ const BlockView = () => {
                             connectable: false
                         })
                     semesterClassCount[parentID]++
-                }
+                //}
             }
         })
 

@@ -15,6 +15,7 @@ lerna-debug.log*
 *.local
 
 # Editor directories and files
+.vs
 .vscode/
 .idea
 .DS_Store
