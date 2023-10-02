@@ -54,7 +54,7 @@ const SideBar = () => {
   const onDragEnd = (event: any, nodeId: string) => {
     console.log(event);
     setClassesNotTaken((prevClasses) =>
-      prevClasses.filter((classItem) => classItem.id !== nodeId)
+      prevClasses.filter((classItem) => !classItem.taken)
     );
   };
 

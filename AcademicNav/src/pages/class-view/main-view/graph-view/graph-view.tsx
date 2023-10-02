@@ -30,23 +30,21 @@ const groupheight = 125
 let groupcount = 0;
 let edgeCount = 0;
 let parentId = 0;
-const warningMessageDuration = 3500;
+const warningMessageDuration = 4500;
 
 //arrays
 const semesters: string | string[] = [];
 let semesterClassCount: number[] = [];
 
 //colors
-const takenColor = 'rgba(178,255,102,1)';
-const readyColor = 'rgb(255,255,255)';
-const unavailableColor = 'rgba(255,153,153,1)';
-let setColor = 'rgb(255,255,255)';
+const classColor = 'rgb(255,255,255)'
+const semesterColor = 'rgba(225,225,225,0)'
 const addSemesterColor = 'rgb(128,128,128)'
 
 const GraphView = () => {
 
     //const reactFlowWrapper = useRef(null);
-    const { classArray, setClassArray, currentSemester } = useUser();
+    const { classArray, setClassArray, currentSemester, creditHours } = useUser();
     const reactFlowWrapper = useRef(null);
     const [nodes, setNodes, onNodesChange] = useNodesState([]);
     const [edges, setEdges, onEdgesChange] = useEdgesState([]);
@@ -96,7 +94,7 @@ const GraphView = () => {
                 data: { label: value },
                 position: { x: groupxposition, y: groupcount * groupspacing },
                 className: 'light',
-                style: { backgroundColor: 'rgba(225,225,225,0)', width: groupwidth, height: groupheight },
+                style: { backgroundColor: semesterColor, width: groupwidth, height: groupheight },
                 selectable: false,
                 connectable: false,
                 draggable: false
@@ -117,22 +115,14 @@ const GraphView = () => {
         console.log('registering the classes as nodes')
         classArray.forEach(function (value) {
             //create all the nodes and edges for the graph
-            if (value.taken) {
-                setColor = takenColor
-            }
-            else if (value.isReadyToTake) {
-                setColor = readyColor
-            }
-            else {
-                setColor = unavailableColor
-            }
+            
             parentId = semesters.findIndex(item => item === value.semester)
             if (value.semester != null && value.semester != "") {
                 nodes.push(
                     {
                         id: value.id,
                         position: { x: semesterClassCount[parentId] * xspacing + initspacing, y: yspacing },
-                        data: { label: value.title }, style: { backgroundColor: setColor },
+                        data: { label: value.title }, style: { backgroundColor: classColor },
                         parentNode: value.semester,
                         expandParent: true,
                         selectable: false,
@@ -149,7 +139,6 @@ const GraphView = () => {
             }
             semesterClassCount[parentId]++
         })
-        setColor = readyColor
         setIsLoading(false)
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
@@ -186,6 +175,8 @@ const GraphView = () => {
                     for (const element of nodes) {
                         parentId = semesters.findIndex((semester) => semester === element.id)
                         if (
+                            element.width != null &&
+                            element.height != null &&
                             element.id != null &&
                             parentId != -1 &&
                             position.x >= element.position.x &&
@@ -195,36 +186,104 @@ const GraphView = () => {
                         ) {
                             console.log("The Semester dragged onto is " + element.id)
                             const classToMove = classArray.find((classItem) => classItem.title === type);
+                            if (classToMove != null) {
+                                const reqAND: any[] = []
+                                const reqOR: any[] = []
+                                let validAddition = true;
+
+                                if (classToMove.prerequisitesAND.length > 0) {
+                                    classToMove.prerequisitesAND.forEach(function (req) {
+                                        const i = classArray.findIndex((section) => section.id === req.id)
+                                        if (i != -1) {
+                                            reqAND.push(classArray[i])
+                                        }
+                                    })
+                                }
+                                if (classToMove.prerequisitesOR.length > 0) {
+                                    classToMove.prerequisitesOR.forEach(function (req) {
+                                        const i = classArray.findIndex((section) => section.id === req.id)
+                                        if (i != -1) {
+                                            reqOR.push(classArray[i])
+                                        }
+                                    })
+                                }
+                                
+                                if (reqAND.length > 0 && reqAND.some((item) => item.taken === false) && reqOR.length > 0 && !reqOR.some((item) => item.taken === true)) {
+                                    console.log("First Drop Down Restriction")
+                                    triggerWarning("Missing Prerequisites for " + classToMove.id + ": " + classToMove.title)
+                                    validAddition = false
+                                }
+                                else if (reqAND.length > 0 && reqAND.some((item) => item.taken === false)) {
+                                    console.log("Second Drop Down Restriction")
+                                    triggerWarning("Missing Prerequisites for " + classToMove.id + ": " + classToMove.title)
+                                    validAddition = false
+                                }
+                                else if (reqOR.length > 0 && !reqOR.some((item) => item.taken === true)) {
+                                    console.log("Third Drop Down Restriction")
+                                    triggerWarning("Missing Prerequisites for " + classToMove.id + ": " + classToMove.title)
+                                    validAddition = false
+                                }
+                                if (reqAND.length > 0) {
+                                    if (reqAND.some((req) => !semesterGreaterThan(element.id, req.semester))) {
+                                        console.log("Fourth Drop Down Restriction")
+                                        triggerWarning("Class " + classToMove.id + ": " + classToMove.title + " cannot be in the same semester or before one of it's prerequisites")
+                                        validAddition = false
+                                    }
+                                }
+                                if (reqOR.length > 0) {
+                                    if (!reqOR.some((req) => semesterGreaterThan(element.id, req.semester))) {
+                                        console.log("Fifth Drop Down Restriction")
+                                        triggerWarning("Class " + classToMove.id + ": " + classToMove.title + " cannot be in the same semester or before one of it's prerequisites")
+                                        validAddition = false
+                                    }
+                                }
+                                const semesterClasses = classArray.filter((classes) => classes.semester === element.id);
+                                let currentCreditHours = 0;
+                                semesterClasses.forEach(function (classes) { currentCreditHours += classes.credits })
+
+                                if (currentCreditHours + classToMove.credits > creditHours) {
+                                    console.log("Credit Hour Check Failed")
+                                    triggerWarning("This will set you over your desired credit hours of " + creditHours)
+                                    validAddition = false;
+                                }
+                                if (validAddition) { 
+                                    console.log("Second Success")
+                                    const newNode = 
+                                    {
+                                        id: classToMove.id,
+                                        position: { x: semesterClassCount[parentId] * xspacing + initspacing, y: yspacing },
+                                        data: { label: `${type}` }, style: { backgroundColor: classColor },
+                                        parentNode: element.id,
+                                        expandParent: true,
+                                        selectable: false,
+                                        draggable: false,
+                                        dragging: false,
+                                        focusable: false
+                                    }
                             
-                            const newNode = 
-                            {
-                                id: classToMove.id,
-                                position: { x: semesterClassCount[parentId] * xspacing + initspacing, y: yspacing },
-                                data: { label: `${type}` }, style: { backgroundColor: setColor },
-                                parentNode: element.id,
-                                expandParent: true,
-                                selectable: false,
-                                draggable: false,
-                                dragging: false,
-                                focusable: false
+                                    semesterClassCount[parentId]++
+                                    if (classToMove) {
+                                        // Set taken to true for the class being moved
+                                        const updatedClassArray = classArray.map((classItem) =>
+                                            classItem === classToMove ? { ...classItem, taken: true, semester: element.id} : classItem // MISAEL CHANGE THIS TO ALSO UPDATE THE SEMESTER AND OTHER VARIABLES!!
+                                        );                                                                                             // I WILL OK!!!
+                                        setClassArray(updatedClassArray);
+                                        console.log(classArray);
+                                    }
+                                    setNodes((nds) => nds.concat(newNode));
+                                }
+                                
+                                
+                                
                             }
                             
-                            semesterClassCount[parentId]++
-                            if (classToMove) {
-                                // Set taken to true for the class being moved
-                                const updatedClassArray = classArray.map((classItem) =>
-                                    classItem === classToMove ? { ...classItem, taken: true, semester: element.id} : classItem // MISAEL CHANGE THIS TO ALSO UPDATE THE SEMESTER AND OTHER VARIABLES!!
-                                );                                                                                             // I WILL OK!!!
-                                setClassArray(updatedClassArray);
-                                console.log(classArray);
-                            }
-                            setNodes((nds) => nds.concat(newNode));
+                            
                         }
                     }
                 }
             }
         },
-        [classArray, nodes, reactFlowInstance, setClassArray, setNodes]
+        [classArray, creditHours, nodes, reactFlowInstance, setClassArray, setNodes]
     );
 
     //used for node deletion
@@ -238,30 +297,36 @@ const GraphView = () => {
             const semesterLastIndex = semesters.length - 1;
             if (semesters.findIndex((semester) => semester === node.id) === semesterLastIndex) {
                 if (semesterClassCount[semesterLastIndex] === 0) {
-                    console.log("last semester double clicked")
-                    const semesterToRemove = semesters[semesterLastIndex]
-                    groupcount--;
-                    semesters.pop()
-                    semesterClassCount.pop()
-                    console.log(nodes)
-                    nodes.splice(nodes.findIndex((node) => node.id === semesterToRemove), 1)
-                    const nodeToUpdate = nodes.findIndex((nnode) => nnode.id === 'addSemester')
-
-                    if (nodeToUpdate !== -1) {
-                        const updatedNodes = [...nodes]
-                        updatedNodes[nodeToUpdate] = {
-                            ...updatedNodes[nodeToUpdate],
-                            position: { x: groupxposition, y: groupcount * groupspacing },
-                        };
-                        setNodes(updatedNodes);
+                    if (semesterClassCount.length === 1) {
+                        triggerWarning("The semester cannot be removed because it is the only semester in the list. You must have at least one semester in the list.")
                     }
-                    //setNodes(nodes)
-                    return
+                    else {
+                        console.log("last semester double clicked")
+                        const semesterToRemove = semesters[semesterLastIndex]
+                        groupcount--;
+                        semesters.pop()
+                        semesterClassCount.pop()
+                        console.log(nodes)
+                        nodes.splice(nodes.findIndex((node) => node.id === semesterToRemove), 1)
+                        const nodeToUpdate = nodes.findIndex((nnode) => nnode.id === 'addSemester')
+
+                        if (nodeToUpdate !== -1) {
+                            const updatedNodes = [...nodes]
+                            updatedNodes[nodeToUpdate] = {
+                                ...updatedNodes[nodeToUpdate],
+                                position: { x: groupxposition, y: groupcount * groupspacing },
+                            };
+                            setNodes(updatedNodes);
+                        }
+                        //setNodes(nodes)
+                        return
+                    }
+                    
                 } else {
                     triggerWarning("Cannot Remove a Semester that has classes")
                 }
             } else {
-                triggerWarning("Can only remove the last semester (Temp)")
+                triggerWarning("Can only remove the last semester")
                 console.log("non last semester double clicked")
                 return
             }
@@ -304,7 +369,7 @@ const GraphView = () => {
                 data: { label: semOutput },
                 position: { x: groupxposition, y: groupcount * groupspacing },
                 className: 'light',
-                style: { backgroundColor: 'rgba(225,225,225,0)', width: groupwidth, height: groupheight },
+                style: { backgroundColor: semesterColor, width: groupwidth, height: groupheight },
                 selectable: false,
                 connectable: false,
                 draggable: false
@@ -404,6 +469,34 @@ function customSort(arr: string[]): string[] {//sorting the semesters by year an
         }
         return aSeason - bSeason
     });
+}
+
+function semesterGreaterThan(left: string, right: string): boolean { //example: Fall 2023 as left and Spring 2023 as right. Will return true since Fall 2023 is later than Spring 2023
+    console.log("Left: " + left + " Right: " + right)
+    const aYearMatch = left.match(/\d+/);
+    const bYearMatch = right.match(/\d+/);
+    if (aYearMatch && bYearMatch) {
+        const aYear = parseInt(aYearMatch[0])
+        const bYear = parseInt(bYearMatch[0])
+        const aSeason = left.includes("Spring") ? 0 : 1
+        const bSeason = right.includes("Spring") ? 0 : 1
+        if (aYear > bYear) {
+            return true
+        }
+        else if (aYear < bYear) {
+            return false
+        }
+        else if (aSeason > bSeason) {
+            return true
+        }
+        else {
+            return false;
+        }
+    }
+    else {
+        return false
+    }
+        
 }
 
 export default GraphView;
