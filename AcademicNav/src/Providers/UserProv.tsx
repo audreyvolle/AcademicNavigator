@@ -1,5 +1,8 @@
 import { createContext, ReactNode, useContext, useEffect, useState } from "react";
 import { useData } from "./DataProv";
+import computerScienceBA from '../data/Requirements/csbareq.json';
+import computerScienceBS from '../data/Requirements/csbsreq.json';
+import publicHealth from '../data/Requirements/pubhealthreq.json';
 //Think about it's a global state value. 
 //Add everything in exportValue
 //Set up the initial state
@@ -196,7 +199,24 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
     setIsMainViewVisible(true);
   };
 
+  const requirements = {
+    'computer-science-ba': computerScienceBA,
+    'computer-science-bs': computerScienceBS,
+    'public-health': publicHealth
+  };
+
   const createCriticalPath = () => {
+    //if the checkbox create critical path to graduation
+    const requirements: any[] = computerScienceBA; // map to major -> requirementts
+    const criticalPath: any[] = [];
+    if (major == 'computer-science-ba' || major == 'computer-science-bs') {
+      classArray.forEach((course) => {
+        //see if it is in the 
+        
+       });
+    }
+  };
+  /*
     const criticalPath: any[] = [];
     if (major == 'computer-science-ba' || major == 'computer-science-bs') {
        // Populate the prerequisites dictionaries
@@ -277,7 +297,7 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
     console.log("critical Path: ");
     //console.log(criticalPath);
     //setClassArray(criticalPath);
-  };
+  };*/
   
 
   const value = {
