@@ -205,99 +205,45 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
     'public-health': publicHealth
   };
 
-  const createCriticalPath = () => {
-    //if the checkbox create critical path to graduation
-    const requirements: any[] = computerScienceBA; // map to major -> requirementts
-    const criticalPath: any[] = [];
-    if (major == 'computer-science-ba' || major == 'computer-science-bs') {
-      classArray.forEach((course) => {
-        //see if it is in the 
-        
-       });
-    }
-  };
-  /*
-    const criticalPath: any[] = [];
-    if (major == 'computer-science-ba' || major == 'computer-science-bs') {
-       // Populate the prerequisites dictionaries
-       classArray.forEach((course) => {
-        //console.log(course);
-       });
-    }
-    //console.log("critical Path: ");
-    //console.log(criticalPath);
-    //setClassArray(criticalPath);
-  }
+    // Create an array of semester names
+  const semesters = ['Spring', 'Fall'];
 
-  const createCriticalPath2 = () => {
-    const criticalPath: any[] = [];
-    if (major == 'computer-science-ba' || major == 'computer-science-bs') {
-      // Create dictionaries to store prerequisites and counts
-      const prerequisitesAND: any = {}; // Store prerequisites that are ANDed
-      const prerequisitesOR: any = {};  // Store prerequisites that are ORed
-      const semesters: any = {};
+  const createCriticalPath = () => {
+    const criticalPath: ClassList[] = [];
+    let semesterCredits = 0;
+    let criticalPathCurrentSemester = currentSemester;
   
-      // Populate the prerequisites dictionaries
-      classArray.forEach((course) => {
-        const courseId = course.id;
-        const coursePrerequisitesAND = course.prerequisitesAND || [];
-        const coursePrerequisitesOR = course.prerequisitesOR || [];
+    const requirementsList: any = requirements[major as keyof typeof requirements]; // Get the requirements for the current major
   
-        prerequisitesAND[courseId] = coursePrerequisitesAND;
-        prerequisitesOR[courseId] = coursePrerequisitesOR;
-        semesters[courseId] = course.semester;
-      });
+    classArray.forEach((course) => {
+      if (requirementsList.some((requirement: any) => requirement.id === course.id)) {
+        const prerequisitesMet = course.prerequisitesAND.every((prerequisite) =>
+          criticalPath.some((completedCourse) => completedCourse.id === prerequisite.id)
+        ) && course.prerequisitesOR.some((prerequisite) =>
+          criticalPath.some((completedCourse) => completedCourse.id === prerequisite.id)
+        );
   
-      // Function to check if a course can be taken based on OR prerequisites
-      const canTakeCourse = (courseId: any) => {
-        const orPrerequisites = prerequisitesOR[courseId];
-        if (orPrerequisites) {
-          for (const prerequisite of orPrerequisites) {
-            if (criticalPath.some((completedCourse) => completedCourse.id === prerequisite.id)) {
-              return true;
-            }
+        if (prerequisitesMet) {
+          const classInstance = { ...course, semester: criticalPathCurrentSemester };
+          semesterCredits += classInstance.credits;
+  
+          if (semesterCredits <= creditHours) {
+            criticalPath.push(classInstance);
+          } else {
+            // Move to the next semester
+            criticalPathCurrentSemester = semesters[(semesters.indexOf(criticalPathCurrentSemester.split(' ')[0]) + 1) % semesters.length] + ' ' + (parseInt(criticalPathCurrentSemester.split(' ')[1]) + 1);
+            semesterCredits = classInstance.credits;
+            classInstance.semester = criticalPathCurrentSemester;
+            criticalPath.push(classInstance);
           }
-          return false;
-        }
-        return true;
-      };
-  
-      // Topological sorting loop
-      while (true) {
-        let found = false;
-  
-        // Iterate through the courses
-        for (const courseId in prerequisitesAND) {
-          if (prerequisitesAND[courseId].every((prerequisite: any) =>
-            criticalPath.some((completedCourse) => completedCourse.id === prerequisite.id)) && canTakeCourse(courseId)) {
-            // Course has all prerequisites completed (AND) and can be taken (OR), add it to the critical path
-            criticalPath.push({
-              id: courseId,
-              semester: semesters[courseId],
-            });
-  
-            // Remove the course from prerequisites dictionaries
-            delete prerequisitesAND[courseId];
-            delete prerequisitesOR[courseId];
-            found = true;
-          }
-        }
-  
-        // If no courses were found to add, break the loop
-        if (!found) {
-          break;
         }
       }
+    });
   
-      // Sort the critical path by semester
-      criticalPath.sort((a, b) => a.semester.localeCompare(b.semester));
-    } else if (major == 'public-health') {
-      // Do nothing for now
-    }
-    console.log("critical Path: ");
-    //console.log(criticalPath);
-    //setClassArray(criticalPath);
-  };*/
+    setClassArray(criticalPath);
+    console.log("critical path:");
+    console.log(criticalPath);
+  };
   
 
   const value = {
