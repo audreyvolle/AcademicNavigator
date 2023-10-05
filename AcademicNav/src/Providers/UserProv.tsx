@@ -205,75 +205,121 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
     'public-health': publicHealth
   };
 
-  
+  const updatedPrerequisitesTaken = (courseTaken: ClassList, classArrayCopy: ClassList[]) => {
+    const updatedClassArray = classArrayCopy.map((course) => {
+      if (course.id !== courseTaken.id) {
+        const updatedORPrerequisitesTaken = course.prerequisitesOR.map(
+          (prerequisitesOR) => {
+            if (prerequisitesOR.id === courseTaken.id) {
+              return course.title;
+            }
+            return prerequisitesOR;
+          }
+        );
+        const isReadyToTakeOR =
+          updatedORPrerequisitesTaken.length === course.prerequisitesOR.length;
+        const updatedANDPrerequisitesTaken = course.prerequisitesOR.map(
+          (prerequisitesOR) => {
+            if (prerequisitesOR.id === courseTaken.id) {
+              return course.title;
+            }
+            return prerequisitesOR;
+          }
+        );
+        const isReadyToTakeAND =
+          updatedANDPrerequisitesTaken.length === course.prerequisitesAND.length;
+        const isReadyToTake = isReadyToTakeOR && isReadyToTakeAND;
+        return {
+          ...course,
+          prerequisitesORTaken: updatedORPrerequisitesTaken,
+          prerequisitesANDTaken: updatedANDPrerequisitesTaken,
+          isReadyToTake,
+        };
+      }
+      return course;
+    });
+    console.log(updatedClassArray);
+    return updatedClassArray;
+  };
 
   const createCriticalPath = () => {
-    /*
-      I want this function to edit the semester value of each class in classArray that is in the requirements for the current major. If they selected computer-science-ba, 
-      I want to go through the classArray and find all the classes that are in the computer-science-ba requirements. Then, I want to go through each of those classes and check
-      the prerequiste order and place them into semesters so that they will be taken in the correct order. I want to start with the current semester and add classes until the
-      credit hours is reached. Then, I want to move to the next semester and continue adding classes until the credit hours is reached. I want to continue this until all the
-      classes from the requirements are added to the classArray. I want to setClassArray with the updated the classArray with the updated semester values.
-    */
-
-    // Create an array of semester names like "Spring 2023"
-  const semestersSeasons = ['Spring', 'Fall'];
-    let minGraduationYear = 2023;
-      let graduationOptions: any = [];
-      for (let year = minGraduationYear; year <= 2050; year++) {
-        for (const semester of semestersSeasons) {
-          graduationOptions.push(`${semester} ${year}`);
-        }
+    const semestersSeasons = ['Spring', 'Fall'];
+    const minGraduationYear = 2023;
+    let graduationOptions: any = [];
+    
+    for (let year = minGraduationYear; year <= 2050; year++) {
+      for (const semester of semestersSeasons) {
+        graduationOptions.push(`${semester} ${year}`);
       }
-
+    }
+  
+    let preReqStack: any = [];
     let semesterPlacement = currentSemester;
-    const maxCreditHours = creditHours? creditHours : 15;
-    console.log("max credit hours" + maxCreditHours);
-
+    const maxCreditHours = creditHours ? creditHours : 15;
+  
+    let classArrayCopy = [...classArray];
     let currentSemesterCredits = 0;
+  
     const majorRequirements = requirements[major as keyof typeof requirements];
-
     const requiredClasses = classArray.filter((c) => {
       return majorRequirements.some((b) => b === c.id);
     });
-
-    console.log(requiredClasses);
-
-    let classArrayCopy = [...classArray];
-    //edit the semester value of each class in classArray that is in the requirements for the current major based on the prerequisites so that a class that has a prerequisite is taken after the prerequisite
-    classArrayCopy.forEach((c) => {
-      if(requiredClasses.some((b) => b.id === c.id && c.taken == false)){
-        //Place in the correct semester starting at the input of the currentSemester if its prerequisites are taken in a semester abouve it
-        if(c.prerequisitesTaken.length == c.prerequisitesAND.length) {
-        if(currentSemesterCredits + c.credits <= maxCreditHours){
-            c.semester = semesterPlacement;
-            c.taken = true;
-            currentSemesterCredits += c.credits;
+  
+    requiredClasses.forEach((c) => {
+      //if preReqStack is not empty, then place the preReqStack classes first and check to make sure that classes prerequisites are met
+      if (preReqStack.length > 0) {
+        preReqStack.forEach((p: any) => {
+          if(p.prerequisitesTaken.length === p.prerequisitesAND.length) {
+          if (currentSemesterCredits + p.credits <= maxCreditHours) {
+            p.semester = semesterPlacement;
+            p.taken = true;
+            currentSemesterCredits += p.credits;
+            classArrayCopy = updatedPrerequisitesTaken(c, classArrayCopy);
+          } else {
+            currentSemesterCredits = 0;
+            semesterPlacement = graduationOptions[graduationOptions.indexOf(semesterPlacement) + 1];
+            p.semester = semesterPlacement;
+            p.taken = true;
+            currentSemesterCredits += p.credits;
+            classArrayCopy = updatedPrerequisitesTaken(c, classArrayCopy);
+          }
         }
         else {
+          p.prerequisitesAND.forEach((p: any) => {
+            //find the class in the classArrayCopy and then push it into the preReqStack
+            const preReqClass = classArrayCopy.find((r) => r.id === p.id);
+            preReqStack.push(preReqClass);
+          });
+        }
+        });
+      }
+      else if (c.prerequisitesTaken.length === c.prerequisitesAND.length) {
+        if (currentSemesterCredits + c.credits <= maxCreditHours) {
+          c.semester = semesterPlacement;
+          c.taken = true;
+          currentSemesterCredits += c.credits;
+          classArrayCopy = updatedPrerequisitesTaken(c, classArrayCopy);
+        } else {
           currentSemesterCredits = 0;
           semesterPlacement = graduationOptions[graduationOptions.indexOf(semesterPlacement) + 1];
           c.semester = semesterPlacement;
-          c.taken = true
+          c.taken = true;
           currentSemesterCredits += c.credits;
+          classArrayCopy = updatedPrerequisitesTaken(c, classArrayCopy);
         }
-      }
-      else {
-        //place its prerequisites instead
-        for (let i = 0; i < c.prerequisitesAND.length; i++) {
-        classArrayCopy.forEach((d) => {
-          /*if(d.id === c.prerequisitesAND[i]) {
-            //place d in the correct semester starting at the input of the currentSemester if its prerequisites are taken in a semester abouve it
-          }*/
+      } else { // else put into stack to place instead of the requiredClasses
+        c.prerequisitesAND.forEach((p) => {
+          //find the class in the classArrayCopy and then push it into the preReqStack
+          const preReqClass = classArrayCopy.find((r) => r.id === p.id);
+          preReqStack.push(preReqClass);
         });
+        preReqStack.push(c);
       }
-      }
-    }
     });
     setClassArray(classArrayCopy);
     console.log(classArrayCopy);
-  }
-
+  };
+  
   const value = {
     //here is the value we should export
     major,
