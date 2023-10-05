@@ -242,20 +242,33 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
     let classArrayCopy = [...classArray];
     //edit the semester value of each class in classArray that is in the requirements for the current major based on the prerequisites so that a class that has a prerequisite is taken after the prerequisite
     classArrayCopy.forEach((c) => {
-      if(requiredClasses.some((b) => b.id === c.id)){
-        //Place in the correct semester starting at the input of the currentSemester
+      if(requiredClasses.some((b) => b.id === c.id && c.taken == false)){
+        //Place in the correct semester starting at the input of the currentSemester if its prerequisites are taken in a semester abouve it
+        if(c.prerequisitesTaken.length == c.prerequisitesAND.length) {
         if(currentSemesterCredits + c.credits <= maxCreditHours){
             c.semester = semesterPlacement;
+            c.taken = true;
             currentSemesterCredits += c.credits;
         }
         else {
           currentSemesterCredits = 0;
-          semesterPlacement = graduationOptions[graduationOptions.indexOf(currentSemester) + 1];
-          console.log("semester Placeement" + semesterPlacement);
+          semesterPlacement = graduationOptions[graduationOptions.indexOf(semesterPlacement) + 1];
           c.semester = semesterPlacement;
+          c.taken = true
           currentSemesterCredits += c.credits;
         }
       }
+      else {
+        //place its prerequisites instead
+        for (let i = 0; i < c.prerequisitesAND.length; i++) {
+        classArrayCopy.forEach((d) => {
+          /*if(d.id === c.prerequisitesAND[i]) {
+            //place d in the correct semester starting at the input of the currentSemester if its prerequisites are taken in a semester abouve it
+          }*/
+        });
+      }
+      }
+    }
     });
     setClassArray(classArrayCopy);
     console.log(classArrayCopy);
