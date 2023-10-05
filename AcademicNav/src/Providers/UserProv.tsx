@@ -245,7 +245,7 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
   const createCriticalPath = () => {
     const semestersSeasons = ['Spring', 'Fall'];
     const minGraduationYear = 2023;
-    let graduationOptions: any = [];
+    const graduationOptions: string[] = [];
     
     for (let year = minGraduationYear; year <= 2050; year++) {
       for (const semester of semestersSeasons) {
@@ -253,72 +253,43 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
       }
     }
   
-    let preReqStack: any = [];
     let semesterPlacement = currentSemester;
-    const maxCreditHours = creditHours ? creditHours : 15;
-  
     let classArrayCopy = [...classArray];
     let currentSemesterCredits = 0;
   
     const majorRequirements = requirements[major as keyof typeof requirements];
-    const requiredClasses = classArray.filter((c) => {
-      return majorRequirements.some((b) => b === c.id);
+    const requiredClasses = classArray.filter((c) => majorRequirements.includes(c.id));
+    
+    const scheduleClass = (classToSchedule: ClassList) => {
+      if (currentSemesterCredits + classToSchedule.credits <= creditHours) {
+        classToSchedule.semester = semesterPlacement;
+        classToSchedule.taken = true;
+        currentSemesterCredits += classToSchedule.credits;
+        classArrayCopy = updatedPrerequisitesTaken(classToSchedule, classArrayCopy);
+      } else {
+        currentSemesterCredits = 0;
+        semesterPlacement = graduationOptions[graduationOptions.indexOf(semesterPlacement) + 1];
+        scheduleClass(classToSchedule); // Recursively try to schedule the class in the next semester
+      }
+    };
+  
+    requiredClasses.forEach((requiredClass) => {
+      if (requiredClass.prerequisitesTaken.length === requiredClass.prerequisitesAND.length) {
+        scheduleClass(requiredClass);
+      } else {
+        requiredClass.prerequisitesAND.forEach((prerequisite) => {
+          const prerequisiteClass = classArrayCopy.find((c) => c.id === prerequisite.id);
+          if (prerequisiteClass && !prerequisiteClass.taken) {
+            scheduleClass(prerequisiteClass);
+          }
+        });
+        scheduleClass(requiredClass); // Schedule the required class after its prerequisites
+      }
     });
   
-    requiredClasses.forEach((c) => {
-      //if preReqStack is not empty, then place the preReqStack classes first and check to make sure that classes prerequisites are met
-      if (preReqStack.length > 0) {
-        preReqStack.forEach((p: any) => {
-          if(p.prerequisitesTaken.length === p.prerequisitesAND.length) {
-          if (currentSemesterCredits + p.credits <= maxCreditHours) {
-            p.semester = semesterPlacement;
-            p.taken = true;
-            currentSemesterCredits += p.credits;
-            classArrayCopy = updatedPrerequisitesTaken(c, classArrayCopy);
-          } else {
-            currentSemesterCredits = 0;
-            semesterPlacement = graduationOptions[graduationOptions.indexOf(semesterPlacement) + 1];
-            p.semester = semesterPlacement;
-            p.taken = true;
-            currentSemesterCredits += p.credits;
-            classArrayCopy = updatedPrerequisitesTaken(c, classArrayCopy);
-          }
-        }
-        else {
-          p.prerequisitesAND.forEach((p: any) => {
-            //find the class in the classArrayCopy and then push it into the preReqStack
-            const preReqClass = classArrayCopy.find((r) => r.id === p.id);
-            preReqStack.push(preReqClass);
-          });
-        }
-        });
-      }
-      else if (c.prerequisitesTaken.length === c.prerequisitesAND.length) {
-        if (currentSemesterCredits + c.credits <= maxCreditHours) {
-          c.semester = semesterPlacement;
-          c.taken = true;
-          currentSemesterCredits += c.credits;
-          classArrayCopy = updatedPrerequisitesTaken(c, classArrayCopy);
-        } else {
-          currentSemesterCredits = 0;
-          semesterPlacement = graduationOptions[graduationOptions.indexOf(semesterPlacement) + 1];
-          c.semester = semesterPlacement;
-          c.taken = true;
-          currentSemesterCredits += c.credits;
-          classArrayCopy = updatedPrerequisitesTaken(c, classArrayCopy);
-        }
-      } else { // else put into stack to place instead of the requiredClasses
-        c.prerequisitesAND.forEach((p) => {
-          //find the class in the classArrayCopy and then push it into the preReqStack
-          const preReqClass = classArrayCopy.find((r) => r.id === p.id);
-          preReqStack.push(preReqClass);
-        });
-        preReqStack.push(c);
-      }
-    });
     setClassArray(classArrayCopy);
     console.log(classArrayCopy);
-  };
+  };  
   
   const value = {
     //here is the value we should export
