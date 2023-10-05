@@ -1,10 +1,8 @@
-{
-  "degree_requirements": [
+[
     "CS 111", "CS 140", "CS 150", "CS 234", "CS 286", "CS 314", "CS 325", "CS 330", "CS 340", "CS 360", "CS 425", "CS 447", "CS 499",
     "MATH 150", "MATH 152", "MATH 223",
     "STAT 244",
     "MATH 250", "MATH 321",
     "CHEM 121A/125A & 121B/125B",
     "BIOL 150"
-  ]
-}
+]

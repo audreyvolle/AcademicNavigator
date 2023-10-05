@@ -1,5 +1,4 @@
-{
-  "degree_requirements": [
+[
     "PBHE 111", "PBHE 305", "PBHE 353", "PBHE 363", "PBHE 370", "PBHE 375", "PBHE 405", "PBHE 410", "PBHE 420", "PBHE 455", "PBHE 490", "PBHE 491", "PBHE 495", "PBHE 498", "PBHE 499 (6 credits)",
     "ACS 304", "ACS 311", "ACS 370",
     "ANTH 352", "ANTH 366",
@@ -15,5 +14,5 @@
     "PSYC 303",
     "SOC 309", "SOC 310", "SOC 383",
     "SOCW 386", "SOCW 420", "SOCW 454", "SOCW 491"
-  ]
-}
+]
+

@@ -83,11 +83,11 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
   const [graduationSemester, setGraduationSemester] = useState<string>("");
   const [classesNotTaken, setClassesNotTaken] = useState<ClassList[]>([]);
 
-  const {courses} = useData();
+  const { courses } = useData();
 
   useEffect(() => {
     setClassesNotTaken(classArray.filter((classItem: ClassList) => !classItem.taken));
-  },[classArray]);
+  }, [classArray]);
 
   const handleDropdownChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     const selectedValue = event.target.value;
@@ -165,7 +165,7 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
             }
           );
           const isReadyToTakeOR =
-          updatedORPrerequisitesTaken.length === course.prerequisitesOR.length;
+            updatedORPrerequisitesTaken.length === course.prerequisitesOR.length;
           const updatedANDPrerequisitesTaken = course.prerequisitesOR.map(
             (prerequisitesOR) => {
               if (prerequisitesOR.id === className) {
@@ -175,12 +175,12 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
             }
           );
           const isReadyToTakeAND =
-          updatedANDPrerequisitesTaken.length === course.prerequisitesAND.length;
-          const isReadyToTake = isReadyToTakeOR  &&  isReadyToTakeAND;
+            updatedANDPrerequisitesTaken.length === course.prerequisitesAND.length;
+          const isReadyToTake = isReadyToTakeOR && isReadyToTakeAND;
           return {
             ...course,
             prerequisitesORTaken: updatedORPrerequisitesTaken,
-            prerequisitesANDTaken:updatedANDPrerequisitesTaken,
+            prerequisitesANDTaken: updatedANDPrerequisitesTaken,
             isReadyToTake,
           };
         }
@@ -205,46 +205,61 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
     'public-health': publicHealth
   };
 
-    // Create an array of semester names
-  const semesters = ['Spring', 'Fall'];
+  
 
   const createCriticalPath = () => {
-    const criticalPath: ClassList[] = [];
-    let semesterCredits = 0;
-    let criticalPathCurrentSemester = currentSemester;
-  
-    const requirementsList: any = requirements[major as keyof typeof requirements]; // Get the requirements for the current major
-  
-    classArray.forEach((course) => {
-      if (requirementsList.some((requirement: any) => requirement.id === course.id)) {
-        const prerequisitesMet = course.prerequisitesAND.every((prerequisite) =>
-          criticalPath.some((completedCourse) => completedCourse.id === prerequisite.id)
-        ) && course.prerequisitesOR.some((prerequisite) =>
-          criticalPath.some((completedCourse) => completedCourse.id === prerequisite.id)
-        );
-  
-        if (prerequisitesMet) {
-          const classInstance = { ...course, semester: criticalPathCurrentSemester };
-          semesterCredits += classInstance.credits;
-  
-          if (semesterCredits <= creditHours) {
-            criticalPath.push(classInstance);
-          } else {
-            // Move to the next semester
-            criticalPathCurrentSemester = semesters[(semesters.indexOf(criticalPathCurrentSemester.split(' ')[0]) + 1) % semesters.length] + ' ' + (parseInt(criticalPathCurrentSemester.split(' ')[1]) + 1);
-            semesterCredits = classInstance.credits;
-            classInstance.semester = criticalPathCurrentSemester;
-            criticalPath.push(classInstance);
-          }
+    /*
+      I want this function to edit the semester value of each class in classArray that is in the requirements for the current major. If they selected computer-science-ba, 
+      I want to go through the classArray and find all the classes that are in the computer-science-ba requirements. Then, I want to go through each of those classes and check
+      the prerequiste order and place them into semesters so that they will be taken in the correct order. I want to start with the current semester and add classes until the
+      credit hours is reached. Then, I want to move to the next semester and continue adding classes until the credit hours is reached. I want to continue this until all the
+      classes from the requirements are added to the classArray. I want to setClassArray with the updated the classArray with the updated semester values.
+    */
+
+    // Create an array of semester names like "Spring 2023"
+  const semestersSeasons = ['Spring', 'Fall'];
+    let minGraduationYear = 2023;
+      let graduationOptions: any = [];
+      for (let year = minGraduationYear; year <= 2050; year++) {
+        for (const semester of semestersSeasons) {
+          graduationOptions.push(`${semester} ${year}`);
+        }
+      }
+
+    let semesterPlacement = currentSemester;
+    const maxCreditHours = creditHours? creditHours : 15;
+    console.log("max credit hours" + maxCreditHours);
+
+    let currentSemesterCredits = 0;
+    const majorRequirements = requirements[major as keyof typeof requirements];
+
+    const requiredClasses = classArray.filter((c) => {
+      return majorRequirements.some((b) => b === c.id);
+    });
+
+    console.log(requiredClasses);
+
+    let classArrayCopy = [...classArray];
+    //edit the semester value of each class in classArray that is in the requirements for the current major based on the prerequisites so that a class that has a prerequisite is taken after the prerequisite
+    classArrayCopy.forEach((c) => {
+      if(requiredClasses.some((b) => b.id === c.id)){
+        //Place in the correct semester starting at the input of the currentSemester
+        if(currentSemesterCredits + c.credits <= maxCreditHours){
+            c.semester = semesterPlacement;
+            currentSemesterCredits += c.credits;
+        }
+        else {
+          currentSemesterCredits = 0;
+          semesterPlacement = graduationOptions[graduationOptions.indexOf(currentSemester) + 1];
+          console.log("semester Placeement" + semesterPlacement);
+          c.semester = semesterPlacement;
+          currentSemesterCredits += c.credits;
         }
       }
     });
-  
-    setClassArray(criticalPath);
-    console.log("critical path:");
-    console.log(criticalPath);
-  };
-  
+    setClassArray(classArrayCopy);
+    console.log(classArrayCopy);
+  }
 
   const value = {
     //here is the value we should export
