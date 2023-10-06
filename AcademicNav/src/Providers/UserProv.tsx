@@ -47,6 +47,8 @@ export interface exportedValue {
   setCurrentSemester: React.Dispatch<React.SetStateAction<string>>;
   graduationSemester: string;
   setGraduationSemester: React.Dispatch<React.SetStateAction<string>>;
+  criticalPath: boolean;
+  setCriticalPath: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 const initialState: exportedValue = {
@@ -58,6 +60,7 @@ const initialState: exportedValue = {
   currentSemester: '',
   graduationSemester: '',
   classesNotTaken: [],
+  criticalPath: false,
   setSelectedClasses: () => { },
   setIsMainViewVisible: () => { },
   setMajor: () => { },
@@ -70,6 +73,7 @@ const initialState: exportedValue = {
   setCurrentSemester: () => { },
   setGraduationSemester: () => { },
   setClassesNotTaken: () => { },
+  setCriticalPath: () => { }
 };
 
 export const UserInfoContext = createContext<exportedValue>(initialState);
@@ -83,6 +87,7 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
   const [currentSemester, setCurrentSemester] = useState<string>("");
   const [graduationSemester, setGraduationSemester] = useState<string>("");
   const [classesNotTaken, setClassesNotTaken] = useState<ClassList[]>([]);
+  const [criticalPath, setCriticalPath] = useState<boolean>(false);
 
   const { courses } = useData();
 
@@ -162,22 +167,21 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
               if (prerequisitesOR.id === className) {
                 return course.title;
               }
-              return prerequisitesOR;
+              return;
             }
           );
-          const isReadyToTakeOR =
-            updatedORPrerequisitesTaken.length === course.prerequisitesOR.length;
-          const updatedANDPrerequisitesTaken = course.prerequisitesOR.map(
-            (prerequisitesOR) => {
-              if (prerequisitesOR.id === className) {
+         // const isReadyToTakeOR = updatedORPrerequisitesTaken.length === course.prerequisitesOR.length;
+          const updatedANDPrerequisitesTaken = course.prerequisitesAND.map(
+            (prerequisitesAND) => {
+              if (prerequisitesAND.id === className) {
                 return course.title;
               }
-              return prerequisitesOR;
+              return prerequisitesAND;
             }
           );
           const isReadyToTakeAND =
             updatedANDPrerequisitesTaken.length === course.prerequisitesAND.length;
-          const isReadyToTake = isReadyToTakeOR && isReadyToTakeAND;
+          const isReadyToTake = isReadyToTakeAND;
           return {
             ...course,
             prerequisitesORTaken: updatedORPrerequisitesTaken,
@@ -196,7 +200,9 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const handleContinueClick = () => {
-    createCriticalPath();
+    if(criticalPath) {
+      createCriticalPath();
+    }
     setIsMainViewVisible(true);
   };
 
@@ -232,8 +238,8 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
         const isReadyToTake = isReadyToTakeOR && isReadyToTakeAND;
         return {
           ...course,
-          prerequisitesORTaken: updatedORPrerequisitesTaken,
-          prerequisitesANDTaken: updatedANDPrerequisitesTaken,
+          prerequisitesORTaken: [...updatedORPrerequisitesTaken],
+          prerequisitesANDTaken: [...updatedANDPrerequisitesTaken],
           isReadyToTake,
         };
       }
@@ -330,6 +336,8 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
     setGraduationSemester,
     classesNotTaken,
     setClassesNotTaken,
+    criticalPath,
+    setCriticalPath
   };
 
 

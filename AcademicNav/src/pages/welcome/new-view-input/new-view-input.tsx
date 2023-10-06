@@ -46,7 +46,7 @@ interface ClassList {
 }
 
 function NewView() {
-  const { handleContinueClick, handleSkipClick, handleCheckboxChange, selectedClasses, classArray, setCreditHours, setCurrentSemester, setGraduationSemester } = useUser();
+  const { handleContinueClick, handleSkipClick, handleCheckboxChange, selectedClasses, classArray, setCreditHours, setCurrentSemester, setGraduationSemester, setCriticalPath } = useUser();
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const currentDate = new Date();
@@ -84,7 +84,7 @@ function NewView() {
     const currentSemesterField = document.getElementById('current') as HTMLSelectElement;
     setCurrentSemester(currentSemesterField.value);
     const graduationSemesterField = document.getElementById('graduation') as HTMLSelectElement;
-    
+
     // Calculate and set the initial graduation semester value to +4 years from the current semester
     const initialGraduationSemester = calculateGraduationSemesterOptions(currentSemesterField.value)[4]; // Change the index as needed
     setGraduationSemester(initialGraduationSemester);
@@ -155,7 +155,7 @@ function NewView() {
             classArray.reduce((groupedCourses: { [level: number]: ClassList[] }, classes) => {
               const courseId = classes;
               if (courseId) {
-                const level = parseInt(courseId.id.replace(/\D/g, '')[0],10); // Parse the level from the course ID
+                const level = parseInt(courseId.id.replace(/\D/g, '')[0], 10); // Parse the level from the course ID
                 if (!groupedCourses[level]) {
                   groupedCourses[level] = [];
                 }
@@ -188,7 +188,7 @@ function NewView() {
         </ul>}
 
         <label htmlFor="credits">Credit Hours Per Semester (between 1 and 20):</label>
-        <input type="number" id="credits" name="credits" min="1" max="20" className="input-field-credits" onChange={(e) => setCreditHours(parseInt(e.target.value))}/>
+        <input type="number" id="credits" name="credits" min="1" max="20" className="input-field-credits" onChange={(e) => setCreditHours(parseInt(e.target.value))} />
 
         <label htmlFor="current">Current Semester: </label>
         <select id="current" name="current" className="input-field" onChange={(e) => setCurrentSemester(e.target.value)}></select>
@@ -198,6 +198,15 @@ function NewView() {
 
         <div className="button-container">
           <button onClick={handleSkipClick} className="button button-secondary">Skip</button>
+          <label htmlFor="critical-path"><input
+            type="checkbox"
+            id="critical-path"
+            name="critical-path"
+            className="input-field-checkbox"
+            onChange={(e) => setCriticalPath(e.target.checked)}
+          />
+            Load Critical Path In View
+          </label>
           <button onClick={() => { handleContinueClick() }} className="button">Continue</button>
         </div>
       </div>
