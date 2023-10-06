@@ -19,7 +19,8 @@ interface ClassList {
   credits: number,
   prerequisitesOR: PrerequisiteType[],
   prerequisitesAND: PrerequisiteType[],
-  prerequisitesTaken: Array<string>,
+  prerequisitesANDTaken: (string | PrerequisiteType)[];
+  prerequisitesORTaken: (string | PrerequisiteType)[];
   isReadyToTake: boolean,
   taken: boolean,
   semester: string,
@@ -123,12 +124,12 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
       // Remove the class from prerequisitesTaken of other courses
       const updatedClassArray = updatedClasses.map((course) => {
         if (course.id !== className) {
-          const updatedPrerequisitesTaken = course.prerequisitesTaken.filter(
+          const updatedPrerequisitesTaken = course.prerequisitesANDTaken.filter(
             (prerequisite) => prerequisite !== classTitle
           );
           return {
             ...course,
-            prerequisitesTaken: updatedPrerequisitesTaken,
+            prerequisitesANDTaken: updatedPrerequisitesTaken,
             isReadyToTake: false,
           };
         }
@@ -218,12 +219,12 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
         );
         const isReadyToTakeOR =
           updatedORPrerequisitesTaken.length === course.prerequisitesOR.length;
-        const updatedANDPrerequisitesTaken = course.prerequisitesOR.map(
-          (prerequisitesOR) => {
-            if (prerequisitesOR.id === courseTaken.id) {
+        const updatedANDPrerequisitesTaken = course.prerequisitesAND.map(
+          (prerequisitesAND) => {
+            if (prerequisitesAND.id === courseTaken.id) {
               return course.title;
             }
-            return prerequisitesOR;
+            return prerequisitesAND;
           }
         );
         const isReadyToTakeAND =
@@ -238,7 +239,6 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
       }
       return course;
     });
-    console.log(updatedClassArray);
     return updatedClassArray;
   };
 
@@ -259,9 +259,27 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
   
     const majorRequirements = requirements[major as keyof typeof requirements];
     const requiredClasses = classArray.filter((c) => majorRequirements.includes(c.id));
-    
+
     const scheduleClass = (classToSchedule: ClassList) => {
+      // Check if any prerequisites are scheduled for the same or earlier semester
+      const earliestPrereqSemester = classToSchedule.prerequisitesANDTaken.reduce(
+        (earliestSemester, prereq) => {
+          const prereqClass = classArrayCopy.find((c) => c.id === prereq);
+          if (prereqClass && prereqClass.semester !== '' && graduationOptions.indexOf(prereqClass.semester) < graduationOptions.indexOf(earliestSemester.toString())) {
+            return prereqClass.semester;
+          }
+          return earliestSemester;
+        },
+        graduationOptions[0]
+      );
+    
+      // Check if class can be scheduled in the current semester
+      if (graduationOptions.indexOf(earliestPrereqSemester.toString()) > graduationOptions.indexOf(semesterPlacement)) {
+        semesterPlacement = earliestPrereqSemester.toString();
+      }
+    
       if (currentSemesterCredits + classToSchedule.credits <= creditHours) {
+        console.log("scheduling" + classToSchedule.id);
         classToSchedule.semester = semesterPlacement;
         classToSchedule.taken = true;
         currentSemesterCredits += classToSchedule.credits;
@@ -274,7 +292,7 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
     };
   
     requiredClasses.forEach((requiredClass) => {
-      if (requiredClass.prerequisitesTaken.length === requiredClass.prerequisitesAND.length) {
+      if (requiredClass.prerequisitesANDTaken.length === requiredClass.prerequisitesAND.length) {
         scheduleClass(requiredClass);
       } else {
         requiredClass.prerequisitesAND.forEach((prerequisite) => {
@@ -286,9 +304,8 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
         scheduleClass(requiredClass); // Schedule the required class after its prerequisites
       }
     });
-  
     setClassArray(classArrayCopy);
-    console.log(classArrayCopy);
+    console.log(classArray);
   };  
   
   const value = {

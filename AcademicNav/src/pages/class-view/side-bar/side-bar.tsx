@@ -17,7 +17,8 @@ interface ClassList {
   credits: number,
   prerequisitesOR: PrerequisiteType[],
   prerequisitesAND: PrerequisiteType[],
-  prerequisitesTaken: Array<string>,
+  prerequisitesANDTaken: (string | PrerequisiteType)[];
+  prerequisitesORTaken: (string | PrerequisiteType)[];
   isReadyToTake: boolean,
   taken: boolean,
   semester: string,
