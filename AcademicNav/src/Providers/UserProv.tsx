@@ -260,7 +260,7 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
     }
   
     let semesterPlacement = currentSemester;
-    let classArrayCopy = [...classArray];
+    //let classArrayCopy = [...classArray];
     let currentSemesterCredits = 0;
   
     const majorRequirements = requirements[major as keyof typeof requirements];
@@ -270,7 +270,7 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
       // Check if any prerequisites are scheduled for the same or earlier semester
       const earliestPrereqSemester = classToSchedule.prerequisitesANDTaken.reduce(
         (earliestSemester, prereq) => {
-          const prereqClass = classArrayCopy.find((c) => c.id === prereq);
+          const prereqClass = classArray.find((c) => c.id === prereq);
           if (prereqClass && prereqClass.semester !== '' && graduationOptions.indexOf(prereqClass.semester) < graduationOptions.indexOf(earliestSemester.toString())) {
             return prereqClass.semester;
           }
@@ -289,7 +289,7 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
         classToSchedule.semester = semesterPlacement;
         classToSchedule.taken = true;
         currentSemesterCredits += classToSchedule.credits;
-        classArrayCopy = updatedPrerequisitesTaken(classToSchedule, classArrayCopy);
+        setClassArray(updatedPrerequisitesTaken(classToSchedule, classArray));
       } else {
         currentSemesterCredits = 0;
         semesterPlacement = graduationOptions[graduationOptions.indexOf(semesterPlacement) + 1];
@@ -302,7 +302,7 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
         scheduleClass(requiredClass);
       } else {
         requiredClass.prerequisitesAND.forEach((prerequisite) => {
-          const prerequisiteClass = classArrayCopy.find((c) => c.id === prerequisite.id);
+          const prerequisiteClass = classArray.find((c) => c.id === prerequisite.id);
           if (prerequisiteClass && !prerequisiteClass.taken) {
             scheduleClass(prerequisiteClass);
           }
@@ -310,7 +310,7 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
         scheduleClass(requiredClass); // Schedule the required class after its prerequisites
       }
     });
-    setClassArray(classArrayCopy);
+    //setClassArray(classArrayCopy);
     console.log(classArray);
   };  
   
