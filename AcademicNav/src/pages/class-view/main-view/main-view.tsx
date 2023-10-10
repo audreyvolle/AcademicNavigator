@@ -112,7 +112,7 @@ const ModalDR = ({ onDRClose, selectedMajor }: ModalPropsDR) => {
             <strong>PBHE: </strong>PBHE 111, PBHE 305, PBHE 353, PBHE 363, PBHE 370, PBHE 375, PBHE 405, PBHE 410, PBHE 420, PBHE 455, PBHE 490, PBHE 491, PBHE 495, PBHE 498, PBHE 499,
           </li>
           <li>
-            <strong>Approved Major Electives (15 or more hours from the following or from appropriate disciplines approved by the advisor): </strong>
+            <strong>Approved Major Electives </strong>15 or more hours from the following or from appropriate disciplines approved by the advisor:
           </li>
           <li>
             ACS 304, 311, 370
