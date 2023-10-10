@@ -1,5 +1,6 @@
 import { useState, useRef, useCallback, useEffect } from 'react';
 import ReactFlow, {
+    Panel,
     Node,
     ReactFlowProvider,
     useNodesState,
@@ -9,6 +10,7 @@ import 'reactflow/dist/style.css';
 import SideBar from '../../side-bar/side-bar';
 import './block-view.scss';
 import { useUser } from '../../../../Providers/UserProv';
+import { toPng } from 'html-to-image';
 
 
 //formatting
@@ -20,6 +22,9 @@ const verticalSpacing = 275;
 const semWidth = 400;
 const semHeight = 250;
 const classWidth = 350;
+
+const printHeight = 2000;
+const printWidth = 875;
 
 //colors
 const takenColor = 'rgba(178,255,102,1)';
@@ -125,7 +130,7 @@ const BlockView = () => {
             data: { label: 'Add Semester' },
             position: { x: spacing + (col * horizontalSpacing), y: spacing + (groupCount * verticalSpacing) },
             className: 'light',
-            style: { backgroundColor: addSemesterColor, width: semWidth, height: semHeight, fontSize: 30, verticalAlign: 'middle' },
+            style: { backgroundColor: addSemesterColor, width: semWidth, height: semHeight, fontSize: 30, verticalAlign: 'middle'},
             selectable: false,
             connectable: false,
             draggable: false
@@ -398,6 +403,23 @@ const BlockView = () => {
         }
     }, [classArray, nodes, setClassArray, setNodes]);
 
+    //used for print button
+    const printClick = useCallback(() => {
+
+        toPng(document.querySelector('.react-flow__viewport'), {
+            backgroundColor: '#ffffff',
+            width: printWidth,
+            height: (groupCount + 1) * 275 + 25,
+            style: {
+                width: printWidth,
+                height: (groupCount + 1) * 275 + 25,
+                transform: `translate(0px, 0px)`
+            }
+        }).then(downloadImage);
+
+    }, []);
+
+
     if (isLoading) {
         return <div>Loading...</div>;
     }
@@ -416,7 +438,7 @@ const BlockView = () => {
     };
 
     return (
-        <div className="dndflow">
+        <div className="dndflowb">
             <ReactFlowProvider>
                 <div className="reactflow-wrapper" ref={reactFlowWrapper} style={{ width: '66vw', height: '80vh' }}>
                     <ReactFlow
@@ -431,7 +453,13 @@ const BlockView = () => {
                         onDrop={onDrop}
                         onDragOver={onDragOver}
                         fitView
-                    />
+                        >
+                    <Panel position="top-right">
+                            <button className="printButton" onClick={printClick} style={{ fontSize: '16px', fontWeight: 'bold' }}>
+                                Download<br />Print View
+                        </button>
+                    </Panel>
+                    </ReactFlow>
                 </div>
                 <SideBar />
                 {
@@ -572,111 +600,17 @@ function fillSemesters(target: string): string[] {
     return filled
 }
 
+//used in document creation
+function downloadImage(dataUrl) {
+    const a = document.createElement('a');
+
+    a.setAttribute('download', 'schedule.png');
+    a.setAttribute('href', dataUrl);
+    a.click();
+}
+
 
 export default BlockView;
 
 
-
-
-
-////THIS IS WHERE THE MAIN CODE STARTS ---- GUT IT AND MOVE ON
-
-
-/*
-
-
-
-let id = 0;
-const getId = () => `dndnode_${id++}`;
-
-const BlockView = () => {
-  const { classArray, setClassArray } = useUser();
-  const reactFlowWrapper = useRef(null);
-  const [nodes, setNodes, onNodesChange] = useNodesState([]);
-  const [edges, setEdges, onEdgesChange] = useEdgesState([]);
-  const [reactFlowInstance, setReactFlowInstance] = useState<ReactFlowInstance | null>(null);
-
-  // Use useEffect to mimic onInit when reactFlowInstance changes
-  useEffect(() => {
-    if (reactFlowInstance) {
-      // reactFlowInstance is available, perform initialization here
-      console.log('Component is initialized');
-    }
-  }, [reactFlowInstance]);
-
-  const onConnect = useCallback((params: any) => setEdges((eds) => addEdge(params, eds)), []);
-
-  const onDragOver = useCallback((event: any) => {
-    event.preventDefault();
-    event.dataTransfer.dropEffect = 'move';
-  }, []);
-
-  const onDrop = useCallback(
-    (event: any) => {
-      event.preventDefault();
-
-      const reactFlowBounds = reactFlowWrapper.current as HTMLElement | null;
-
-      if (reactFlowBounds) {
-        const type = event.dataTransfer.getData('application/reactflow');
-
-        // check if the dropped element is valid
-        if (typeof type === 'undefined' || !type) {
-          return;
-        }
-
-        if (reactFlowInstance) {
-          const position = reactFlowInstance.project({
-            x: event.clientX - reactFlowBounds.getBoundingClientRect().left,
-            y: event.clientY - reactFlowBounds.getBoundingClientRect().top,
-          });
-
-          const newNode = {
-            id: getId(),
-            type,
-            position,
-            data: { label: `${type}` },
-          };
-          
-          const classToMove = classArray.find((classItem) => classItem.title === type);
-
-          if (classToMove) {
-            // Set taken to true for the class being moved
-            const updatedClassArray = classArray.map((classItem) =>
-              classItem === classToMove ? { ...classItem, taken: true } : classItem // DARIN CHANGE THIS TO ALSO UPDATE THE SEMESTER AND OTHER VARIABLES!!
-              );
-            setClassArray(updatedClassArray);
-            console.log(classArray);
-          }
-            setNodes((nds) => nds.concat(newNode));
-        }
-      }
-    },
-    [reactFlowInstance]
-  );
-
-  return (
-    <div className="dndflow">
-      <ReactFlowProvider>
-        <div className="reactflow-wrapper" ref={reactFlowWrapper} style={{ width: '66vw', height: '80vh' }}>
-          <ReactFlow
-            nodes={nodes}
-            edges={edges}
-            onNodesChange={onNodesChange}
-            onEdgesChange={onEdgesChange}
-            onConnect={onConnect}
-            onInit={setReactFlowInstance}
-            onDrop={onDrop}
-            onDragOver={onDragOver}
-            fitView
-          >
-            <Controls />
-          </ReactFlow>
-        </div>
-        <SideBar />
-      </ReactFlowProvider>
-    </div>
-  );
-};
-
-*/
+//end of file
