@@ -19,7 +19,7 @@ const Modal = ({ onClose }: ModalProps) => (
       <p>Simply drag and drop classes to the semester you wish to take them. If this is not allowed due to a prerequisite or credit hour restriction, you will be notified.</p>
       <ul>
         <li>
-          <strong>Graph View:</strong> This tab provides a graphical representation of your schedule, allowing you to visualize prerequisite and post-requisite relationships.
+          <strong>Graph View:</strong> This tab provides a graphical representation of your schedule, allowing you to visualize prerequisite and post-requisite relationships. Double click a class to remove it.
         </li>
         <li>
           <strong>Block View:</strong> This tab displays your schedule in a block-like format, similar to a typical schedule layout.

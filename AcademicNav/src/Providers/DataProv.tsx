@@ -23,17 +23,6 @@ type TransformedData = {
     semester: string;
 };
 
-interface ClassList {
-    id: string,
-    title: string,
-    credits: number,
-    prerequisites: Array<string>,
-    prerequisitesTaken: Array<string>,
-    isReadyToTake: boolean,
-    taken: boolean,
-    semester: string,
-};
-
 export interface exportedValue {
     courses: TransformedData[];
 }

@@ -21,6 +21,9 @@ const Modal = ({ onClose }: ModalProps) => (
         <li>
           <strong>Graduation Semester:</strong> This is the semester that you plan on graduating. You can add a semester inside the schedule if you find this necessary. This target helps in creating a path/goal.
         </li>
+        <li>
+          <strong>Critical Path Load In:</strong> Checking this box will create a path of core classes for your major based on the order of prerequisites.
+        </li>
       </ul>
       <button onClick={onClose}>Close</button>
     </div>

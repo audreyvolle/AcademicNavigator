@@ -212,8 +212,8 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
     'public-health': publicHealth
   };
 
-  const updatedPrerequisitesTaken = (courseTaken: ClassList, classArrayCopy: ClassList[]) => {
-    const updatedClassArray = classArrayCopy.map((course) => {
+  const updatedPrerequisitesTaken = (courseTaken: ClassList) => {
+      classArray.map((course) => {
       if (course.id !== courseTaken.id) {
         const updatedORPrerequisitesTaken = course.prerequisitesOR.map(
           (prerequisitesOR) => {
@@ -245,7 +245,6 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
       }
       return course;
     });
-    return updatedClassArray;
   };
 
   const createCriticalPath = () => {
@@ -260,7 +259,6 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
     }
   
     let semesterPlacement = currentSemester;
-    //let classArrayCopy = [...classArray];
     let currentSemesterCredits = 0;
   
     const majorRequirements = requirements[major as keyof typeof requirements];
@@ -276,7 +274,7 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
           }
           return earliestSemester;
         },
-        graduationOptions[0]
+        semesterPlacement
       );
     
       // Check if class can be scheduled in the current semester
@@ -284,33 +282,42 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
         semesterPlacement = earliestPrereqSemester.toString();
       }
     
-      if (currentSemesterCredits + classToSchedule.credits <= creditHours) {
-        console.log("scheduling" + classToSchedule.id);
-        classToSchedule.semester = semesterPlacement;
-        classToSchedule.taken = true;
-        currentSemesterCredits += classToSchedule.credits;
-        setClassArray(updatedPrerequisitesTaken(classToSchedule, classArray));
-      } else {
-        currentSemesterCredits = 0;
-        semesterPlacement = graduationOptions[graduationOptions.indexOf(semesterPlacement) + 1];
-        scheduleClass(classToSchedule); // Recursively try to schedule the class in the next semester
+      // Schedule prerequisites before the class that requires them
+      classToSchedule.prerequisitesAND.forEach((prereq) => {
+        const prereqClass = classArray.find((c) => c.id === prereq.id);
+        if (prereqClass && !prereqClass.taken) {
+          scheduleClass(prereqClass);
+        }
+      });
+    
+      // Schedule the class itself
+      while (true) {
+        if (currentSemesterCredits + classToSchedule.credits <= creditHours) {
+          console.log("scheduling" + classToSchedule.id);
+          classToSchedule.semester = semesterPlacement;
+          classToSchedule.taken = true;
+          currentSemesterCredits += classToSchedule.credits;
+          break;
+        } else {
+          currentSemesterCredits = 0;
+          semesterPlacement = graduationOptions[graduationOptions.indexOf(semesterPlacement) + 1];
+        }
       }
     };
   
     requiredClasses.forEach((requiredClass) => {
-      if (requiredClass.prerequisitesANDTaken.length === requiredClass.prerequisitesAND.length) {
-        scheduleClass(requiredClass);
-      } else {
+     // if (requiredClass.prerequisitesANDTaken.length === requiredClass.prerequisitesAND.length) {
+       // scheduleClass(requiredClass);
+      //} else {
         requiredClass.prerequisitesAND.forEach((prerequisite) => {
           const prerequisiteClass = classArray.find((c) => c.id === prerequisite.id);
-          if (prerequisiteClass && !prerequisiteClass.taken) {
+          if (prerequisiteClass ) {
             scheduleClass(prerequisiteClass);
           }
         });
         scheduleClass(requiredClass); // Schedule the required class after its prerequisites
-      }
+      //}
     });
-    //setClassArray(classArrayCopy);
     console.log(classArray);
   };  
   
