@@ -116,7 +116,7 @@ export const DataProvider = ({children}: { children: ReactNode}) => {
                         Grade: 'C',
                         concurrency: false,
                     });
-                } else if (idMatch![1].includes("PHYS 142")){
+                } else if(idMatch![1].includes("PHYS 142")){
                     prerequisitesOR.push({
                         id: `PHYS 141`,
                         Grade: 'C',
@@ -128,16 +128,90 @@ export const DataProvider = ({children}: { children: ReactNode}) => {
                         concurrency: false,
                     });
                     prerequisitesAND.push({
-                        id: `PHYS 152`,
+                        id: `MATH 152`,
                         Grade: 'C',
                         concurrency: false,
                     });
-                    prerequisitesOR.push({
+                    prerequisitesAND.push({
                         id: `PHYS 151L`,
                         Grade: 'C',
                         concurrency: false,
                     });
-                } else {
+                } else if(idMatch![1].includes("BIOL 240A")){
+                    prerequisitesAND.push({
+                        id: "BIOL 140",
+                        Grade: 'C',
+                        concurrency: false,
+                    });
+                    prerequisitesAND.push({
+                        id: "BIOL 120A",
+                        Grade: 'C',
+                        concurrency: false,
+                    });
+                } else if(idMatch![1].includes("PBHE 490")){
+                    prerequisitesAND.push({
+                        id: "PBHE 370",
+                        Grade: 'C',
+                        concurrency: false,
+                    });
+                    prerequisitesAND.push({
+                        id: "PBHE 375",
+                        Grade: 'C',
+                        concurrency: false,
+                    });
+                    prerequisitesAND.push({
+                        id: "PBHE 305",
+                        Grade: 'C',
+                        concurrency: false,
+                    });
+                } else if(idMatch![1].includes("PBHE 498")){
+                    prerequisitesOR.push({
+                        id: "PBHE 491",
+                        Grade: 'C',
+                        concurrency: true,
+                    });
+                    prerequisitesAND.push({
+                        id: "HED 491",
+                        Grade: 'C',
+                        concurrency: true,
+                    });
+                } else if(idMatch![1].includes("PSYC 303")){
+                    prerequisitesOR.push({
+                        id: "PSYC 314",
+                        Grade: 'C',
+                        concurrency: false,
+                    });
+                    prerequisitesOR.push({
+                        id: "BIOL 140",
+                        Grade: 'C',
+                        concurrency: false,
+                    });
+                    prerequisitesAND.push({
+                        id: "PSYC 111",
+                        Grade: 'C',
+                        concurrency: false,
+                    });
+                } else if(idMatch![1].includes("SOC 383")){
+                    //do nothing   
+                } else if(idMatch![1].includes("SOCW 420")){
+                    //do nothing   
+                    prerequisitesOR.push({
+                        id: "ENG 101",
+                        Grade: 'C',
+                        concurrency: false,
+                    });
+                    prerequisitesOR.push({
+                        id: "ENG 101E",
+                        Grade: 'C',
+                        concurrency: false,
+                    });
+                    prerequisitesAND.push({
+                        id: "ENG 102",
+                        Grade: 'C',
+                        concurrency: false,
+                    });
+                }
+                 else {
                     const beforeOR = prerequisitesRaw[1].split(" OR ");
                     for(let i = 0; i < beforeOR.length; i++) {
                         if(beforeOR[i].includes("Minimum Grade of")){
