@@ -99,8 +99,18 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
     const selectedValue = event.target.value;
     setMajor(selectedValue);
     console.log(selectedValue);
-    setClassArray(courses as ClassList[]);
-    setClassesNotTaken(courses as ClassList[]);
+    let filteredCourses: ClassList[] = [];
+  
+    if (selectedValue === "public-health") {
+      // Filter classes that ids are in pubhealthreq.json
+      filteredCourses = courses.filter((course) => publicHealth.includes(course.id));
+    } else {
+      // Filter out classes that ids are in pubhealthreq.json
+      filteredCourses = courses.filter((course) => !publicHealth.includes(course.id));
+    }
+    console.log(filteredCourses);
+    setClassArray(filteredCourses);
+    setClassesNotTaken(filteredCourses);
   };
 
   const handleCheckboxChange = (className: string) => {

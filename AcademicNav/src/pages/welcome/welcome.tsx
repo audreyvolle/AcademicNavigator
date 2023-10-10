@@ -50,6 +50,7 @@ const Welcome = () => {
               <option value="">Select your degree option</option>
               <option value="computer-science-ba">Computer Science BA</option>
               <option value="computer-science-bs">Computer Science BS</option>
+              <option value="public-health">Public Health</option>
             </select>
             <hr></hr>
              <div className="load-container">
