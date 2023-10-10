@@ -251,75 +251,80 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
     const semestersSeasons = ['Spring', 'Fall'];
     const minGraduationYear = 2023;
     const graduationOptions: string[] = [];
-    
+  
     for (let year = minGraduationYear; year <= 2050; year++) {
       for (const semester of semestersSeasons) {
         graduationOptions.push(`${semester} ${year}`);
       }
     }
   
+    const visited = new Set<ClassList>();
+    const semesterCredits: Record<string, number> = {};
     let semesterPlacement = currentSemester;
     let currentSemesterCredits = 0;
   
-    const majorRequirements = requirements[major as keyof typeof requirements];
-    const requiredClasses = classArray.filter((c) => majorRequirements.includes(c.id));
-
-    const scheduleClass = (classToSchedule: ClassList) => {
-      // Check if any prerequisites are scheduled for the same or earlier semester
-      const earliestPrereqSemester = classToSchedule.prerequisitesANDTaken.reduce(
-        (earliestSemester, prereq) => {
-          const prereqClass = classArray.find((c) => c.id === prereq);
-          if (prereqClass && prereqClass.semester !== '' && graduationOptions.indexOf(prereqClass.semester) < graduationOptions.indexOf(earliestSemester.toString())) {
-            return prereqClass.semester;
-          }
-          return earliestSemester;
-        },
-        semesterPlacement
-      );
-    
-      // Check if class can be scheduled in the current semester
-      if (graduationOptions.indexOf(earliestPrereqSemester.toString()) > graduationOptions.indexOf(semesterPlacement)) {
-        semesterPlacement = earliestPrereqSemester.toString();
+    const dfs = (classToVisit: ClassList) => {
+      if (visited.has(classToVisit)) {
+        return;
       }
-    
-      // Schedule prerequisites before the class that requires them
-      classToSchedule.prerequisitesAND.forEach((prereq) => {
+  
+      visited.add(classToVisit);
+  
+      classToVisit.prerequisitesAND.forEach((prereq) => {
         const prereqClass = classArray.find((c) => c.id === prereq.id);
-        if (prereqClass && !prereqClass.taken) {
-          scheduleClass(prereqClass);
+        if (prereqClass) {
+          dfs(prereqClass);
         }
       });
-    
-      // Schedule the class itself
-      while (true) {
-        if (currentSemesterCredits + classToSchedule.credits <= creditHours) {
-          console.log("scheduling" + classToSchedule.id);
-          classToSchedule.semester = semesterPlacement;
-          classToSchedule.taken = true;
-          currentSemesterCredits += classToSchedule.credits;
-          break;
-        } else {
-          currentSemesterCredits = 0;
-          semesterPlacement = graduationOptions[graduationOptions.indexOf(semesterPlacement) + 1];
-        }
+  
+      // Schedule logic starts here
+      // Check if class can be scheduled in the current semester
+      if (graduationOptions.indexOf(classToVisit.semester) > graduationOptions.indexOf(semesterPlacement)) {
+        semesterPlacement = classToVisit.semester;
+        currentSemesterCredits = 0;
+      }
+  
+      // Check if there is a prerequisite for the class in the current semester
+      const hasPrerequisiteInCurrentSemester = classToVisit.prerequisitesAND.some((prereq) => {
+        const prereqClass = classArray.find((c) => c.id === prereq.id);
+        return prereqClass && prereqClass.semester === semesterPlacement;
+      });
+  
+      // If there is a prerequisite for the class in the current semester, schedule it in the next semester
+      if (hasPrerequisiteInCurrentSemester) {
+        const semesterIndex = graduationOptions.indexOf(semesterPlacement);
+        semesterPlacement = graduationOptions[semesterIndex + 1];
+        currentSemesterCredits = 0;
+      }
+  
+      // Check if there is enough space in the semester for the class
+      if (currentSemesterCredits + classToVisit.credits <= creditHours) {
+        classToVisit.semester = semesterPlacement;
+        classToVisit.taken = true;
+        updatedPrerequisitesTaken(classToVisit);
+        currentSemesterCredits += classToVisit.credits;
+      } else {
+        // If there is not enough space in the semester, move to the next semester
+        const semesterIndex = graduationOptions.indexOf(semesterPlacement);
+        semesterPlacement = graduationOptions[semesterIndex + 1];
+        currentSemesterCredits = 0;
+        classToVisit.semester = semesterPlacement;
+        classToVisit.taken = true;
+        updatedPrerequisitesTaken(classToVisit);
+        currentSemesterCredits += classToVisit.credits;
       }
     };
   
-    requiredClasses.forEach((requiredClass) => {
-     // if (requiredClass.prerequisitesANDTaken.length === requiredClass.prerequisitesAND.length) {
-       // scheduleClass(requiredClass);
-      //} else {
-        requiredClass.prerequisitesAND.forEach((prerequisite) => {
-          const prerequisiteClass = classArray.find((c) => c.id === prerequisite.id);
-          if (prerequisiteClass ) {
-            scheduleClass(prerequisiteClass);
-          }
-        });
-        scheduleClass(requiredClass); // Schedule the required class after its prerequisites
-      //}
+    const majorRequirements = requirements[major as keyof typeof requirements];
+    const requiredClasses = classArray.filter((c) => majorRequirements.includes(c.id));
+  
+    requiredClasses.forEach((classToVisit) => {
+      dfs(classToVisit);
     });
-    console.log(classArray);
-  };  
+  };
+  
+  // Call the function to generate the schedule
+  createCriticalPath();  
   
   const value = {
     //here is the value we should export
