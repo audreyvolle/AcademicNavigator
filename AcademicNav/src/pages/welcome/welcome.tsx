@@ -18,25 +18,28 @@ const Welcome = () => {
   const handleFileUpload = (e: any) => {
     console.log(classArray);
     const selectedFile = e.target.files[0];
-
+  
     if (selectedFile) {
       const reader = new FileReader();
-
+  
       reader.onload = (event) => {
         const fileContent = event.target?.result as string;
-
-        try {
-          const parsedContent = JSON.parse(fileContent);
-          setClassArray(parsedContent);
-          setIsMainViewVisible(true);
-        } catch (error) {
-          console.error("Error parsing the file content as JSON:", error);
-        }
+  
+        (async () => {
+          try {
+            const parsedContent = JSON.parse(fileContent);
+            console.log(parsedContent);
+            await setClassArray(parsedContent);
+            setIsMainViewVisible(true);
+          } catch (error) {
+            console.error("Error parsing the file content as JSON:", error);
+          }
+        })();
       };
       reader.readAsText(selectedFile);
     }
   };
-
+  
   return (
     <>
       {major === "" ? <div className="welcome-container">

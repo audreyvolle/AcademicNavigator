@@ -316,15 +316,12 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
     };
   
     const majorRequirements = requirements[major as keyof typeof requirements];
-    const requiredClasses = classArray.filter((c) => majorRequirements.includes(c.id));
+    const requiredClasses = classArray.filter((c) => majorRequirements?.includes(c.id));
   
     requiredClasses.forEach((classToVisit) => {
       dfs(classToVisit);
     });
   };
-  
-  // Call the function to generate the schedule
-  createCriticalPath();  
   
   const value = {
     //here is the value we should export
