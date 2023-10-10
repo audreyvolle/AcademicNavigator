@@ -39,9 +39,144 @@ const Modal = ({ onClose }: ModalProps) => (
   </div>
 );
 
+interface ModalPropsDR {
+  onDRClose: () => void;
+  selectedMajor: string;
+}
+
+const ModalDR = ({ onDRClose, selectedMajor }: ModalPropsDR) => {
+  let content;
+
+  // Determine content based on selected major
+  if (selectedMajor === "computer-science-ba") {
+    content = (
+      <div>
+        <h3>Computer Science BA Degree Requirements</h3>
+        <ul>
+          <li>
+            <strong>CS: </strong>111, 140, 150, 234, 286, 314, 325, 330, 340, 360, 425, 447, 499
+          </li>
+          <li>
+            <strong>MATH: </strong>150, 223 or 224
+          </li>
+          <li>
+            <strong>STAT: </strong>224
+          </li>
+          <li>
+            <strong>Two Computing Electives:</strong> CS 321, CS 382, CS 423, CS 434, CS 438, CS 454, CS 456, CS 482, CS 490, CS 495, MATH 465
+          </li>
+          <li>
+            One two-semester foreign language sequence (101-102)
+          </li>
+          <li>
+            One Minor (or Second Major)
+          </li>
+        </ul>
+      </div>
+    );
+  } else if (selectedMajor === "computer-science-bs") {
+    content = (
+      <div>
+        <h3>Computer Science BS Degree Requirements</h3>
+        <ul>
+          <li>
+            <strong>CS: </strong>111, 140, 150, 234, 286, 314, 325, 330, 340, 360, 425, 447, 499
+          </li>
+          <li>
+            <strong>MATH: </strong>150, 152, 223 or 224
+          </li>
+          <li>
+            <strong>STAT: </strong>224 or 380
+          </li>
+          <li>
+            <strong>One Laboratory Science Sequence: </strong>PHYS 141/151L & 142/152L or CHEM 121A/125A & 121B/125B or CHEM 131/135 & 121B/125B
+          </li>
+          <li>
+            <strong>One Additional Science Lab Elective: </strong>BIOL 150, CHEM 121A/125A, CHEM 131/135, PHYS 141/151L, or PHYS 201/201L
+          </li>
+          <li>
+            <strong>Two Math Electives: </strong>MATH 250, 321, or 423
+          </li>
+          <li>
+            <strong>Five Computing Electives: </strong>CS 321, CS 382, CS 423, CS 434, CS 438, CS 454, CS 456, CS 482, CS 490, CS 495, ECE 381, ECE 482, ECE 483, or MATH 465
+          </li>
+        </ul>
+      </div>
+    );
+  } else if (selectedMajor === "public-health") {
+    content = (
+      <div>
+        <h3>Public Health Degree Requirements</h3>
+        <ul>
+          <li>
+            <strong>PBHE: </strong>PBHE 111, PBHE 305, PBHE 353, PBHE 363, PBHE 370, PBHE 375, PBHE 405, PBHE 410, PBHE 420, PBHE 455, PBHE 490, PBHE 491, PBHE 495, PBHE 498, PBHE 499,
+          </li>
+          <li>
+            <strong>Approved Major Electives </strong>15 or more hours from the following or from appropriate disciplines approved by the advisor:
+          </li>
+          <li>
+            ACS 304, 311, 370
+          </li>
+          <li>
+            ANTH 352, 366
+          </li>
+          <li>
+            CJ 311, 420, 464
+          </li>
+          <li>
+            GEOG 205, 404, 418, 454
+          </li>
+          <li>
+            KIN 211
+          </li>
+          <li>
+            MC 325, 452, 472
+          </li>
+          <li>
+            NURS 234
+          </li>
+          <li>
+            NUTR 250, 375
+          </li>
+          <li>
+            PBHE 210, 213, 220, 230, 240, 462, 489
+          </li>
+          <li>
+            PHIL 321
+          </li>
+          <li>
+            POLS 320, 370
+          </li>
+          <li>
+            PSYC 303
+          </li>
+          <li>
+            SOC 309, 310, 383
+          </li>
+          <li>
+            SOCW 386, 420, 454, 491
+          </li>
+        </ul>
+      </div>
+    );
+  } else {
+    content = <p>Invalid major selected</p>;
+  }
+
+  return (
+    <div className="modal">
+      <div className="modal-content">
+        {content}
+        <button onClick={onDRClose}>Close</button>
+      </div>
+    </div>
+  );
+};
+
 const MainView = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const { classArray, setCreditHours, creditHours } = useUser();
+  const [isDRModalOpen, setIsDRModalOpen] = useState(false);
+  const { classArray, setCreditHours, creditHours, major } = useUser();
 
   const openModal = () => {
     setIsModalOpen(true);
@@ -49,6 +184,14 @@ const MainView = () => {
 
   const closeModal = () => {
     setIsModalOpen(false);
+  };
+
+  const openDRModal = () => {
+    setIsDRModalOpen(true);
+  };
+
+  const closeDRModal = () => {
+    setIsDRModalOpen(false);
   };
 
   const handleCreditHoursChange = (event: any) => {
@@ -77,6 +220,7 @@ const MainView = () => {
     <div>
       <div className="main-view">
         <div className="top-bar">
+          <button className="save" onClick={openDRModal}>Degree Requirements</button>
           <label htmlFor="creditHours">Credit Hours Per Semester:</label>
           <input
             type="number"
@@ -117,6 +261,7 @@ const MainView = () => {
         </div>
       </div>
       {isModalOpen && <Modal onClose={closeModal} />}
+      {isDRModalOpen && <ModalDR onDRClose={closeDRModal} selectedMajor={major} />}
     </div>
   );
 }
