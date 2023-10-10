@@ -14,20 +14,47 @@ h2 {
     color: #333;
     text-align: center;
 }
-
-.description {
-    text-align: center;
-    font-size: 1rem;
-    margin-bottom: 20px;
-    color: #666;
+.SideBarHeader{
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 12px;
+    .description {
+        text-align: center;
+        font-size: 1rem;
+        margin-bottom: 20px;
+        color: #666;
+    }
+    .ButtonGroup {
+        display: flex;
+        justify-content: space-between;
+        .RadioButton {
+          display: flex;
+          justify-content: center;
+          margin-top: 5px;
+          label {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            margin-bottom: 0;
+            margin-left: 5px;
+          }
+          input{
+            width: auto;
+            height: auto;
+            margin: 0;
+          }
+        }
+      }
 }
 .classesContainer{
     max-height: 60vh;
-    overflow-y: scroll;
+    overflow-y: auto;
     background-color: white;
     border: 1px solid #ccc;
 }
-
 .dndnode {
     background-color: #fff;
     padding: 10px;

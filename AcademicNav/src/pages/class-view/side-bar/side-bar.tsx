@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useUser } from '../../../Providers/UserProv';
 import './side-bar.scss';
 import questionMark from '/public/images/question-mark.png';
@@ -45,7 +45,8 @@ const Modal = ({ onClose }: ModalProps) => (
 const SideBar = () => {
   const {classesNotTaken, setClassesNotTaken} = useUser();
   const [isModalOpen, setIsModalOpen] = useState(false);
-  
+  const [isChecked, setIsChecked] = useState<"ID"|"Name">("ID");
+  const [searchText, setSearchText] = useState<string>("");
   const onDragStart = (event: any, nodeType: any, nodeId: string) => {
     event.dataTransfer.setData('application/reactflow', nodeType);
     event.dataTransfer.effectAllowed = 'move';
@@ -66,9 +67,14 @@ const SideBar = () => {
   const closeModal = () => {
     setIsModalOpen(false);
   };
+
+  useEffect(() => {
+    console.log(searchText);
+  }, [searchText]);
+
   return (
     <aside>
-      <div>
+      <div className='SideBarHeader'>
         <h2>
           Class List
           <button className="help-button" onClick={openModal}>
@@ -82,20 +88,69 @@ const SideBar = () => {
         <div className="description">
           You can drag these classes into a semester on the left
         </div>
+        <input className="SearchBar" type="text" placeholder={`Search class by ${isChecked}`}
+        onChange={(e)=>{setSearchText(e.target.value)}}
+        value={searchText}
+        />
+          <div className='ButtonGroup'>
+            <div className='RadioButton'>
+              <input type="radio" id="ID" checked={isChecked==="ID"?true:false} value="ID" 
+              onChange={()=>{
+                setIsChecked("ID");
+              }}/>
+              <label>Search By ID</label>
+            </div>
+            <div className='RadioButton'>
+              <input type="radio" id="Name" checked={isChecked==="Name"?true:false}
+              onChange={()=>{
+                setIsChecked("Name");
+              }} value="Name"/>
+              <label>Search By Name</label>
+            </div>
+          </div>
       </div>
       <div className='classesContainer'>
-      {classesNotTaken.map((classItem: ClassList) => (
-        <div
-          key={classItem.id}
-          className="dndnode"
-          onDragStart={(event) => onDragStart(event, classItem.title, classItem.id)}
-          onDragEnd={(event) => onDragEnd(event, classItem.id)}
-          draggable
-        >
-          {classItem.id} - {classItem.title}
-        </div>
-      ))}
+      {classesNotTaken.map((classItem: ClassList) => {
+
+        if (!searchText){
+          return (
+          <div
+            key={classItem.id}
+            className="dndnode"
+            onDragStart={(event) => onDragStart(event, classItem.title, classItem.id)}
+            onDragEnd={(event) => onDragEnd(event, classItem.id)}
+            draggable
+          >
+            {classItem.id} - {classItem.title}
+          </div>)
+        } else {
+          if(classItem.id.toLowerCase().includes(searchText.toLocaleLowerCase()) && isChecked==="ID"){
+            return (
+              <div
+                key={classItem.id}
+                className="dndnode"
+                onDragStart={(event) => onDragStart(event, classItem.title, classItem.id)}
+                onDragEnd={(event) => onDragEnd(event, classItem.id)}
+                draggable
+              >
+                {classItem.id} - {classItem.title}
+              </div>)
+          } else if(classItem.title.toLowerCase().includes(searchText.toLocaleLowerCase()) && isChecked==="Name"){
+              return (
+                <div
+                  key={classItem.id}
+                  className="dndnode"
+                  onDragStart={(event) => onDragStart(event, classItem.title, classItem.id)}
+                  onDragEnd={(event) => onDragEnd(event, classItem.id)}
+                  draggable
+                >
+                  {classItem.id} - {classItem.title}
+                </div>)
+          }
+        }
+      })}
       </div>
+        
       {isModalOpen && <Modal onClose={closeModal} />}
     </aside>
   );
