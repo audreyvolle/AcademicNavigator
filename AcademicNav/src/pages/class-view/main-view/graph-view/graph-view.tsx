@@ -457,19 +457,27 @@ function findEdges(prerequisites: PrerequisiteType[], classes: any[], edgeArray:
     return edgeCount
 }
 
-function customSort(arr: string[]): string[] {//sorting the semesters by year and Fall/Spring
+function customSort(arr: string[]): string[] {
+    if (!arr) {
+      return [];
+    }
+  
     return arr.sort((a, b) => {
-        const aYear = parseInt(a.match(/\d+/)[0])
-        const bYear = parseInt(b.match(/\d+/)[0])
-        const aSeason = a.includes("Spring") ? 0 : 1
-        const bSeason = b.includes("Spring") ? 0 : 1
-
-        if (aYear !== bYear) {
-            return aYear - bYear
-        }
-        return aSeason - bSeason
+      const aMatch = a.match(/\d+/);
+      const bMatch = b.match(/\d+/);
+  
+      const aYear = aMatch ? parseInt(aMatch[0]) : 0;
+      const bYear = bMatch ? parseInt(bMatch[0]) : 0;
+  
+      const aSeason = a.includes("Spring") ? 0 : 1;
+      const bSeason = b.includes("Spring") ? 0 : 1;
+  
+      if (aYear !== bYear) {
+        return aYear - bYear;
+      }
+      return aSeason - bSeason;
     });
-}
+  }
 
 function semesterGreaterThan(left: string, right: string): boolean { //example: Fall 2023 as left and Spring 2023 as right. Will return true since Fall 2023 is later than Spring 2023
     console.log("Left: " + left + " Right: " + right)
