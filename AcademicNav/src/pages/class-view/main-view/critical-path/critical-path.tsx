@@ -44,16 +44,16 @@ const fullMajorNames = {
 };
 
 const CriticalPath = () => {
-  const { selectedValue, setSelectedValue } = useUser();
+  const { major, setMajor } = useUser();
   const [isModalOpen, setIsModalOpen] = useState(false);
-  console.log(selectedValue);
-  const major = fullMajorNames[selectedValue as keyof typeof fullMajorNames];
+  console.log(major);
+  const majorName = fullMajorNames[major as keyof typeof fullMajorNames];
 
-  const isInvalidMajor = !svgFiles.hasOwnProperty(selectedValue);
+  const isInvalidMajor = !svgFiles.hasOwnProperty(major);
 
   function handleMajorDropdownChange(event: React.ChangeEvent<HTMLSelectElement>) {
     const selectedValue = event.target.value;
-    setSelectedValue(selectedValue);
+    setMajor(selectedValue);
   }
 
   const openModal = () => {
@@ -69,25 +69,25 @@ const CriticalPath = () => {
       {isInvalidMajor ? (
         <div>
           <h1 className='critical-path-heading'>Select Your Major</h1>
-          <select value={selectedValue} onChange={(e) => { handleMajorDropdownChange(e) }} className='major-dropdown'>
+          <select value={major} onChange={(e) => { handleMajorDropdownChange(e) }} className='major-dropdown'>
             <option value="computer-science-ba">Computer Science BA</option>
             <option value="computer-science-bs">Computer Science BS</option>
           </select>
         </div>
       ) : (
         <div>
-  <div className="heading-wrapper">
-    <h1 className='critical-path-heading'>
-      {major} Critical Path
-    </h1>
-    <button className="legend" onClick={openModal}>Legend</button>
-  </div>
-  <img
-    className='critical-path-img'
-    src={svgFiles[selectedValue as keyof typeof svgFiles]}
-    alt={`SVG for ${selectedValue}`}
-  />
-</div>
+          <div className="heading-wrapper">
+            <h1 className='critical-path-heading'>
+              {majorName} Critical Path
+            </h1>
+            <button className="legend" onClick={openModal}>Legend</button>
+          </div>
+          <img
+            className='critical-path-img'
+            src={svgFiles[major as keyof typeof svgFiles]}
+            alt={`SVG for ${major}`}
+          />
+        </div>
       )}
       {isModalOpen && <Modal onClose={closeModal} />}
     </div>

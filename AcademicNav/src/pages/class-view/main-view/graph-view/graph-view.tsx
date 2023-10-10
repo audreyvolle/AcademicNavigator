@@ -134,9 +134,9 @@ const GraphView = () => {
             if (value.prerequisitesAND.length > 0) {
                 edgeCount = findEdges(value.prerequisitesAND, classArray, edges, value.id, edgeCount);
             }
-            if (value.prerequisitesOR.length > 0) {
+            /*if (value.prerequisitesOR.length > 0) {
                 edgeCount = findEdges(value.prerequisitesOR, classArray, edges, value.id, edgeCount);
-            }
+            }*/
             semesterClassCount[parentId]++
         })
         setIsLoading(false)
@@ -218,11 +218,11 @@ const GraphView = () => {
                                     triggerWarning("Missing Prerequisites for " + classToMove.id + " " + classToMove.title)
                                     validAddition = false
                                 }
-                                else if (reqOR.length > 0 && !reqOR.some((item) => item.taken === true)) {
+                                /*else if (reqOR.length > 0 && !reqOR.some((item) => item.taken === true)) {
                                     console.log("Third Drop Down Restriction")
                                     triggerWarning("Missing Prerequisites for " + classToMove.id + " " + classToMove.title)
                                     validAddition = false
-                                }
+                                }*/
                                 if (reqAND.length > 0) {
                                     if (reqAND.some((req) => !semesterGreaterThan(element.id, req.semester))) {
                                         console.log("Fourth Drop Down Restriction")
@@ -230,13 +230,13 @@ const GraphView = () => {
                                         validAddition = false
                                     }
                                 }
-                                if (reqOR.length > 0) {
+                                /*if (reqOR.length > 0) {
                                     if (!reqOR.some((req) => semesterGreaterThan(element.id, req.semester))) {
                                         console.log("Fifth Drop Down Restriction")
                                         triggerWarning("Class " + classToMove.id + " " + classToMove.title + " cannot be in the same semester or before one of it's prerequisites")
                                         validAddition = false
                                     }
-                                }
+                                }*/
                                 const semesterClasses = classArray.filter((classes) => classes.semester === element.id);
                                 let currentCreditHours = 0;
                                 semesterClasses.forEach(function (classes) { currentCreditHours += classes.credits })

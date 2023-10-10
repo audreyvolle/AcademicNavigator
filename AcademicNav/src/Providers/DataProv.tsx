@@ -14,23 +14,13 @@ type TransformedData = {
     prerequisitesRaw: string;
     prerequisitesOR: PrerequisiteType[];
     prerequisitesAND: PrerequisiteType[];
-    prerequisitesTaken: string[];
+    prerequisitesANDTaken: string[];
+    prerequisitesORTaken: string[];
     isReadyToTake: boolean;
     taken: boolean;
     description: string;
     number: number;
     semester: string;
-};
-
-interface ClassList {
-    id: string,
-    title: string,
-    credits: number,
-    prerequisites: Array<string>,
-    prerequisitesTaken: Array<string>,
-    isReadyToTake: boolean,
-    taken: boolean,
-    semester: string,
 };
 
 export interface exportedValue {
@@ -46,7 +36,8 @@ const initialState:exportedValue = {
             prerequisitesRaw: "",
             prerequisitesOR: [],
             prerequisitesAND: [],
-            prerequisitesTaken: [],
+            prerequisitesANDTaken: [],
+            prerequisitesORTaken: [],
             isReadyToTake: false,
             taken: false,
             description: "",
@@ -532,7 +523,8 @@ export const DataProvider = ({children}: { children: ReactNode}) => {
                 title: titleMatch ? titleMatch[1] : "",
                 credits: creditsMatch ? parseInt(creditsMatch[1], 10) : 0,
                 prerequisitesRaw: prerequisitesRaw ? prerequisitesRaw[1] : "",
-                prerequisitesTaken: [],
+                prerequisitesANDTaken: [],
+                prerequisitesORTaken: [],
                 isReadyToTake: false,
                 taken: false,
                 description: descriptionMatch ? descriptionMatch[1] : "",
