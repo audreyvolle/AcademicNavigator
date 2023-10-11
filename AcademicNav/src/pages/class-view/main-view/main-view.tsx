@@ -109,7 +109,7 @@ const ModalDR = ({ onDRClose, selectedMajor }: ModalPropsDR) => {
         <h3>Public Health Degree Requirements</h3>
         <ul>
           <li>
-            <strong>PBHE: </strong>PBHE 111, PBHE 305, PBHE 353, PBHE 363, PBHE 370, PBHE 375, PBHE 405, PBHE 410, PBHE 420, PBHE 455, PBHE 490, PBHE 491, PBHE 495, PBHE 498, PBHE 499,
+            <strong>PBHE: </strong>111, 305, 353, 363, 370, 375, 405, 410, 420, 455, 490, 491, 495, 498, 499,
           </li>
           <li>
             <strong>Approved Major Electives </strong>15 or more hours from the following or from appropriate disciplines approved by the advisor:
@@ -160,7 +160,7 @@ const ModalDR = ({ onDRClose, selectedMajor }: ModalPropsDR) => {
       </div>
     );
   } else {
-    content = <p>Invalid major selected</p>;
+    content = <p>Select a major in the Critical Path tab to view degree requirements.</p>;
   }
 
   return (
