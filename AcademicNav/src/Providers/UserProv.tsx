@@ -2,10 +2,7 @@ import { createContext, ReactNode, useContext, useEffect, useState } from "react
 import { useData } from "./DataProv";
 import computerScienceBA from '../data/Requirements/csbareq.json';
 import computerScienceBS from '../data/Requirements/csbsreq.json';
-import publicHealth from '../data/Requirements/pubhealthreq.json';
-//Think about it's a global state value. 
-//Add everything in exportValue
-//Set up the initial state
+import publicHealth from '../data/Requirements/pubhealthcore.json';
 
 export type PrerequisiteType = {
   id: string;
@@ -329,7 +326,6 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
   };
   
   const value = {
-    //here is the value we should export
     major,
     setMajor,
     handleDropdownChange,
