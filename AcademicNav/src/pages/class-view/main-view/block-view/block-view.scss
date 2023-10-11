@@ -1,22 +1,22 @@
-.dndflow {
+.dndflowb {
     flex-direction: column;
     display: flex;
     flex-grow: 1;
     height: 100%;
   }
   
-  .dndflow aside {
+  .dndflowb aside {
     border-right: 1px solid #eee;
     padding: 15px 10px;
     font-size: 12px;
     background: #fcfcfc;
   }
   
-  .dndflow aside .description {
+  .dndflowb aside .description {
     margin-bottom: 10px;
   }
   
-  .dndflow .dndnode {
+  .dndflowb .dndnode {
     height: 20px;
     padding: 4px;
     border: 1px solid #1a192b;
@@ -28,22 +28,27 @@
     cursor: grab;
   }
   
-  .dndflow .reactflow-wrapper {
+  .dndflowb .reactflow-wrapper {
     flex-grow: 1;
     height: 100%;
   }
   
-  .dndflow .selectall {
+  .dndflowb .selectall {
     margin-top: 10px;
   }
   
   @media screen and (min-width: 768px) {
-    .dndflow {
+    .dndflowb {
       flex-direction: row;
     }
   
-    .dndflow aside {
+    .dndflowb aside {
       width: 20%;
       max-width: 250px;
     }
   }
+
+/**/
+.dndflowb .react-flow__handle {
+    display: none;
+}
