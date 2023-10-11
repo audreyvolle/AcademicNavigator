@@ -87,24 +87,58 @@ const SideBar = () => {
             message += hoveredNode.id + "\n"
             message += hoveredNode.title + "\n"
             message += "Credit Hours: " + hoveredNode.credits + "\n"
-            if (hoveredNode.prerequisitesAND.length > 0) {
+            if (hoveredNode.prerequisitesAND.length > 0 || hoveredNode.prerequisitesOR.length > 0) {
                 message += "Prerequisites: "
-                for (let i = 0; i < hoveredNode.prerequisitesAND.length; i++) {
-                    message += hoveredNode.prerequisitesAND[i].id
-                    if (i != hoveredNode.prerequisitesAND.length - 1 && hoveredNode.prerequisitesAND.length != 2) {
-                        message += ", "
+                if (hoveredNode.prerequisitesAND.length > 0 && hoveredNode.prerequisitesOR.length > 0) {
+                    for (let i = 0; i < hoveredNode.prerequisitesAND.length; i++) {
+                        message += hoveredNode.prerequisitesAND[i].id
+                        if (hoveredNode.prerequisitesAND.length != 1) {
+                            message += ", "
+                        }
+                        if (i === hoveredNode.prerequisitesAND.length - 1) {
+                            message += " and "
+                        }
                     }
-                    if (i === hoveredNode.prerequisitesAND.length - 2) {
-                        message += " and "
+                    for (let i = 0; i < hoveredNode.prerequisitesOR.length; i++) {
+                        message += hoveredNode.prerequisitesOR[i].id
+                        if (i != hoveredNode.prerequisitesOR.length - 1 && hoveredNode.prerequisitesOR.length != 2) {
+                            message += ", "
+                        }
+                        if (i === hoveredNode.prerequisitesOR.length - 2) {
+                            message += " or "
+                        }
                     }
                 }
+                else if (hoveredNode.prerequisitesAND.length > 0) {
+                    for (let i = 0; i < hoveredNode.prerequisitesAND.length; i++) {
+                        message += hoveredNode.prerequisitesAND[i].id
+                        if (i != hoveredNode.prerequisitesAND.length - 1 && hoveredNode.prerequisitesAND.length != 2) {
+                            message += ", "
+                        }
+                        if (i === hoveredNode.prerequisitesAND.length - 2) {
+                            message += " and "
+                        }
+                    }
+                }
+                else if (hoveredNode.prerequisitesOR.length > 0) {
+                    for (let i = 0; i < hoveredNode.prerequisitesOR.length; i++) {
+                        message += hoveredNode.prerequisitesOR[i].id
+                        if (i != hoveredNode.prerequisitesOR.length - 1 && hoveredNode.prerequisitesOR.length != 2) {
+                            message += ", "
+                        }
+                        if (i === hoveredNode.prerequisitesOR.length - 2) {
+                            message += " or "
+                        }
+                    }
+                }
+                
             }
 
             // Use setTimeout to show the NodeInfoBox after 3 seconds
             const timeout = setTimeout(() => {
                 if (classId === hoveredNode.id) {
                     setInfoBoxMessage(message)
-                    console.log(message)
+                    //console.log(message)
                     setInfoBoxVisible(true)
                     // Set a state to make the NodeInfoBox visible
                     // You can store additional node information in state if needed
@@ -221,7 +255,7 @@ const SideBar = () => {
               <NodeInfoBox
                   node={infoBoxMessage}
                   isVisible={infoBoxVisible}
-                  style={{ top: `${mousePosition.y}px`, left: `${mousePosition.x}px` }}
+                  style={{ top: `${mousePosition.y}px`, left: `${mousePosition.x-75}px` }}
               />
       </div>
         
