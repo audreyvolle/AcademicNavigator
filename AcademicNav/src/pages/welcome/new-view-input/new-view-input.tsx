@@ -49,7 +49,7 @@ interface ClassList {
 }
 
 function NewView() {
-  const { handleContinueClick, handleSkipClick, handleCheckboxChange, selectedClasses, classArray, setCreditHours, setCurrentSemester, setGraduationSemester, setCriticalPath } = useUser();
+  const { handleContinueClick, handleSkipClick, handleCheckboxChange, selectedClasses, classArray, setCreditHours, setCurrentSemester, setCriticalPath } = useUser();
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const currentDate = new Date();
@@ -59,39 +59,11 @@ function NewView() {
   // Create an array of semester names
   const semesters = ['Spring', 'Fall'];
 
-  // Function to calculate graduation semester options based on current semester
-  function calculateGraduationSemesterOptions(currentSemesterValue: any) {
-    const parts = currentSemesterValue.split(' ');
-    const currentSemester = parts[0];
-    const currentYear = parseInt(parts[1]);
-
-    // Calculate the minimum year for graduation
-    let minGraduationYear = currentYear + 4;
-    if (currentSemester === 'Fall' && currentMonth <= 6) {
-      minGraduationYear--;
-    }
-
-    // Generate graduation semester options
-    const graduationOptions = [];
-    for (let year = minGraduationYear; year <= 2050; year++) {
-      for (const semester of semesters) {
-        graduationOptions.push(`${semester} ${year}`);
-      }
-    }
-
-    return graduationOptions;
-  }
-
   useEffect(() => {
     // Get references to the current and graduation semester dropdowns
     const currentSemesterField = document.getElementById('current') as HTMLSelectElement;
     setCurrentSemester(currentSemesterField.value);
-    const graduationSemesterField = document.getElementById('graduation') as HTMLSelectElement;
-
-    // Calculate and set the initial graduation semester value to +4 years from the current semester
-    const initialGraduationSemester = calculateGraduationSemesterOptions(currentSemesterField.value)[4]; // Change the index as needed
-    setGraduationSemester(initialGraduationSemester);
-
+    
     // Populate the current semester dropdown
     for (let year = currentYear; year <= 2050; year++) {
       for (const semester of semesters) {
@@ -102,32 +74,9 @@ function NewView() {
         option.value = `${semester} ${year}`;
         option.text = `${semester} ${year}`;
         currentSemesterField?.appendChild(option);
-        const option2 = document.createElement('option');
-        option2.value = `${semester} ${year}`;
-        option2.text = `${semester} ${year}`;
-        graduationSemesterField?.appendChild(option2);
       }
     }
-
     setCurrentSemester(currentSemesterField.value);
-    setGraduationSemester(graduationSemesterField.value);
-
-    // Event listener for when the user selects a current semester
-    currentSemesterField?.addEventListener('change', function () {
-      const selectedCurrentSemester = currentSemesterField.value;
-      const graduationSemesterOptions = calculateGraduationSemesterOptions(selectedCurrentSemester);
-
-      // Clear existing options in graduation semester dropdown
-      graduationSemesterField.innerHTML = '';
-
-      // Add the calculated options to the graduation semester dropdown
-      for (const optionValue of graduationSemesterOptions) {
-        const option2 = document.createElement('option');
-        option2.value = optionValue;
-        option2.text = optionValue;
-        graduationSemesterField?.appendChild(option2);
-      }
-    });
   }, [currentYear, currentMonth]);
 
   const openModal = () => {
@@ -195,9 +144,6 @@ function NewView() {
 
         <label htmlFor="current">Current Semester: </label>
         <select id="current" name="current" className="input-field" onChange={(e) => setCurrentSemester(e.target.value)}></select>
-
-        <label htmlFor="graduation">Target Graduation Semester: </label>
-        <select id="graduation" name="graduation" className="input-field" onChange={(e) => setGraduationSemester(e.target.value)}></select>
 
         <div className="button-container">
           <button onClick={handleSkipClick} className="button button-secondary">Skip</button>
