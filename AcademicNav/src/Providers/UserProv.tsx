@@ -45,8 +45,6 @@ export interface exportedValue {
   setCreditHours: React.Dispatch<React.SetStateAction<number>>;
   currentSemester: string;
   setCurrentSemester: React.Dispatch<React.SetStateAction<string>>;
-  graduationSemester: string;
-  setGraduationSemester: React.Dispatch<React.SetStateAction<string>>;
   criticalPath: boolean;
   setCriticalPath: React.Dispatch<React.SetStateAction<boolean>>;
 }
@@ -58,7 +56,6 @@ const initialState: exportedValue = {
   classArray: [],
   creditHours: 15,
   currentSemester: '',
-  graduationSemester: '',
   classesNotTaken: [],
   criticalPath: false,
   setSelectedClasses: () => { },
@@ -71,7 +68,6 @@ const initialState: exportedValue = {
   setClassArray: () => { },
   setCreditHours: () => { },
   setCurrentSemester: () => { },
-  setGraduationSemester: () => { },
   setClassesNotTaken: () => { },
   setCriticalPath: () => { }
 };
@@ -85,7 +81,6 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
   const [classArray, setClassArray] = useState<ClassList[]>([]);
   const [creditHours, setCreditHours] = useState<number>(15);
   const [currentSemester, setCurrentSemester] = useState<string>("");
-  const [graduationSemester, setGraduationSemester] = useState<string>("");
   const [classesNotTaken, setClassesNotTaken] = useState<ClassList[]>([]);
   const [criticalPath, setCriticalPath] = useState<boolean>(false);
 
@@ -349,10 +344,8 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
     classArray,
     creditHours,
     currentSemester,
-    graduationSemester,
     setCreditHours,
     setCurrentSemester,
-    setGraduationSemester,
     classesNotTaken,
     setClassesNotTaken,
     criticalPath,
