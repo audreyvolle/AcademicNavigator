@@ -109,7 +109,7 @@ const ModalDR = ({ onDRClose, selectedMajor }: ModalPropsDR) => {
         <h3>Public Health Degree Requirements</h3>
         <ul>
           <li>
-            <strong>PBHE: </strong>111, 305, 353, 363, 370, 375, 405, 410, 420, 455, 490, 491, 495, 498, 499,
+            <strong>PBHE: </strong>111, 305, 353, 363, 370, 375, 405, 410, 420, 455, 490, 491, 495, 498, 499
           </li>
           <li>
             <strong>Approved Major Electives </strong>15 or more hours from the following or from appropriate disciplines approved by the advisor:
