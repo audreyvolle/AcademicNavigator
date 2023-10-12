@@ -13,11 +13,16 @@ import {
 } from 'reactflow';
 import SideBar from '../../side-bar/side-bar';
 import { useUser, PrerequisiteType } from '../../../../Providers/UserProv';
+import cselec from '../../../../data/electives/cselec.json';
+import pubheaelthelec from '../../../../data/electives/pubhealthelec.json';
+import pubheaelthcore from '../../../../data/requirements/pubhealthcore.json';
+import csbsreq from '../../../../data/requirements/csbsreq.json';
+import csbareq from '../../../../data/requirements/csbareq.json';
 
 
 //spacing
 const initspacing = 25;
-const xspacing = 175; 
+const xspacing = 175;
 const yspacing = 50
 const groupspacing = 150
 const groupxposition = 33
@@ -37,14 +42,13 @@ const semesters: string | string[] = [];
 let semesterClassCount: number[] = [];
 
 //colors
-const classColor = 'rgb(255,255,255)'
 const semesterColor = 'rgba(225,225,225,0)'
 const addSemesterColor = 'rgb(128,128,128)'
 
 const GraphView = () => {
 
     //const reactFlowWrapper = useRef(null);
-    const { classArray, setClassArray, currentSemester, creditHours } = useUser();
+    const { classArray, setClassArray, currentSemester, creditHours, major } = useUser();
     const reactFlowWrapper = useRef(null);
     const [nodes, setNodes, onNodesChange] = useNodesState([]);
     const [edges, setEdges, onEdgesChange] = useEdgesState([]);
@@ -53,13 +57,23 @@ const GraphView = () => {
     const [showWarning, setShowWarning] = useState(false);
     const [warningMessage, setWarningMessage] = useState('');
 
+    const electiveList = major === 'computer-science-ba' || major === 'computer-science-bs' ? cselec : pubheaelthelec;
+    let coreList: string | string[] = [];
+    if (major === 'computer-science-ba') {
+        coreList = csbareq;
+    } else if (major === 'computer-science-bs') {
+        coreList = csbsreq;
+    } else if (major === 'public-health') {
+        coreList = pubheaelthcore;
+    }
+
     useEffect(() => {//used to set up the semesters and classes that have a semester set on them
         //cleans up the empty semesters at the end
         if (semesters.length > 0) {
             //console.log(semesters)
             let emptySemesters = -1;
             for (let i = semesters.length; i > 0; i--) {
-                if (semesterClassCount[i-1] > 0 || (i === 1 && emptySemesters === - 1)) {
+                if (semesterClassCount[i - 1] > 0 || (i === 1 && emptySemesters === - 1)) {
                     emptySemesters = i
                     break
                 }
@@ -68,7 +82,7 @@ const GraphView = () => {
             if (emptySemesters != -1) {
                 //console.log("slicing")
                 const slicedSemesters = semesters.slice(0, emptySemesters)
-                semesters.splice(0,semesters.length)
+                semesters.splice(0, semesters.length)
                 //console.log(slicedSemesters)
                 slicedSemesters.forEach(function (value) {
                     semesters.push(value)
@@ -115,7 +129,10 @@ const GraphView = () => {
         console.log('registering the classes as nodes')
         classArray.forEach(function (value) {
             //create all the nodes and edges for the graph
-            
+            const isCore = coreList.includes(value.id);
+            // Check if the class is an elective
+            const isElective = electiveList.includes(value.id);
+            const classColor = isCore ? 'rgb(158, 158, 228)' : (isElective ? 'rgb(234, 234, 153)' : 'rgb(255,255,255)');
             parentId = semesters.findIndex(item => item === value.semester)
             if (value.semester != null && value.semester != "") {
                 nodes.push(
@@ -140,7 +157,7 @@ const GraphView = () => {
             semesterClassCount[parentId]++
         })
         setIsLoading(false)
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     const onConnect = useCallback((params: any) => setEdges((eds) => addEdge(params, eds)), []);
@@ -153,12 +170,12 @@ const GraphView = () => {
     const onDrop = useCallback(
         (event: any) => {
             event.preventDefault();
-            
+
             const reactFlowBounds = reactFlowWrapper.current as HTMLElement | null;
-            
+
             if (reactFlowBounds) {
                 const type = event.dataTransfer.getData('application/reactflow');
-                
+
                 // check if the dropped element is valid
                 if (typeof type === 'undefined' || !type) {
                     return;
@@ -207,7 +224,7 @@ const GraphView = () => {
                                         }
                                     })
                                 }
-                                
+
                                 if (reqAND.length > 0 && reqAND.some((item) => item.taken === false) && reqOR.length > 0 && !reqOR.some((item) => item.taken === true)) {
                                     console.log("First Drop Down Restriction")
                                     triggerWarning("Missing Prerequisites for " + classToMove.id + " " + classToMove.title)
@@ -246,9 +263,13 @@ const GraphView = () => {
                                     triggerWarning("This will set you over your desired credit hours of " + creditHours)
                                     validAddition = false;
                                 }
-                                if (validAddition) { 
+                                if (validAddition) {
                                     console.log("Second Success")
-                                    const newNode = 
+                                    const isCore = coreList.includes(classToMove.id);
+                                    const isElective = electiveList.includes(classToMove.id);  
+                                    const classColor = isCore ? 'rgb(158, 158, 228)' : (isElective ? 'rgb(234, 234, 153)' : 'rgb(255,255,255)');
+                              
+                                    const newNode =
                                     {
                                         id: classToMove.id,
                                         position: { x: semesterClassCount[parentId] * xspacing + initspacing, y: yspacing },
@@ -260,24 +281,24 @@ const GraphView = () => {
                                         dragging: false,
                                         focusable: false
                                     }
-                            
+
                                     semesterClassCount[parentId]++
                                     if (classToMove) {
                                         // Set taken to true for the class being moved
                                         const updatedClassArray = classArray.map((classItem) =>
-                                            classItem === classToMove ? { ...classItem, taken: true, semester: element.id} : classItem // MISAEL CHANGE THIS TO ALSO UPDATE THE SEMESTER AND OTHER VARIABLES!!
+                                            classItem === classToMove ? { ...classItem, taken: true, semester: element.id } : classItem // MISAEL CHANGE THIS TO ALSO UPDATE THE SEMESTER AND OTHER VARIABLES!!
                                         );                                                                                             // I WILL OK!!!
                                         setClassArray(updatedClassArray);
                                         console.log(classArray);
                                     }
                                     setNodes((nds) => nds.concat(newNode));
                                 }
-                                
-                                
-                                
+
+
+
                             }
-                            
-                            
+
+
                         }
                     }
                 }
@@ -321,7 +342,7 @@ const GraphView = () => {
                         //setNodes(nodes)
                         return
                     }
-                    
+
                 } else {
                     triggerWarning("Cannot Remove a Semester that has classes")
                 }
@@ -334,7 +355,7 @@ const GraphView = () => {
         else {
             console.log("class node doubleclicked")
             const classInfo = classArray.find((element) => element.id === node.id)
-            const semesterId = semesters.findIndex((semester) => semester === classInfo.semester)
+            const semesterId = semesters.findIndex((semester) => semester === classInfo?.semester)
 
             semesterClassCount[semesterId]--
             const updatedNodes = nodes.filter((element) => element.id !== node.id);
@@ -347,7 +368,7 @@ const GraphView = () => {
 
             return
         }
-    },[classArray, nodes, setClassArray, setNodes]);
+    }, [classArray, nodes, setClassArray, setNodes]);
 
     const onClick = useCallback((event: React.MouseEvent, node: Node) => { //used for the add semester button
         event.preventDefault()
@@ -365,7 +386,7 @@ const GraphView = () => {
             }
             semesters.push(semOutput)
             nodes.push({
-                id: semOutput,  
+                id: semOutput,
                 data: { label: semOutput },
                 position: { x: groupxposition, y: groupcount * groupspacing },
                 className: 'light',
@@ -407,38 +428,38 @@ const GraphView = () => {
         }, warningMessageDuration);
     };
 
-return (
-    <div className="dndflow">
-        <ReactFlowProvider>
-            <div className="reactflow-wrapper" ref={reactFlowWrapper} style={{ width: '66vw', height: '80vh' }} >
-                <ReactFlow
-                    nodes={nodes}
-                    edges={edges}
-                    onNodesChange={onNodesChange}
-                    onEdgesChange={onEdgesChange}
-                    onConnect={onConnect}
-                    onInit={setReactFlowInstance}
-                    onDrop={onDrop}
-                    onDragOver={onDragOver}
-                    panOnScroll={true}
-                    panOnDrag={false}
-                    zoomOnDoubleClick={false}
-                    onNodeClick={onClick}
-                    onNodeDoubleClick={ onNodeDoubleClick }
+    return (
+        <div className="dndflow">
+            <ReactFlowProvider>
+                <div className="reactflow-wrapper" ref={reactFlowWrapper} style={{ width: '66vw', height: '80vh' }} >
+                    <ReactFlow
+                        nodes={nodes}
+                        edges={edges}
+                        onNodesChange={onNodesChange}
+                        onEdgesChange={onEdgesChange}
+                        onConnect={onConnect}
+                        onInit={setReactFlowInstance}
+                        onDrop={onDrop}
+                        onDragOver={onDragOver}
+                        panOnScroll={true}
+                        panOnDrag={false}
+                        zoomOnDoubleClick={false}
+                        onNodeClick={onClick}
+                        onNodeDoubleClick={onNodeDoubleClick}
                     //fitView
-                >
-                    <Controls />
-                </ReactFlow>
-            </div>
-            <SideBar />
-            {
-                <div className={`warning-box ${showWarning ? 'show' : 'hide'}`} >
-                    <div className="message">{warningMessage}</div>
+                    >
+                        <Controls />
+                    </ReactFlow>
                 </div>
-            }
-        </ReactFlowProvider>
-    </div>
-);
+                <SideBar />
+                {
+                    <div className={`warning-box ${showWarning ? 'show' : 'hide'}`} >
+                        <div className="message">{warningMessage}</div>
+                    </div>
+                }
+            </ReactFlowProvider>
+        </div>
+    );
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -459,25 +480,25 @@ function findEdges(prerequisites: PrerequisiteType[], classes: any[], edgeArray:
 
 function customSort(arr: string[]): string[] {
     if (!arr) {
-      return [];
+        return [];
     }
-  
+
     return arr.sort((a, b) => {
-      const aMatch = a.match(/\d+/);
-      const bMatch = b.match(/\d+/);
-  
-      const aYear = aMatch ? parseInt(aMatch[0]) : 0;
-      const bYear = bMatch ? parseInt(bMatch[0]) : 0;
-  
-      const aSeason = a.includes("Spring") ? 0 : 1;
-      const bSeason = b.includes("Spring") ? 0 : 1;
-  
-      if (aYear !== bYear) {
-        return aYear - bYear;
-      }
-      return aSeason - bSeason;
+        const aMatch = a.match(/\d+/);
+        const bMatch = b.match(/\d+/);
+
+        const aYear = aMatch ? parseInt(aMatch[0]) : 0;
+        const bYear = bMatch ? parseInt(bMatch[0]) : 0;
+
+        const aSeason = a.includes("Spring") ? 0 : 1;
+        const bSeason = b.includes("Spring") ? 0 : 1;
+
+        if (aYear !== bYear) {
+            return aYear - bYear;
+        }
+        return aSeason - bSeason;
     });
-  }
+}
 
 function semesterGreaterThan(left: string, right: string): boolean { //example: Fall 2023 as left and Spring 2023 as right. Will return true since Fall 2023 is later than Spring 2023
     console.log("Left: " + left + " Right: " + right)
@@ -504,7 +525,7 @@ function semesterGreaterThan(left: string, right: string): boolean { //example: 
     else {
         return false
     }
-        
+
 }
 
 export default GraphView;
