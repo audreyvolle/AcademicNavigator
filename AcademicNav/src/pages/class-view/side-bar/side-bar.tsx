@@ -102,6 +102,12 @@ const SideBar = () => {
     if (hoveredNode) {
       message += hoveredNode.id + "\n"
       message += hoveredNode.title + "\n"
+      if (coreList.includes(hoveredNode.id)) {
+          message += "Required Course for Major\n"
+      }
+      if (electiveList.includes(hoveredNode.id)) {
+          message += "Elective \n"
+      }
       message += "Credit Hours: " + hoveredNode.credits + "\n"
       if (hoveredNode.prerequisitesAND.length > 0 || hoveredNode.prerequisitesOR.length > 0) {
         message += "Prerequisites: "
