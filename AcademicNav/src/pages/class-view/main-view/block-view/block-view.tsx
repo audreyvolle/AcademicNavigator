@@ -11,7 +11,11 @@ import SideBar from '../../side-bar/side-bar';
 import './block-view.scss';
 import { useUser } from '../../../../Providers/UserProv';
 import { toPng } from 'html-to-image';
-
+import cselec from '../../../../data/electives/cselec.json';
+import pubheaelthelec from '../../../../data/electives/pubhealthelec.json';
+import pubheaelthcore from '../../../../data/requirements/pubhealthcore.json';
+import csbsreq from '../../../../data/requirements/csbsreq.json';
+import csbareq from '../../../../data/requirements/csbareq.json';
 
 //formatting
 
@@ -26,7 +30,6 @@ const classWidth = 350;
 const printWidth = 875;
 
 //colors
-const takenColor = 'rgba(255,255,255)';
 const readyColor = 'rgb(255,255,255)';
 const unavailableColor = 'rgba(255,153,153,1)';
 let setColor = 'rgb(255,255,255)';
@@ -44,7 +47,7 @@ const warningMessageDuration = 3500;
 
 
 const BlockView = () => {
-    const { classArray, setClassArray, currentSemester, creditHours } = useUser();
+    const { classArray, setClassArray, currentSemester, creditHours, major } = useUser();
     const reactFlowWrapper = useRef(null);
     const [reactFlowInstance, setReactFlowInstance] = useState<ReactFlowInstance | null>(null);
     const [nodes, setNodes, onNodesChange] = useNodesState([]);
@@ -52,6 +55,15 @@ const BlockView = () => {
     const [showWarning, setShowWarning] = useState(false);
     const [warningMessage, setWarningMessage] = useState('');
 
+    const electiveList = major === 'computer-science-ba' || major === 'computer-science-bs' ? cselec : pubheaelthelec;
+    let coreList: string | string[] = [];
+    if (major === 'computer-science-ba') {
+        coreList = csbareq;
+    } else if (major === 'computer-science-bs') {
+        coreList = csbsreq;
+    } else if (major === 'public-health') {
+        coreList = pubheaelthcore;
+    }
 
     useEffect(() => {
 
@@ -86,7 +98,7 @@ const BlockView = () => {
         if (!semesters.includes(currentSemester)) {
             semesters.push(currentSemester);
         }
-        
+
 
 
         classArray.forEach(function (value) {
@@ -129,7 +141,7 @@ const BlockView = () => {
             data: { label: 'Add Semester' },
             position: { x: spacing + (col * horizontalSpacing), y: spacing + (groupCount * verticalSpacing) },
             className: 'light',
-            style: { backgroundColor: addSemesterColor, width: semWidth, height: semHeight, fontSize: 30, verticalAlign: 'middle'},
+            style: { backgroundColor: addSemesterColor, width: semWidth, height: semHeight, fontSize: 30, verticalAlign: 'middle' },
             selectable: false,
             connectable: false,
             draggable: false
@@ -139,35 +151,29 @@ const BlockView = () => {
         //Add classes to the display
         classArray.forEach(function (value) {
             //set color based off class status
-            if (value.taken) {
-                setColor = takenColor
-            }
-            else if (value.isReadyToTake) {
-                setColor = readyColor
-            }
-            else {
-                setColor = unavailableColor
-            }
+            const isCore = coreList.includes(value.id);
+            const isElective = electiveList.includes(value.id);
+            const setColor = isCore ? 'rgb(158, 158, 228)' : (isElective ? 'rgb(234, 234, 153)' :  'rgb(255,255,255)');
 
             parentID = semesters.findIndex(item => item === value.semester)
             if (value.semester != null && value.semester != "" && value.semester != "done") {
-                
+
                 //if (!value.taken) {  //Removed condition for filtering out taken classes.
-                    nodes.push(
-                        {
-                            id: value.id,
-                            position: { x: spacing, y: 20 + (semesterClassCount[parentID] + 1) * 30 },
-                            data: { label: value.id + ": " + value.title },
-                            style: { backgroundColor: setColor, width: classWidth },
-                            parentNode: value.semester,
-                            expandParent: true,
-                            selectable: false,
-                            draggable: false,
-                            dragging: false,
-                            focusable: true,
-                            connectable: false
-                        })
-                    semesterClassCount[parentID]++
+                nodes.push(
+                    {
+                        id: value.id,
+                        position: { x: spacing, y: 20 + (semesterClassCount[parentID] + 1) * 30 },
+                        data: { label: value.id + ": " + value.title },
+                        style: { backgroundColor: setColor, width: classWidth },
+                        parentNode: value.semester,
+                        expandParent: true,
+                        selectable: false,
+                        draggable: false,
+                        dragging: false,
+                        focusable: true,
+                        connectable: false
+                    })
+                semesterClassCount[parentID]++
                 //}
             }
         })
@@ -234,9 +240,6 @@ const BlockView = () => {
                 };
                 setNodes(updatedNodes);
             }
-
-            //console.log(nodes)
-            //console.log(groupCount)
         }
 
     }, [nodes, setNodes])
@@ -317,11 +320,11 @@ const BlockView = () => {
                                     triggerWarning("Missing Prerequisites for " + classToMove.id + " " + classToMove.title)
                                     validAddition = false
                                 }
-                                /*else if (reqOR.length > 0 && !reqOR.some((item) => item.taken === true)) {
+                                else if (reqOR.length > 0 && !reqOR.some((item) => item.taken === true)) {
                                     console.log("Third Drop Down Restriction")
                                     triggerWarning("Missing Prerequisites for " + classToMove.id + " " + classToMove.title)
                                     validAddition = false
-                                }*/
+                                }
                                 if (reqAND.length > 0) {
                                     if (reqAND.some((req) => !semesterGreaterThan(element.id, req.semester))) {
                                         console.log("Fourth Drop Down Restriction")
@@ -329,13 +332,13 @@ const BlockView = () => {
                                         validAddition = false
                                     }
                                 }
-                                /*if (reqOR.length > 0) {
+                                if (reqOR.length > 0) {
                                     if (!reqOR.some((req) => semesterGreaterThan(element.id, req.semester))) {
                                         console.log("Fifth Drop Down Restriction")
                                         triggerWarning("Class " + classToMove.id + " " + classToMove.title + " cannot be in the same semester or before one of it's prerequisites")
                                         validAddition = false
                                     }
-                                }*/
+                                }
                                 const semesterClasses = classArray.filter((classes) => classes.semester === element.id);
                                 let currentCreditHours = 0;
                                 semesterClasses.forEach(function (classes) { currentCreditHours += classes.credits })
@@ -347,11 +350,15 @@ const BlockView = () => {
                                 }
 
                                 if (validAddition) {
+                                    const isCore = coreList.includes(classToMove.id);
+                                    const isElective = electiveList.includes(classToMove.id);  
+                                    const classColor = isCore ? 'rgb(158, 158, 228)' : (isElective ? 'rgb(234, 234, 153)' : 'rgb(255,255,255)');
+
                                     const newNode = {
                                         id: classToMove.id,
                                         position: { x: spacing, y: 20 + (semesterClassCount[parentID] + 1) * 30 },
                                         data: { label: classToMove.id + ": " + classToMove.title },
-                                        style: { backgroundColor: setColor, width: classWidth },
+                                        style: { backgroundColor: classColor, width: classWidth },
                                         parentNode: element.id,
                                         expandParent: true,
                                         selectable: false,
@@ -371,13 +378,13 @@ const BlockView = () => {
 
                                     setNodes((nds) => nds.concat(newNode));
                                 }
-                                
+
                             }
 
 
                         } //end of if
                     }
-                    
+
                 }
 
             }
@@ -432,7 +439,7 @@ const BlockView = () => {
                         //setNodes(nodes)
                         return
                     }
-                    
+
                 } else {
                     triggerWarning("Cannot Remove a Semester that has classes")
                 }
@@ -485,7 +492,7 @@ const BlockView = () => {
                 transform: `translate(0px, 0px)`
             }
         }).then(downloadImage);
-        
+
     }, []);
 
 
@@ -522,12 +529,12 @@ const BlockView = () => {
                         onDrop={onDrop}
                         onDragOver={onDragOver}
                         fitView
-                        >
-                    <Panel position="top-right">
+                    >
+                        <Panel position="top-right">
                             <button className="printButton" onClick={printClick} style={{ fontSize: '16px', fontWeight: 'bold' }}>
                                 Download<br />Print View
-                        </button>
-                    </Panel>
+                            </button>
+                        </Panel>
                     </ReactFlow>
                 </div>
                 <SideBar />
@@ -664,7 +671,7 @@ function fillSemesters(target: string): string[] {
 
     //add the formatted semester to the array
     filled.push(sem);
-    
+
 
     return filled
 }
