@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useUser } from '../../../Providers/UserProv';
 import './side-bar.scss';
 import questionMark from '/public/images/question-mark.png';
+import NodeInfoBox from './info-box'
 
 type PrerequisiteType = {
   id: string;
@@ -46,19 +47,115 @@ const SideBar = () => {
   const {classesNotTaken, setClassesNotTaken} = useUser();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isChecked, setIsChecked] = useState<"ID"|"Name">("ID");
-  const [searchText, setSearchText] = useState<string>("");
+    const [searchText, setSearchText] = useState<string>("");
+    const [timeoutId, setTimeoutId] = useState<NodeJS.Timeout | null>(null);
+    const [infoBoxMessage, setInfoBoxMessage] = useState<string | null>('')
+    const [infoBoxVisible, setInfoBoxVisible] = useState(false)
+    const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
+    const infoBoxDelayTime = 1500;
+
   const onDragStart = (event: any, nodeType: any, nodeId: string) => {
     event.dataTransfer.setData('application/reactflow', nodeType);
     event.dataTransfer.effectAllowed = 'move';
     event.dataTransfer.setData('nodeId', nodeId);
-  };
+    };
+
+    useEffect(() => {
+        // Track mouse position
+        const handleMouseMove = (event) => {
+            setMousePosition({ x: event.clientX, y: event.clientY });
+        };
+        window.addEventListener('mousemove', handleMouseMove);
+
+        return () => {
+            window.removeEventListener('mousemove', handleMouseMove);
+        };
+    }, []);
 
   const onDragEnd = (event: any, nodeId: string) => {
     console.log(event);
     setClassesNotTaken((prevClasses) =>
       prevClasses.filter((classItem) => !classItem.taken)
     );
-  };
+    };
+
+    const handleNodeHover = (event, classId: string) => {
+        //console.log("handleNodeHover")
+        const hoveredNode = classesNotTaken.find((c) => c.id === classId)
+        let message = ""
+        if (hoveredNode) {
+            message += hoveredNode.id + "\n"
+            message += hoveredNode.title + "\n"
+            message += "Credit Hours: " + hoveredNode.credits + "\n"
+            if (hoveredNode.prerequisitesAND.length > 0 || hoveredNode.prerequisitesOR.length > 0) {
+                message += "Prerequisites: "
+                if (hoveredNode.prerequisitesAND.length > 0 && hoveredNode.prerequisitesOR.length > 0) {
+                    for (let i = 0; i < hoveredNode.prerequisitesAND.length; i++) {
+                        message += hoveredNode.prerequisitesAND[i].id
+                        if (hoveredNode.prerequisitesAND.length != 1) {
+                            message += ", "
+                        }
+                        if (i === hoveredNode.prerequisitesAND.length - 1) {
+                            message += " and "
+                        }
+                    }
+                    for (let i = 0; i < hoveredNode.prerequisitesOR.length; i++) {
+                        message += hoveredNode.prerequisitesOR[i].id
+                        if (i != hoveredNode.prerequisitesOR.length - 1 && hoveredNode.prerequisitesOR.length != 2) {
+                            message += ", "
+                        }
+                        if (i === hoveredNode.prerequisitesOR.length - 2) {
+                            message += " or "
+                        }
+                    }
+                }
+                else if (hoveredNode.prerequisitesAND.length > 0) {
+                    for (let i = 0; i < hoveredNode.prerequisitesAND.length; i++) {
+                        message += hoveredNode.prerequisitesAND[i].id
+                        if (i != hoveredNode.prerequisitesAND.length - 1 && hoveredNode.prerequisitesAND.length != 2) {
+                            message += ", "
+                        }
+                        if (i === hoveredNode.prerequisitesAND.length - 2) {
+                            message += " and "
+                        }
+                    }
+                }
+                else if (hoveredNode.prerequisitesOR.length > 0) {
+                    for (let i = 0; i < hoveredNode.prerequisitesOR.length; i++) {
+                        message += hoveredNode.prerequisitesOR[i].id
+                        if (i != hoveredNode.prerequisitesOR.length - 1 && hoveredNode.prerequisitesOR.length != 2) {
+                            message += ", "
+                        }
+                        if (i === hoveredNode.prerequisitesOR.length - 2) {
+                            message += " or "
+                        }
+                    }
+                }
+                
+            }
+
+            // Use setTimeout to show the NodeInfoBox after 3 seconds
+            const timeout = setTimeout(() => {
+                if (classId === hoveredNode.id) {
+                    setInfoBoxMessage(message)
+                    //console.log(message)
+                    setInfoBoxVisible(true)
+                    // Set a state to make the NodeInfoBox visible
+                    // You can store additional node information in state if needed
+                    // Example: setSelectedNodeInfo(node);
+                }
+            }, infoBoxDelayTime);
+            setTimeoutId(timeout);
+        }
+    };
+
+    const handleNodeUnhover = () => {
+        setInfoBoxVisible(false)
+        //console.log("handleNodeUnhover")
+        if (timeoutId) {
+            clearTimeout(timeoutId);
+        }
+    };
 
   const openModal = () => {
     setIsModalOpen(true);
@@ -119,6 +216,8 @@ const SideBar = () => {
             className="dndnode"
             onDragStart={(event) => onDragStart(event, classItem.title, classItem.id)}
             onDragEnd={(event) => onDragEnd(event, classItem.id)}
+            onMouseEnter={(event) => handleNodeHover(event, classItem.id)}
+            onMouseLeave={() => handleNodeUnhover()}
             draggable
           >
             {classItem.id} - {classItem.title}
@@ -131,6 +230,8 @@ const SideBar = () => {
                 className="dndnode"
                 onDragStart={(event) => onDragStart(event, classItem.title, classItem.id)}
                 onDragEnd={(event) => onDragEnd(event, classItem.id)}
+                onMouseEnter={(event) => handleNodeHover(event, classItem.id)}
+                onMouseLeave={() => handleNodeUnhover()}
                 draggable
               >
                 {classItem.id} - {classItem.title}
@@ -142,6 +243,8 @@ const SideBar = () => {
                   className="dndnode"
                   onDragStart={(event) => onDragStart(event, classItem.title, classItem.id)}
                   onDragEnd={(event) => onDragEnd(event, classItem.id)}
+                  onMouseEnter={(event) => handleNodeHover(event, classItem.id)}
+                  onMouseLeave={() => handleNodeUnhover()}
                   draggable
                 >
                   {classItem.id} - {classItem.title}
@@ -149,6 +252,11 @@ const SideBar = () => {
           }
         }
       })}
+              <NodeInfoBox
+                  node={infoBoxMessage}
+                  isVisible={infoBoxVisible}
+                  style={{ top: `${mousePosition.y}px`, left: `${mousePosition.x-75}px` }}
+              />
       </div>
         
       {isModalOpen && <Modal onClose={closeModal} />}
