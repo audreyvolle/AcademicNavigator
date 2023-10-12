@@ -2,7 +2,8 @@ import { createContext, ReactNode, useContext, useEffect, useState } from "react
 import { useData } from "./DataProv";
 import computerScienceBA from '../data/requirements/csbareq.json';
 import computerScienceBS from '../data/requirements/csbsreq.json';
-import publicHealth from '../data/requirements/pubhealthcore.json';
+import publicHealth from '../data/requirements/pubhealthreq.json';
+import publicHealthCore from '../data/requirements/pubhealthcore.json';
 
 export type PrerequisiteType = {
   id: string;
@@ -211,7 +212,7 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
   const requirements = {
     'computer-science-ba': computerScienceBA,
     'computer-science-bs': computerScienceBS,
-    'public-health': publicHealth
+    'public-health': publicHealthCore
   };
 
   const updatedPrerequisitesTaken = (courseTaken: ClassList) => {

@@ -16,22 +16,19 @@ const Modal = ({ onClose }: ModalProps) => (
   <div className="modal">
     <div className="modal-content">
       <h3>Help</h3>
-      <p>Simply drag and drop classes to the semester you wish to take them. If this is not allowed due to a prerequisite or credit hour restriction, you will be notified.</p>
+      <p>Simply <strong>drag and drop</strong> classes to the semester you wish to take them. If this is not allowed due to a prerequisite or credit hour restriction, you will be notified. <strong>Double click</strong> to remove a class.</p>
       <ul>
         <li>
           <strong>Graph View:</strong> This tab provides a graphical representation of your schedule, allowing you to visualize prerequisite and post-requisite relationships. Double click a class to remove it.
         </li>
         <li>
-          <strong>Block View:</strong> This tab displays your schedule in a block-like format, similar to a typical schedule layout.
+          <strong>Block View:</strong> This tab displays your schedule in a block-like format, similar to a typical schedule layout. You are also able to print this page with the "Download Print View" button.
         </li>
         <li>
           <strong>Critical Path:</strong> This tab displays a graphical view of classes which have pre-requisites to help guide you in placing classes on you schedule.
         </li>
         <li>
           <strong>Save Workspace:</strong> Click "Save Workspace" to save your current work so that you can work on it or refer to it later.
-        </li>
-        <li>
-          <strong>Color Guide:</strong> Green: Completed class, Yellow: In progress, Blue: Future class
         </li>
       </ul>
       <button onClick={onClose}>Close</button>
