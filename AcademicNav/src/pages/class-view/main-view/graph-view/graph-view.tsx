@@ -24,12 +24,12 @@ import csbareq from '../../../../data/requirements/csbareq.json';
 const initspacing = 25;
 const xspacing = 175;
 const yspacing = 50
-const groupspacing = 150
+const groupspacing = 160
 const groupxposition = 33
 
 //sizes
-const groupwidth = 800;
-const groupheight = 125
+const groupwidth = 900;
+const groupheight = 135
 
 //counts
 let groupcount = 0;
@@ -45,6 +45,18 @@ let semesterClassCount: number[] = [];
 const semesterColor = 'rgba(225,225,225,0)'
 const addSemesterColor = 'rgb(128,128,128)'
 
+
+let coreList: string | string[] = [];
+
+const semesterGroupStyle = {
+    backgroundColor: semesterColor,
+    width: groupwidth,
+    height: groupheight,
+    textAlign: 'left',
+    fontSize: '15px',
+    fontWeight: 'bold'
+};
+
 const GraphView = () => {
 
     //const reactFlowWrapper = useRef(null);
@@ -58,7 +70,7 @@ const GraphView = () => {
     const [warningMessage, setWarningMessage] = useState('');
 
     const electiveList = major === 'computer-science-ba' || major === 'computer-science-bs' ? cselec : pubheaelthelec;
-    let coreList: string | string[] = [];
+
     if (major === 'computer-science-ba') {
         coreList = csbareq;
     } else if (major === 'computer-science-bs') {
@@ -108,7 +120,7 @@ const GraphView = () => {
                 data: { label: value },
                 position: { x: groupxposition, y: groupcount * groupspacing },
                 className: 'light',
-                style: { backgroundColor: semesterColor, width: groupwidth, height: groupheight },
+                style: semesterGroupStyle as React.CSSProperties,
                 selectable: false,
                 connectable: false,
                 draggable: false
@@ -139,7 +151,7 @@ const GraphView = () => {
                     {
                         id: value.id,
                         position: { x: semesterClassCount[parentId] * xspacing + initspacing, y: yspacing },
-                        data: { label: value.title }, style: { backgroundColor: classColor },
+                        data: { label: value.id + " - " + value.title }, style: { backgroundColor: classColor },
                         parentNode: value.semester,
                         expandParent: true,
                         selectable: false,
@@ -226,28 +238,71 @@ const GraphView = () => {
                                 }
 
                                 if (reqAND.length > 0 && reqAND.some((item) => item.taken === false) && reqOR.length > 0 && !reqOR.some((item) => item.taken === true)) {
+                                    let message = ""
+                                    const missingReqAND = reqAND.filter((c) => c.taken === false)
+                                    const missingReqOR = reqOR.filter((c) => c.taken === false)
+                                    for (let i = 0; i < missingReqAND.length; i++) {
+                                        message += missingReqAND[i].id
+                                        if (missingReqAND.length != 1) {
+                                            message += ", "
+                                        }
+                                        if (i === missingReqAND.length - 1) {
+                                            message += " and "
+                                        }
+                                    }
+                                    for (let i = 0; i < missingReqOR.length; i++) {
+                                        message += missingReqOR[i].id
+                                        if (i != missingReqOR.length - 1 && missingReqOR.length != 2) {
+                                            message += ", "
+                                        }
+                                        if (i === missingReqOR.length - 2) {
+                                            message += " or "
+                                        }
+                                    }
                                     console.log("First Drop Down Restriction")
-                                    triggerWarning("Missing Prerequisites for " + classToMove.id + " " + classToMove.title)
+                                    triggerWarning("Missing Prerequisites for " + classToMove.id + " " + classToMove.title + ": " + message)
                                     validAddition = false
                                 }
                                 else if (reqAND.length > 0 && reqAND.some((item) => item.taken === false)) {
+                                    let message = ""
+                                    const missingReqAND = reqAND.filter((c) => c.taken === false)
+                                    for (let i = 0; i < missingReqAND.length; i++) {
+                                        message += missingReqAND[i].id
+                                        if (i != missingReqAND.length - 1 && missingReqAND.length != 2) {
+                                            message += ", "
+                                        }
+                                        if (i === missingReqAND.length - 2) {
+                                            message += " and "
+                                        }
+                                    }
                                     console.log("Second Drop Down Restriction")
-                                    triggerWarning("Missing Prerequisites for " + classToMove.id + " " + classToMove.title)
+                                    triggerWarning("Missing Prerequisites for " + classToMove.id + " " + classToMove.title + ": " + message)
                                     validAddition = false
                                 }
                                 else if (reqOR.length > 0 && !reqOR.some((item) => item.taken === true)) {
+                                    let message = ""
+                                    const missingReqOR = reqOR.filter((c) => c.taken === false)
+                                    for (let i = 0; i < missingReqOR.length; i++) {
+                                        message += missingReqOR[i].id
+                                        if (i != missingReqOR.length - 1 && missingReqOR.length != 2) {
+                                            message += ", "
+                                        }
+                                        if (i === missingReqOR.length - 2) {
+                                            message += " or "
+                                        }
+                                    }
                                     console.log("Third Drop Down Restriction")
-                                    triggerWarning("Missing Prerequisites for " + classToMove.id + " " + classToMove.title)
+                                    triggerWarning("Missing Prerequisites for " + classToMove.id + " " + classToMove.title + ": " + message)
                                     validAddition = false
                                 }
-                                if (reqAND.length > 0) {
+                                if (reqAND.length > 0 && validAddition) {
                                     if (reqAND.some((req) => !semesterGreaterThan(element.id, req.semester))) {
                                         console.log("Fourth Drop Down Restriction")
                                         triggerWarning("Class " + classToMove.id + " " + classToMove.title + " cannot be in the same semester or before one of it's prerequisites")
                                         validAddition = false
                                     }
                                 }
-                                if (reqOR.length > 0) {
+                                if (reqOR.length > 0 && validAddition) {
                                     if (!reqOR.some((req) => semesterGreaterThan(element.id, req.semester))) {
                                         console.log("Fifth Drop Down Restriction")
                                         triggerWarning("Class " + classToMove.id + " " + classToMove.title + " cannot be in the same semester or before one of it's prerequisites")
@@ -258,7 +313,7 @@ const GraphView = () => {
                                 let currentCreditHours = 0;
                                 semesterClasses.forEach(function (classes) { currentCreditHours += classes.credits })
 
-                                if (currentCreditHours + classToMove.credits > creditHours) {
+                                if (currentCreditHours + classToMove.credits > creditHours && validAddition) {
                                     console.log("Credit Hour Check Failed")
                                     triggerWarning("This will set you over your desired credit hours of " + creditHours)
                                     validAddition = false;
@@ -273,7 +328,7 @@ const GraphView = () => {
                                     {
                                         id: classToMove.id,
                                         position: { x: semesterClassCount[parentId] * xspacing + initspacing, y: yspacing },
-                                        data: { label: `${type}` }, style: { backgroundColor: classColor },
+                                        data: { label: classToMove.id + " - " + classToMove.title }, style: { backgroundColor: classColor },
                                         parentNode: element.id,
                                         expandParent: true,
                                         selectable: false,
@@ -304,7 +359,7 @@ const GraphView = () => {
                 }
             }
         },
-        [classArray, creditHours, nodes, reactFlowInstance, setClassArray, setNodes]
+        [classArray, creditHours, electiveList, nodes, reactFlowInstance, setClassArray, setNodes]
     );
 
     //used for node deletion
@@ -390,7 +445,7 @@ const GraphView = () => {
                 data: { label: semOutput },
                 position: { x: groupxposition, y: groupcount * groupspacing },
                 className: 'light',
-                style: { backgroundColor: semesterColor, width: groupwidth, height: groupheight },
+                style: semesterGroupStyle as React.CSSProperties,
                 selectable: false,
                 connectable: false,
                 draggable: false

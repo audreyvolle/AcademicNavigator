@@ -70,7 +70,11 @@ const SideBar = () => {
     coreList = pubheaelthcore;
   }
 
-  const onDragStart = (event: any, nodeType: any, nodeId: string) => {
+const onDragStart = (event: any, nodeType: any, nodeId: string) => {
+    setInfoBoxVisible(false)
+    if (timeoutId) {
+        clearTimeout(timeoutId);
+    }
     event.dataTransfer.setData('application/reactflow', nodeType);
     event.dataTransfer.effectAllowed = 'move';
     event.dataTransfer.setData('nodeId', nodeId);
