@@ -163,9 +163,9 @@ const GraphView = () => {
             if (value.prerequisitesAND.length > 0) {
                 edgeCount = findEdges(value.prerequisitesAND, classArray, edges, value.id, edgeCount);
             }
-            /*if (value.prerequisitesOR.length > 0) {
+            if (value.prerequisitesOR.length > 0) {
                 edgeCount = findEdges(value.prerequisitesOR, classArray, edges, value.id, edgeCount);
-            }*/
+            }
             semesterClassCount[parentId]++
         })
         setIsLoading(false)
