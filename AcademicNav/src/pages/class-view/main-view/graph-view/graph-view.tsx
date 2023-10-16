@@ -411,9 +411,19 @@ const GraphView = () => {
             console.log("class node doubleclicked")
             const classInfo = classArray.find((element) => element.id === node.id)
             const semesterId = semesters.findIndex((semester) => semester === classInfo?.semester)
-
+            
             semesterClassCount[semesterId]--
             const updatedNodes = nodes.filter((element) => element.id !== node.id);
+
+            if (semesterClassCount.length > 0) {
+                let i = 0;
+                updatedNodes.forEach(function (nnodes) {
+                    if (nnodes.parentNode === classInfo?.semester) {
+                        nnodes.position = { x: i * xspacing + initspacing, y: yspacing }
+                        i++;
+                    }
+                })
+            }
             setNodes(updatedNodes)
 
             const updatedClassArray = classArray.map((classItem) =>
