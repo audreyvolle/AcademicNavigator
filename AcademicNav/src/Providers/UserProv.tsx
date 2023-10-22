@@ -273,7 +273,7 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
 
       visited.add(classToVisit);
 
-      if (classToVisit.prerequisitesAND.length === 0) {
+      if (classToVisit.prerequisitesAND.length === 0 && classToVisit.prerequisitesOR.length === 0) {
         while (true) {
           if (
             graduationOptions.indexOf(semesterPlacement) >= 0 &&
@@ -326,6 +326,13 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
           }
         });
 
+        classToVisit.prerequisitesOR.forEach((prereq) => {
+          const prereqClass = classArray.find((c) => c.id === prereq.id);
+          if (prereqClass) {
+            dfs(prereqClass);
+          }
+        });
+
         // Schedule logic starts here
         // Check if class can be scheduled in the current semester
         if (graduationOptions.indexOf(classToVisit.semester) > graduationOptions.indexOf(semesterPlacement)) {
@@ -339,8 +346,14 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
           return prereqClass && prereqClass.semester === semesterPlacement;
         });
 
+        // Check if there is a prerequisite for the class in the current semester
+        const hasPrerequisiteInCurrentSemesterOR = classToVisit.prerequisitesOR.some((prereq) => {
+          const prereqClass = classArray.find((c) => c.id === prereq.id);
+          return prereqClass && prereqClass.semester === semesterPlacement;
+        });
+
         // If there is a prerequisite for the class in the current semester, schedule it in the next semester
-        if (hasPrerequisiteInCurrentSemester) {
+        if (hasPrerequisiteInCurrentSemester || hasPrerequisiteInCurrentSemesterOR) {
           const semesterIndex = graduationOptions.indexOf(semesterPlacement);
           semesterPlacement = graduationOptions[semesterIndex + 1];
           currentSemesterCredits = 0;
