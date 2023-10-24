@@ -4,19 +4,15 @@ import { useUser } from '../../Providers/UserProv';
 import { useEffect } from 'react';
 
 const Welcome = () => {
-  const { major, handleDropdownChange, setClassArray, classArray, setIsMainViewVisible, setCurrentSemester } = useUser();
+  const { setMajor, major, handleDropdownChange, setClassArray, classArray, setIsMainViewVisible, setCurrentSemester, setCreditHours } = useUser();
 
   const handleLoadWorkspace = () => {
     const fileInput = document.getElementById('fileInput');
     fileInput?.click();
   };
 
-  useEffect(() => {
-    console.log(classArray);
-  }, [classArray]);
 
   const handleFileUpload = (e: any) => {
-    console.log(classArray);
     const selectedFile = e.target.files[0];
 
     if (selectedFile) {
@@ -29,21 +25,22 @@ const Welcome = () => {
           const parsedContent = JSON.parse(fileContent);
 
           try {
-            console.log(parsedContent);
-            await setClassArray(parsedContent);
-
+            setClassArray(parsedContent.classes);
+            setMajor(parsedContent.basicInfo.major);
+            setCreditHours(parsedContent.basicInfo.creditHours);
             // search class array for the smallest semester/year and set that as the currentSemester
             const currentDate = new Date();
             const currentYear = currentDate.getFullYear();
             const semesters = ['Spring', 'Fall'];
             let smallestSemester = 'Fall 2050'; // Set it to a future date for comparison
 
-            parsedContent.forEach((classObj: any) => {
-              const classYear = parseInt(classObj.year, 10);
-              const classSemester = `${classObj.semester} ${classYear}`;
-
-              if (classYear <= currentYear && semesters.includes(classObj.semester)) {
-                if (classYear < parseInt(smallestSemester.split(' ')[1], 10) ||
+            parsedContent.classes.forEach((classObj: any) => {
+              //Semester is a string in the format of "Fall 2021"
+              //Split the string into an array and get the year
+              const classYear = parseInt(classObj.semester.split(' ')[1], 10);
+              const classSemester = `${classObj.semester}`;
+              if (classYear && classYear <= currentYear) {
+                 if (classYear < parseInt(smallestSemester.split(' ')[1], 10) ||
                   (classYear === parseInt(smallestSemester.split(' ')[1], 10) &&
                     semesters.indexOf(classObj.semester) < semesters.indexOf(smallestSemester.split(' ')[0]))) {
                   smallestSemester = classSemester;
@@ -51,7 +48,6 @@ const Welcome = () => {
               }
             });
 
-            console.log('Smallest Semester:', smallestSemester);
             setCurrentSemester(smallestSemester);
             setIsMainViewVisible(true);
           } catch (error) {

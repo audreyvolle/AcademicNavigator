@@ -199,7 +199,17 @@ const MainView = () => {
   };
 
   function saveWorkSpace() {
-    const blob = new Blob([JSON.stringify(classArray, null, 2)], { type: 'application/json' });
+    // Create an object with the data to be saved
+    const dataToSave = {
+      basicInfo: {
+        major: major, // Add the major property to the basicInfo object
+        creditHours: creditHours
+      },
+      classes: classArray
+    };
+
+    // Create a blob of the data
+    const blob = new Blob([JSON.stringify(dataToSave, null, 2)], { type: 'application/json' });
     saveFile(blob);
   }
 
