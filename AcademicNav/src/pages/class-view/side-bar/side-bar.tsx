@@ -72,7 +72,7 @@ const SideBar = () => {
 
 const onDragStart = (event: any, nodeType: any, nodeId: string) => {
     setInfoBoxVisible(false)
-    if (timeoutId) {
+    if (timeoutId) {//disables the info tooltip once a drag starts
         clearTimeout(timeoutId);
     }
     event.dataTransfer.setData('application/reactflow', nodeType);
@@ -94,26 +94,29 @@ const onDragStart = (event: any, nodeType: any, nodeId: string) => {
 
   const onDragEnd = (event: any, nodeId: string) => {
     console.log(nodeId, event);
+    //resets the classes in the sidebar after one gets dragged over 
     setClassesNotTaken((prevClasses) =>
       prevClasses.filter((classItem) => !classItem.taken)
     );
   };
 
-  const handleNodeHover = (event: any, classId: string) => {
+  const handleNodeHover = (event: any, classId: string) => {//handles the class info tooltip when hovering over a node
     console.log(event)
+
+    //gets the class data based on the name of the node
     const hoveredNode = classesNotTaken.find((c) => c.id === classId)
     let message = ""
-    if (hoveredNode) {
-      message += hoveredNode.id + "\n"
-      message += hoveredNode.title + "\n"
-      if (coreList.includes(hoveredNode.id)) {
+    if (hoveredNode) {//makes sure the hovered node is valid
+      message += hoveredNode.id + "\n" //adds the class id to the tooltip
+      message += hoveredNode.title + "\n" //adds the class name to the tool tip
+      if (coreList.includes(hoveredNode.id)) { //if the class is required, show that on the tooltip
           message += "Required Course for Major\n"
       }
-      if (electiveList.includes(hoveredNode.id)) {
+      if (electiveList.includes(hoveredNode.id)) { //if the class is an elective, show that on the tooltip
           message += "Elective \n"
       }
-      message += "Credit Hours: " + hoveredNode.credits + "\n"
-      if (hoveredNode.prerequisitesAND.length > 0 || hoveredNode.prerequisitesOR.length > 0) {
+      message += "Credit Hours: " + hoveredNode.credits + "\n" //adds the credit hours to the tooltip
+      if (hoveredNode.prerequisitesAND.length > 0 || hoveredNode.prerequisitesOR.length > 0) { //adds prereqsOR and prereqsAND class ids to the tooltip
         message += "Prerequisites: "
         if (hoveredNode.prerequisitesAND.length > 0 && hoveredNode.prerequisitesOR.length > 0) {
           for (let i = 0; i < hoveredNode.prerequisitesAND.length; i++) {
@@ -135,7 +138,7 @@ const onDragStart = (event: any, nodeType: any, nodeId: string) => {
             }
           }
         }
-        else if (hoveredNode.prerequisitesAND.length > 0) {
+        else if (hoveredNode.prerequisitesAND.length > 0) { //adds prereqAND class ids to the tooltip - Used if class only has AND prereqs
           for (let i = 0; i < hoveredNode.prerequisitesAND.length; i++) {
             message += hoveredNode.prerequisitesAND[i].id
             if (i != hoveredNode.prerequisitesAND.length - 1 && hoveredNode.prerequisitesAND.length != 2) {
@@ -146,7 +149,7 @@ const onDragStart = (event: any, nodeType: any, nodeId: string) => {
             }
           }
         }
-        else if (hoveredNode.prerequisitesOR.length > 0) {
+        else if (hoveredNode.prerequisitesOR.length > 0) { //adds prereqOR class ids to the tooltip - Used if class only has OR prereqs
           for (let i = 0; i < hoveredNode.prerequisitesOR.length; i++) {
             message += hoveredNode.prerequisitesOR[i].id
             if (i != hoveredNode.prerequisitesOR.length - 1 && hoveredNode.prerequisitesOR.length != 2) {
@@ -164,17 +167,14 @@ const onDragStart = (event: any, nodeType: any, nodeId: string) => {
       const timeout = setTimeout(() => {
         if (classId === hoveredNode.id) {
           setInfoBoxMessage(message)
-          //console.log(message)
           setInfoBoxVisible(true)
-          // Set a state to make the NodeInfoBox visible
-          // You can store additional node information in state if needed
-          // Example: setSelectedNodeInfo(node);
         }
       }, infoBoxDelayTime);
       setTimeoutId(timeout);
     }
   };
 
+  //disables the tooltip once the mouse leaves a node
   const handleNodeUnhover = () => {
     setInfoBoxVisible(false)
     if (timeoutId) {
