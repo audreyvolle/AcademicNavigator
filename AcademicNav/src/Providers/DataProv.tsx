@@ -64,6 +64,8 @@ export const DataProvider = ({children}: { children: ReactNode}) => {
             const prerequisitesOR: PrerequisiteType[] = [];
             const prerequisitesAND: PrerequisiteType[] = [];
             let number = 1;
+
+            //adds all of the prerequisites to each class
             if(prerequisitesRaw){
                 if(idMatch![1] === "CHEM 121A" || idMatch![1] === "CHEM 131"){
                     prerequisitesOR.push({

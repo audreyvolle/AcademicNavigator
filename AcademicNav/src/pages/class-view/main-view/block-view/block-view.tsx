@@ -65,11 +65,10 @@ const BlockView = () => {
         coreList = pubheaelthcore;
     }
 
-    useEffect(() => {
+    useEffect(() => {//used to set up the semesters and classes that have a semester set on them
 
         //cleans up the empty semesters at the end
         if (semesters.length > 0) {
-            //console.log(semesters)
             let emptySemesters = -1;
             for (let i = semesters.length; i > 0; i--) {
                 if (semesterClassCount[i - 1] > 0 || (i === 1 && emptySemesters === - 1)) {
@@ -77,17 +76,13 @@ const BlockView = () => {
                     break
                 }
             }
-            //console.log(emptySemesters)
             if (emptySemesters != -1) {
-                //console.log("slicing")
                 const slicedSemesters = semesters.slice(0, emptySemesters)
                 semesters.splice(0, semesters.length)
-                //console.log(slicedSemesters)
                 slicedSemesters.forEach(function (value) {
                     semesters.push(value)
                 })
             }
-            //console.log(semesters)
         }
 
         //set up the arrays for the display formatting
@@ -97,16 +92,16 @@ const BlockView = () => {
         //get the current semester
         if (!semesters.includes(currentSemester)) {
             semesters.push(currentSemester);
-        }
+        }//if the semester given in the settings is not present, add it
 
 
 
-        classArray.forEach(function (value) {
+        classArray.forEach(function (value) {//adds each class's semesters to the semester array
             if (!semesters.includes(value.semester) && value.semester != null && value.semester != "" && value.semester != "done") {
                 semesters.push(value.semester);
             }
         })
-        customSort(semesters)
+        semesterSort(semesters)
         semesterClassCount = new Array(semesters.length).fill(0);
 
 
@@ -157,8 +152,6 @@ const BlockView = () => {
 
             parentID = semesters.findIndex(item => item === value.semester)
             if (value.semester != null && value.semester != "" && value.semester != "done") {
-
-                //if (!value.taken) {  //Removed condition for filtering out taken classes.
                 nodes.push(
                     {
                         id: value.id,
@@ -174,7 +167,6 @@ const BlockView = () => {
                         connectable: false
                     })
                 semesterClassCount[parentID]++
-                //}
             }
         })
 
@@ -185,12 +177,13 @@ const BlockView = () => {
 
 
     //Click Event Handler
-    const onClick = useCallback((event: React.MouseEvent, node: Node) => {
+    const onClick = useCallback((event: React.MouseEvent, clickedNode: Node) => { //used for the add semester button
         event.preventDefault()
-        if (node.id === 'addSemester') {
+        if (clickedNode.id === 'addSemester') {//makes sure the node clicked on is the add semester button
             let semOutput = "";
             const lastindex = semesters[semesters.length - 1]
 
+            //determines what the next semester should be, based on the last semester in the view
             const matchResult = lastindex.match(/\d+/);
             let year;
             if (matchResult) {
@@ -211,7 +204,7 @@ const BlockView = () => {
             }
             semesters.push(semOutput)
 
-            nodes.push({
+            nodes.push({//creates the new semester
                 id: semOutput,
                 data: { label: semOutput },
                 position: { x: 25 + (col * 425), y: 25 + (groupCount * 275) },
@@ -230,9 +223,9 @@ const BlockView = () => {
             }
             semesterClassCount.push(0);
 
-            const nodeToUpdate = nodes.findIndex((nnode) => nnode.id === node.id)
+            const nodeToUpdate = nodes.findIndex((nnode) => nnode.id === clickedNode.id)
 
-            if (nodeToUpdate !== -1) {
+            if (nodeToUpdate !== -1) {//updates the add semester button position to show after the new semester
                 const updatedNodes = [...nodes]
                 updatedNodes[nodeToUpdate] = {
                     ...updatedNodes[nodeToUpdate],
@@ -252,12 +245,12 @@ const BlockView = () => {
 
     //Drop Event Handler
     const onDrop = useCallback(
-        (event: any) => {
+        (event: any) => {//handles when a class is dragged over from the sidebar
             event.preventDefault();
 
             const reactFlowBounds = reactFlowWrapper.current as HTMLElement | null;
 
-            if (reactFlowBounds) {
+            if (reactFlowBounds) {//makes sure it's in the proper bounds
                 const type = event.dataTransfer.getData('application/reactflow');
 
                 // check if the dropped element is valid
@@ -294,7 +287,7 @@ const BlockView = () => {
                                 let validAddition = true;
 
                                 if (classToMove.prerequisitesAND.length > 0) {
-                                    classToMove.prerequisitesAND.forEach(function (req) {
+                                    classToMove.prerequisitesAND.forEach(function (req) {//collects all the classes in classToMove's prerequisitesAND and puts them into the local reqAND array
                                         const i = classArray.findIndex((section) => section.id === req.id)
                                         if (i != -1) {
                                             reqAND.push(classArray[i])
@@ -302,39 +295,45 @@ const BlockView = () => {
                                     })
                                 }
                                 if (classToMove.prerequisitesOR.length > 0) {
-                                    classToMove.prerequisitesOR.forEach(function (req) {
+                                    classToMove.prerequisitesOR.forEach(function (req) {//collects all the classes in classToMove's prerequisitesOR and puts them into the local reqOR array
                                         const i = classArray.findIndex((section) => section.id === req.id)
                                         if (i != -1) {
                                             reqOR.push(classArray[i])
                                         }
                                     })
                                 }
-
+                                //the following if statements make sure the class dragged in has the proper requirements for being added
                                 if (reqAND.length > 0 && reqAND.some((item) => item.taken === false) && reqOR.length > 0 && !reqOR.some((item) => item.taken === true)) {
-                                    console.log("First Drop Down Restriction")
+                                    //if a class both prereqOR and prereqAND prereqs, makes sure that all classes in the prerequisitesAND array are marked as taken
+                                    // and that at least one class in the prerequisitesOR array is marked as taken
+                                    console.log("Unsatisfied prereqOR and prereqAND")
                                     triggerWarning("Missing Prerequisites for " + classToMove.id + " " + classToMove.title)
                                     validAddition = false
                                 }
                                 else if (reqAND.length > 0 && reqAND.some((item) => item.taken === false)) {
-                                    console.log("Second Drop Down Restriction")
+                                    //if a class only has prereqAND prereqs or the prereqORs are satified, makes sure that all classes in the prerequisitesAND array are marked as taken
+                                    console.log("Unsatisfied prereqAND")
                                     triggerWarning("Missing Prerequisites for " + classToMove.id + " " + classToMove.title)
                                     validAddition = false
                                 }
                                 else if (reqOR.length > 0 && !reqOR.some((item) => item.taken === true)) {
-                                    console.log("Third Drop Down Restriction")
+                                    //if a class only has prereqOR prereqs or the prereqANDs are satified, makes sure that at least one class in the prerequisitesOR array is marked as taken
+                                    console.log("Unsatisfied prereqOR")
                                     triggerWarning("Missing Prerequisites for " + classToMove.id + " " + classToMove.title)
                                     validAddition = false
                                 }
                                 if (reqAND.length > 0) {
+                                    //makes sure that the class is not put before or the same semester as a prereq | checks prereqAND
                                     if (reqAND.some((req) => !semesterGreaterThan(element.id, req.semester))) {
-                                        console.log("Fourth Drop Down Restriction")
+                                        console.log("Class in wrong order - PrereqAND")
                                         triggerWarning("Class " + classToMove.id + " " + classToMove.title + " cannot be in the same semester or before one of it's prerequisites")
                                         validAddition = false
                                     }
                                 }
                                 if (reqOR.length > 0) {
+                                    //makes sure that the class is not put before or the same semester as a prereq | checks prereqOR
                                     if (!reqOR.some((req) => semesterGreaterThan(element.id, req.semester))) {
-                                        console.log("Fifth Drop Down Restriction")
+                                        console.log("Class in wrong order - PrereqOR")
                                         triggerWarning("Class " + classToMove.id + " " + classToMove.title + " cannot be in the same semester or before one of it's prerequisites")
                                         validAddition = false
                                     }
@@ -344,17 +343,19 @@ const BlockView = () => {
                                 semesterClasses.forEach(function (classes) { currentCreditHours += classes.credits })
 
                                 if (currentCreditHours + classToMove.credits > creditHours) {
+                                    //checks to make sure that the current credit hours plus the classes credit hours don't exceed the max selected in the menu
                                     console.log("Credit Hour Check Failed")
                                     triggerWarning("This will set you over your desired credit hours of " + creditHours)
                                     validAddition = false;
                                 }
 
                                 if (validAddition) {
+                                    //if the class passes all the checks, it gets added as a node
                                     const isCore = coreList.includes(classToMove.id);
                                     const isElective = electiveList.includes(classToMove.id);  
                                     const classColor = isCore ? 'rgb(158, 158, 228)' : (isElective ? 'rgb(234, 234, 153)' : 'rgb(255,255,255)');
 
-                                    const newNode = {
+                                    const newNode = {//node creation
                                         id: classToMove.id,
                                         position: { x: spacing, y: 20 + (semesterClassCount[parentID] + 1) * 30 },
                                         data: { label: classToMove.id + ": " + classToMove.title },
@@ -368,6 +369,7 @@ const BlockView = () => {
                                         connectable: false
                                     }
 
+                                    // Set taken to true and set's the class's semester for the class being moved
                                     const updatedClassArray = classArray.map((classItem) => classItem === classToMove ? {
                                         ...classItem, taken: true, semester: element.id
                                     } : classItem);
@@ -393,17 +395,17 @@ const BlockView = () => {
     );
 
     //used for node deletion
-    const onNodeDoubleClick = useCallback((event: React.MouseEvent, node: Node) => { //use for deleting a class node or semester node
+    const onNodeDoubleClick = useCallback((event: React.MouseEvent, doubleClickedNode: Node) => { //use for deleting a class node or semester node
         event.preventDefault()
-        if (node.id === 'addSemester') {
+        if (doubleClickedNode.id === 'addSemester') {
             console.log("add semester double clicked, how did you do this...")
             return
         }
-        else if (semesters.findIndex((semester) => semester === node.id) != -1) { //if its a semester node
+        else if (semesters.findIndex((semester) => semester === doubleClickedNode.id) != -1) { //if its a semester node
             const semesterLastIndex = semesters.length - 1;
 
             //if it's the last semester in the array
-            if (semesters.findIndex((semester) => semester === node.id) === semesterLastIndex) {
+            if (semesters.findIndex((semester) => semester === doubleClickedNode.id) === semesterLastIndex) {
 
                 //if last semester in the array is empty (no classes)
                 if (semesterClassCount[semesterLastIndex] === 0) {
@@ -451,11 +453,11 @@ const BlockView = () => {
         }
         else { //it's a class node
             console.log("class node doubleclicked")
-            const classInfo = classArray.find((element) => element.id === node.id)
+            const classInfo = classArray.find((element) => element.id === doubleClickedNode.id)
             const semesterId = semesters.findIndex((semester) => semester === classInfo.semester)
 
             semesterClassCount[semesterId]--
-            const updatedNodes = nodes.filter((element) => element.id !== node.id);
+            const updatedNodes = nodes.filter((element) => element.id !== doubleClickedNode.id);
 
             //condense the remaining class nodes 
             let x = 0
@@ -549,7 +551,7 @@ const BlockView = () => {
 }
 
 //sorts semesters by year and season
-function customSort(arr: string[]): string[] {
+function semesterSort(arr: string[]): string[] {
     return arr.sort((a, b) => {
         const matchA = a.match(/\d+/)
         const matchB = b.match(/\d+/)
@@ -685,7 +687,9 @@ function downloadImage(dataUrl) {
     a.click();
 }
 
-function semesterGreaterThan(left: string, right: string): boolean { //example: Fall 2023 as left and Spring 2023 as right. Will return true since Fall 2023 is later than Spring 2023
+function semesterGreaterThan(left: string, right: string): boolean {
+    //checks if the left semester is later than the right semester.
+    //example: Fall 2023 as left and Spring 2023 as right. Will return true since Fall 2023 is later than Spring 2023
     console.log("Left: " + left + " Right: " + right)
     const aYearMatch = left.match(/\d+/);
     const bYearMatch = right.match(/\d+/);
