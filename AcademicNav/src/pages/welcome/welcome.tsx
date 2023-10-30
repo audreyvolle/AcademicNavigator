@@ -94,7 +94,7 @@ const Welcome = () => {
           <div className="vertical-line"></div>
           <div className="right-panel">
             <div className="welcome">
-              <h1>Academic Navigator</h1>
+              <img src='./academicNavIcon.png' alt="academicNavIcon" width={"320px"} height={"320px"}/>
               <p>Welcome! Select your major from the drop down to generate a schedule, or click LOAD to modify an existing schedule.</p>
             </div>
           </div>
