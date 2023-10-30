@@ -195,7 +195,7 @@ const onDragStart = (event: any, nodeType: any, nodeId: string) => {
   }, [searchText]);
 
   return (
-    <aside>
+    <aside className='SideBar'>
       <div className='SideBarHeader'>
         <h2>
           Class List

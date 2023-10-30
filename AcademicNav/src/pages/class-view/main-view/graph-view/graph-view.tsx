@@ -311,9 +311,10 @@ const GraphView = () => {
                                 }
                                 const semesterClasses = classArray.filter((classes) => classes.semester === element.id);
                                 let currentCreditHours = 0;
-                                semesterClasses.forEach(function (classes) { currentCreditHours += classes.credits })
-
-                                if (currentCreditHours + classToMove.credits > creditHours && validAddition) {
+                                let total = 0
+                                semesterClasses.forEach(function (classes) { currentCreditHours += classes.credits; total+=1 })
+                                //Can't have more than 6 classes in one semester
+                                if ((currentCreditHours + classToMove.credits > creditHours || total > 5) && validAddition) {
                                     console.log("Credit Hour Check Failed")
                                     triggerWarning("This will set you over your desired credit hours of " + creditHours)
                                     validAddition = false;

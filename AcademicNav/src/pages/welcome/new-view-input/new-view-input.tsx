@@ -55,7 +55,6 @@ function NewView() {
   const currentDate = new Date();
   const currentYear = currentDate.getFullYear();
   const currentMonth = currentDate.getMonth() + 1; // Month is 0-indexed, so we add 1
-
   // Create an array of semester names
   const semesters = ['Spring', 'Fall'];
 
@@ -139,8 +138,13 @@ function NewView() {
           ))}
         </ul>}
 
-        <label htmlFor="credits">Credit Hours Per Semester (between 1 and 20):</label>
-        <input type="number" id="credits" name="credits" min="1" max="20" className="input-field-credits" onChange={(e) => setCreditHours(parseInt(e.target.value))} />
+        <label htmlFor="credits">Credit Hours Per Semester (between 4 and 20):</label>
+        <input type="number" defaultValue={15} id="credits" name="credits" min="4" max="20" className="input-field-credits" onChange={(e) => {
+            let value = parseInt(e.target.value);
+            if (value < 4) value = 4;
+            if (value > 20) value = 20;
+            setCreditHours(value);
+          }} />
 
         <label htmlFor="current">Current Semester: </label>
         <select id="current" name="current" className="input-field" onChange={(e) => setCurrentSemester(e.target.value)}></select>
