@@ -1,10 +1,9 @@
 import NewView from './new-view-input/new-view-input';
 import './welcome.scss';
 import { useUser } from '../../Providers/UserProv';
-import { useEffect } from 'react';
 
 const Welcome = () => {
-  const { setMajor, major, handleDropdownChange, setClassArray, classArray, setIsMainViewVisible, setCurrentSemester, setCreditHours } = useUser();
+  const { setMajor, major, handleDropdownChange, setClassArray, setIsMainViewVisible, setCurrentSemester, setCreditHours } = useUser();
 
   const handleLoadWorkspace = () => {
     const fileInput = document.getElementById('fileInput');
