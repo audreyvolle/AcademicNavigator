@@ -43,7 +43,7 @@ let semesterClassCount: number[] = [];
 
 //colors
 const semesterColor = 'rgba(225,225,225,0)'
-const addSemesterColor = '#fbbaaf'
+const addSemesterColor = 'rgb(128,128,128)'
 
 
 let coreList: string | string[] = [];
@@ -144,7 +144,7 @@ const GraphView = () => {
             const isCore = coreList.includes(value.id);
             // Check if the class is an elective
             const isElective = electiveList.includes(value.id);
-            const classColor = isCore ? `${addSemesterColor}` : (isElective ? 'rgb(234, 234, 153)' : 'rgb(255,255,255)');
+            const classColor = isCore ? 'rgb(158, 158, 228)' : (isElective ? 'rgb(234, 234, 153)' : 'rgb(255,255,255)');
             parentId = semesters.findIndex(item => item === value.semester)
             if (value.semester != null && value.semester != "") {
                 nodes.push(
@@ -323,7 +323,7 @@ const GraphView = () => {
                                     console.log("Second Success")
                                     const isCore = coreList.includes(classToMove.id);
                                     const isElective = electiveList.includes(classToMove.id);  
-                                    const classColor = isCore ? `${addSemesterColor}` : (isElective ? 'rgb(234, 234, 153)' : 'rgb(255,255,255)');
+                                    const classColor = isCore ? 'rgb(158, 158, 228)' : (isElective ? 'rgb(234, 234, 153)' : 'rgb(255,255,255)');
                               
                                     const newNode =
                                     {
@@ -441,7 +441,8 @@ const GraphView = () => {
         if (node.id === 'addSemester') {
             let semOutput = "";
             const lastindex = semesters[semesters.length - 1]
-            const year = parseInt(lastindex.match(/\d+/)![0])
+
+            const year = parseInt(lastindex.match(/\d+/)[0])
             const isSpring = lastindex.includes("Spring")
             if (isSpring) {
                 semOutput = "Fall " + year

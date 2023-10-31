@@ -58,7 +58,6 @@ function useLoading() {
   justify-content: center;
   background: #282c34;
   z-index: 9;
-  background-color:#f7d1ca;
 }
     `
   const oStyle = document.createElement('style')

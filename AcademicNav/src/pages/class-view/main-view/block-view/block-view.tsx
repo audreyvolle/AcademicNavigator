@@ -30,8 +30,10 @@ const classWidth = 350;
 const printWidth = 875;
 
 //colors
-//const readyColor = 'rgb(255,255,255)';
-const addSemesterColor = '#fbbaaf'
+const readyColor = 'rgb(255,255,255)';
+const unavailableColor = 'rgba(255,153,153,1)';
+let setColor = 'rgb(255,255,255)';
+const addSemesterColor = 'rgb(128,128,128)'
 
 //arrays
 const semesters: string | string[] = [];
@@ -176,7 +178,7 @@ const BlockView = () => {
             }
         })
 
-        //setColor = readyColor
+        setColor = readyColor
         setIsLoading(false)
 
     }, []);
@@ -278,9 +280,9 @@ const BlockView = () => {
                             element.id != null &&
                             parentID != -1 &&
                             position.x >= element.position.x &&
-                            position.x <= element.position.x + element.width! &&
+                            position.x <= element.position.x + element.width &&
                             position.y >= element.position.y &&
-                            position.y <= element.position.y + element.height!
+                            position.y <= element.position.y + element.height
                         ) {
                             console.log("The Semester dragged onto is " + element.id)
                             const classToMove = classArray.find((classItem) => classItem.title === type);
@@ -450,7 +452,7 @@ const BlockView = () => {
         else { //it's a class node
             console.log("class node doubleclicked")
             const classInfo = classArray.find((element) => element.id === node.id)
-            const semesterId = semesters.findIndex((semester) => semester === classInfo!.semester)
+            const semesterId = semesters.findIndex((semester) => semester === classInfo.semester)
 
             semesterClassCount[semesterId]--
             const updatedNodes = nodes.filter((element) => element.id !== node.id);
@@ -458,7 +460,7 @@ const BlockView = () => {
             //condense the remaining class nodes 
             let x = 0
             updatedNodes.forEach((node) => {
-                if (node.parentNode === classInfo!.semester) {
+                if (node.parentNode === classInfo.semester) {
                     x++
 
                     node.position = { x: spacing, y: 20 + x * 30 }
@@ -479,18 +481,14 @@ const BlockView = () => {
 
     //used for print button
     const printClick = useCallback(() => {
-        const viewport = document.querySelector('.react-flow__viewport') as HTMLElement;
-        if (!viewport) {
-            return;
-        }
 
-        toPng(viewport, {
+        toPng(document.querySelector('.react-flow__viewport'), {
             backgroundColor: '#ffffff',
             width: printWidth,
             height: (groupCount + 1) * 275 + 25,
             style: {
-                width: `${printWidth}px`,
-                height: `${(groupCount + 1) * 275 + 25}px`,
+                width: printWidth,
+                height: (groupCount + 1) * 275 + 25,
                 transform: `translate(0px, 0px)`
             }
         }).then(downloadImage);
@@ -581,7 +579,7 @@ function customSort(arr: string[]): string[] {
 }
 
 //returns the latest semester in the array of semester
-/* function lastSemester(arr: string[]): string {
+function lastSemester(arr: string[]): string {
     arr.sort((a, b) => {
         const matchA = a.match(/\d+/)
         const matchB = b.match(/\d+/)
@@ -610,9 +608,9 @@ function customSort(arr: string[]): string[] {
     });
     return arr[arr.length - 1]
 }
- */
+
 //given the last semester in the critical path, this method will return an array of semester strings from now till then
-/* function fillSemesters(target: string): string[] {
+function fillSemesters(target: string): string[] {
     const today = new Date()
     let curYear = parseInt(today.getFullYear().toString()) //describes the year of the starting semester
     let isSpring //describes the season of the starting semester
@@ -676,10 +674,10 @@ function customSort(arr: string[]): string[] {
 
 
     return filled
-} */
+}
 
 //used in document creation
-function downloadImage(dataUrl:any) {
+function downloadImage(dataUrl) {
     const a = document.createElement('a');
 
     a.setAttribute('download', 'schedule.png');
