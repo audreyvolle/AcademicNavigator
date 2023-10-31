@@ -39,5 +39,31 @@
     "vite-plugin-electron-renderer": "^0.14.5",
     "vite-plugin-sass": "^0.1.0"
   },
-  "main": "dist-electron/main.js"
+  "main": "./dist-electron/main.js",
+  "electron-builder": {
+    "appId": "T3AM.academicnav",
+    "productName": "AcademicNav",
+    "directories": {
+      "output": "release/"
+    },
+    "files": [
+      "./dist/**/*",
+      "./node_modules/**/*",
+      "package.json"
+    ],
+    "win": {
+      "target": "nsis",
+      "icon": "./public/academicNavIcon_40.ico"
+    },
+    "mac": {
+      "target": "dmg",
+      "icon": "./public/academicNavIcon.icns"
+    },
+    "linux": {
+      "target": [
+        "AppImage",
+        "deb"
+      ]
+    }
+  }
 }

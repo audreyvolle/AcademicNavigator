@@ -2,21 +2,22 @@
  * @see https://www.electron.build/configuration/configuration
  */
 {
-  "$schema": "https://raw.githubusercontent.com/electron-userland/electron-builder/master/packages/app-builder-lib/scheme.json",
-  "appId": "YourAppID",
+  "appId": "T3AM.academicnav",
+  "productName": "AcademicNav",
   "asar": true,
   "directories": {
-    "output": "release/${version}"
+    "output": "release/${0.0.1}"
   },
   "files": [
     "dist-electron",
     "dist"
   ],
   "mac": {
-    "artifactName": "${productName}_${version}.${ext}",
+    "artifactName": "${productName}_${0.0.1}.${ext}",
     "target": [
       "dmg"
-    ]
+    ],
+    "icon": "./public/academicNavIcon.icns"
   },
   "win": {
     "target": [
@@ -27,7 +28,8 @@
         ]
       }
     ],
-    "artifactName": "${productName}_${version}.${ext}"
+    "artifactName": "${productName}_${0.0.1}.${ext}",
+    "icon": "./public/academicNavIcon.png"
   },
   "nsis": {
     "oneClick": false,
